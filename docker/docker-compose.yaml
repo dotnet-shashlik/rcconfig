@@ -1,0 +1,12 @@
+version: "2"
+services:
+  shashlik-rc-server:
+    image: shashlik-rc-server
+    hostname: shashlik-rc-server
+    container_name: shashlik-rc-server
+    environment:
+      ASPNETCORE_URLS: http://*:80
+    ports:
+      - 8080:80
+    volumes:
+      - ./rc.db:/app/rc.db
