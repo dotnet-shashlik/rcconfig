@@ -4,9 +4,8 @@ services:
     image: shashlik-rc-server
     hostname: shashlik-rc-server
     container_name: shashlik-rc-server
+    network_mode: host
     environment:
-      ASPNETCORE_URLS: http://*:80
-    ports:
-      - 8080:80
+      ASPNETCORE_URLS: http://*:8080
     volumes:
       - ./rc.db:/app/rc.db
