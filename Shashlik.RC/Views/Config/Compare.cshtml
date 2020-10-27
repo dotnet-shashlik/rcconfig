@@ -1,0 +1,52 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>配置内容修改对比</title>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1, IE=edge">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="description" content="Merge and Diff your documents with diff online and share" />
+    <meta name="keywords" content="diff,merge,compare,jsdiff,comparison,difference,file,text,unix,patch,algorithm,saas,longest common subsequence" />
+    <meta name="author" content="Jamie Peabody" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/codemirror.min.css">
+    <link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/addon/merge/merge.min.css">
+    <link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/theme/material-darker.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/mode/yaml/yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/diff_match_patch/20121119/diff_match_patch.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/addon/merge/merge.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.get('/Config/GetCompareContent/@ViewData["Id"]', function (res) {
+                var type = "javascript";
+                if (res.type !== 'json') {
+                    type = res.type;
+                }
+                window.dv = CodeMirror.MergeView(document.getElementById("mergely"), {
+                    value: res.beforeContent,
+                    orig: res.afterContent,
+                    lineNumbers: true,
+                    mode: type,
+                    highlightDifferences: true,
+                    connect: "align",
+                    collapseIdentical: true,
+                    readOnly: true,
+                    revertButtons: false
+                });
+            }, 'json');
+        });
+    </script>
+</head>
+<body>
+<div id="mergely">
+    </div>
+</body>
+</html>

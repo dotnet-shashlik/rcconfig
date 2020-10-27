@@ -1,0 +1,61 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@model Shashlik.RC.Models.AppDetailModel
+
+<div>
+    <h1>@Model.Name</h1>
+    <small>@Model.Desc</small>
+    <br />
+    <br />
+    <dl>
+        <dt>AppId</dt>
+        <dd>@Model.AppId</dd>
+    </dl>
+    <a href="/env">新增环境</a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>环境Name</th>
+                <th>描述</th>
+                <th>Ip白名单</th>
+                <th>配置</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Envs)
+            {
+                <tr>
+                    <td>
+                        @item.Name
+                    </td>
+                    <td>
+                        @item.Desc
+                    </td>                  
+                    <td>
+                        @foreach (var ip in item.IpWhites)
+                        {
+                            @ip
+                            <br />
+                        }
+                    </td>
+                    <td>
+                        @foreach (var config in item.Configs)
+                        {
+                            <p><a href="/config/index/@config.Id" style="@(config.Enabled?"":"color:#f0ad4e;")">@config.Name&nbsp;<small>@config.Desc</small>【@config.Type】【@(config.Enabled ? "已启用" : "已禁用")】</a></p>
+                        }
+                        <p><a href="/config/index?envId=@item.Id">新增配置</a><p>
+                    </td>
+                    <td>
+                        <a href="/config/ModifyRecords?pageindex=1&envid=@item.Id">查看修改记录</a>
+                        <a href="/env/index/@item.Id">编辑</a>
+                        <a href="/env/copy/@item.Id" class="confirm">复制</a>
+                        <a href="/env/delete/@item.Id" class="confirm">删除</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>

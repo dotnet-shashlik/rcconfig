@@ -1,0 +1,67 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@model List<Shashlik.RC.Models.ModifyRecordModel>
+@{
+    int pageIndex = (int)ViewData["PageIndex"];
+    int total = (int)ViewData["Total"];
+    int pageTotal = (int)Math.Ceiling(((double)total / 20));
+}
+
+<a href="/App">
+    <h3>返回</h3>
+</a>
+
+<div style="font-size:18px;font-weight:bold;margin-bottom:10px;">
+    <span>总计@(total)条记录,第@(pageIndex)页</span>
+    @if (pageIndex > 1)
+    {
+        <a href="/config/ModifyRecords?pageIndex=@(pageIndex - 1)&envid=@ViewData["EnvId"]&configid=@ViewData["ConfigId"]">上一页</a>
+    }
+    @if (pageIndex < pageTotal)
+    {
+        <a href="/config/ModifyRecords?pageIndex=@(pageIndex + 1)&envid=@ViewData["EnvId"]&configid=@ViewData["ConfigId"]">下一页</a>
+    }
+</div>
+
+@foreach (var item in Model)
+{
+    <div class="panel panel-default" style="padding:10px;">
+        @if (ViewData["ConfigId"].ToString() == "")
+        {
+            <h5>
+                【修改文件】：  @item.ConfigDesc&nbsp;&nbsp;(@item.ConfigName)，【修改时间】：@item.ModifyTime.ToString("yyyy-MM-dd HH:mm")
+            </h5>
+        }
+        @if (!string.IsNullOrWhiteSpace(item.Desc))
+        {
+            <span>
+                【修改内容】：
+                @if (string.IsNullOrWhiteSpace(item.BeforeContent) && string.IsNullOrWhiteSpace(item.AfterContent))
+                {
+                    <span>配置内容无修改</span>
+                }
+                else
+                {
+                    <a asp-action="Compare" asp-route-id="@item.Id">查看配置内容修改详情</a>
+                }
+            </span>
+            foreach (var desc in item.Desc.Split('\n'))
+            {
+                <p>@desc</p>
+            }
+        }
+    </div>
+}
+
+<div style="font-size:18px;font-weight:bold;">
+    <span>总计@(total)条记录,第@(pageIndex)页</span>
+    @if (pageIndex > 1)
+    {
+        <a href="/config/ModifyRecords?pageIndex=@(pageIndex - 1)&envid=@ViewData["EnvId"]&configid=@ViewData["ConfigId"]">上一页</a>
+    }
+    @if (pageIndex < pageTotal)
+    {
+        <a href="/config/ModifyRecords?pageIndex=@(pageIndex + 1)&envid=@ViewData["EnvId"]&configid=@ViewData["ConfigId"]">下一页</a>
+    }
+</div>
