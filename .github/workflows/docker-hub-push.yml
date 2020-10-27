@@ -2,7 +2,7 @@ name: shashlik-rc-server-docker
 
 on:
   release:
-    types: [published]
+    types: [prereleased,published]
 
 jobs:
   build:
