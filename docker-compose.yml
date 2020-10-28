@@ -1,11 +1,11 @@
 version: "2"
 services:
   shashlik-rc-server:
-    image: shashlik-rc-server
+    image: 280780363/shashlik-rc-server
     hostname: shashlik-rc-server
     container_name: shashlik-rc-server
     network_mode: host
     environment:
-      ASPNETCORE_URLS: http://*:8080
+      ASPNETCORE_URLS: http://*:8989
     volumes:
       - ./rc.db:/app/rc.db
