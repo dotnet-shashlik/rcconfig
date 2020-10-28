@@ -2,7 +2,7 @@ name: shashlik-rc-server-docker
 
 on:
   release:
-    types: [prereleased]
+    types: [published]
 
 jobs:
   build:
@@ -14,7 +14,7 @@ jobs:
         uses: actions/setup-dotnet@v1
       - name: PublishProject
         run: dotnet publish ./Shashlik.RC/Shashlik.RC.csproj --configuration Release --output ./dist
-      - name: Push to Docker Hub
+      - name: Docker build and push to Docker Hub
         uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
