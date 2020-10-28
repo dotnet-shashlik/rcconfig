@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 namespace Shashlik.RC
@@ -13,14 +14,17 @@ namespace Shashlik.RC
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
            Host.CreateDefaultBuilder(args)
-              .ConfigureWebHostDefaults((webBuilder) =>
-              {
+                .ConfigureAppConfiguration(r =>
+                {
+                    r.SetBasePath("./data");
+                })
+                .ConfigureWebHostDefaults((webBuilder) =>
+                {
 #if DEBUG
-                  // 正式服使用环境变量 ASPNETCORE_URLS=http://*:5000 来灵活配置
-                  webBuilder.UseUrls("http://*:5000");
+                    // 正式服使用环境变量 ASPNETCORE_URLS=http://*:5000 来灵活配置
+                    webBuilder.UseUrls("http://*:5000");
 #endif
-                  webBuilder.UseStartup<Startup>();
-              })
-                  ;
+                    webBuilder.UseStartup<Startup>();
+                });
     }
 }
