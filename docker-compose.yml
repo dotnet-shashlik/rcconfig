@@ -5,6 +5,7 @@ services:
     hostname: shashlik-rc-server
     container_name: shashlik-rc-server
     network_mode: host
+    privileged: true
     environment:
       ASPNETCORE_URLS: http://*:8989
     volumes:
