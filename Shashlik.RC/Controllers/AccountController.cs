@@ -77,17 +77,19 @@ namespace Shashlik.RC.Controllers
                 return View();
             }
 
-            var admin = configuration.GetSection("Admin").Get<LoginModel>();
+            var adminUser = configuration.GetValue<string>("Admin:UserName") ?? Environment.GetEnvironmentVariable("ADMIN_USER");
+            var adminPassword = configuration.GetValue<string>("Admin:Password") ?? Environment.GetEnvironmentVariable("ADMIN_PASS");
+
             ClaimsIdentity claimIdentity = null;
             string role = null;
-            if (loginModel.UserName == admin.UserName)
+            if (loginModel.UserName == adminUser)
             {
-                if (HashHelper.MD5(loginModel.Password).ToUpperInvariant() == admin.Password)
+                if (loginModel.Password == adminPassword)
                 {
                     claimIdentity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
                     claimIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier, "1"));
                     claimIdentity.AddClaim(new Claim(ClaimTypes.Role, Roles.Admin));
-                    claimIdentity.AddClaim(new Claim(ClaimTypes.Name, admin.UserName));
+                    claimIdentity.AddClaim(new Claim(ClaimTypes.Name, adminUser));
                     role = Roles.Admin;
                 }
             }
