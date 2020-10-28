@@ -1,10 +1,11 @@
 version: "2"
 services:
   shashlik-rc-server:
-    image: 280780363/shashlik-rc-server
+    image: 280780363/shashlik-rc-server        
     hostname: shashlik-rc-server
     container_name: shashlik-rc-server
     network_mode: host
+    pull: true
     privileged: true
     environment:
       ASPNETCORE_URLS: http://*:8989
