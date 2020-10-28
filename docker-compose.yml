@@ -1,4 +1,4 @@
-version: "3"
+version: "2"
 services:
   shashlik-rc-server:
     image: 280780363/shashlik-rc-server        
@@ -8,5 +8,7 @@ services:
     privileged: true
     environment:
       ASPNETCORE_URLS: http://*:8989
+      ADMIN_USER: admin
+      ADMIN_PASS: 123123
     volumes:
       - ./data:/app/data
