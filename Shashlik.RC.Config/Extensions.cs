@@ -41,12 +41,6 @@ namespace Jinkong.RC.Config
         /// <returns></returns>
         public static IHostBuilder UseRCConfiguration(this IHostBuilder builder)
         {
-            builder.ConfigureServices((context, services) =>
-            {
-                // 这个配置给全局用
-                services.AddSingleton<IRCConfigManager, RCConfigManager>();
-            });
-
             // 内部服务
             InternalService.Services.AddSingleton<IRCConfigManager, RCConfigManager>();
             InternalService.Services.AddSingleton<IParse, JsonParse>();
@@ -69,6 +63,12 @@ namespace Jinkong.RC.Config
                 };
 
                 config.AddRCConfigProvider(source);
+            });
+
+            builder.ConfigureServices((context, services) =>
+            {
+                services.AddSingleton<IRCConfigManager, RCConfigManager>();
+                services.Configure<RCOptions>(context.Configuration.GetSection("RCConfig"));
             });
 
             return builder;

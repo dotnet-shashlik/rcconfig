@@ -1,10 +1,8 @@
-﻿using Shashlik.Kernel.Attributes;
-
+﻿
 // ReSharper disable InconsistentNaming
 
 namespace Jinkong.RC.Config
 {
-    [AutoOptions("RCConfig")]
     public class RCOptions
     {
         public string Server { get; set; }

@@ -1,20 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\common.xml" />
-<PropertyGroup>
+  <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Shashlik.Kernel" Version="0.1.0-preview-00014" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="4.7.0" />
-    <!--<PackageReference Include="WatsonWebsocket" Version="2.1.7.2" />-->
     <PackageReference Include="Websocket.Client" Version="4.3.21" />
     <PackageReference Include="YamlDotNet" Version="8.1.2" />
     <PackageReference Include="Shashlik.Utils" Version="0.1.0-preview-*" />
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
-
-
 
 </Project>
