@@ -6,8 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Shashlik.RC.Data.SqlLite;
 using Shashlik.RC.WebSocket;
+using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC
 {
@@ -18,12 +20,14 @@ namespace Shashlik.RC
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var conn = Configuration.GetConnectionString("default") ?? "Data Source=./data/rc.db;";
+            var conn = Configuration.GetConnectionString("default").EmptyToNull() ?? "Data Source=./data/rc.db;";
+            Console.WriteLine($"rc connection: {conn}");
+
             services.AddRCDataSqlLite(conn, true);
 
             services.Configure<CookiePolicyOptions>(options =>
