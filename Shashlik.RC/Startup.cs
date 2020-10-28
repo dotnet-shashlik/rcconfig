@@ -26,7 +26,7 @@ namespace Shashlik.RC
         public void ConfigureServices(IServiceCollection services)
         {
             var conn = Configuration.GetConnectionString("default").EmptyToNull() ?? "Data Source=./data/rc.db;";
-            Console.WriteLine($"rc connection: {conn}");
+            Console.WriteLine($"【rc connection】: {conn}");
 
             services.AddRCDataSqlLite(conn, true);
 

@@ -47,9 +47,7 @@ namespace Shashlik.RC.WebSocket
                     result = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token);
                     if (result.MessageType == WebSocketMessageType.Text)
                     {
-                        using var ms = new MemoryStream(buffer);
-                        using var reader = new StreamReader(ms);
-                        Console.WriteLine(reader.ReadToEnd());
+                        // ignore, 发送的什么内容都不管
                     }
                 }
                 while (!result.CloseStatus.HasValue);
