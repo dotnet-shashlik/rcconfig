@@ -9,4 +9,4 @@ services:
     environment:
       ASPNETCORE_URLS: http://*:8989
     volumes:
-      - /rcdatabase/rc.db:/app/rc.db
+      - ${PWD}/rcdatabase/rc.db:/app/rc.db
