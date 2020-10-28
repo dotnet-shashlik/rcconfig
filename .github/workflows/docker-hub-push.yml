@@ -15,7 +15,9 @@ jobs:
       - name: PublishProject
         run: dotnet publish ./Shashlik.RC/Shashlik.RC.csproj --configuration Release --output ./docker/dist
       - name: Docker Image Build
-        run: docker build -t shashlik-rc-server .
+        run: |
+          cd ./dist
+          docker build -t shashlik-rc-server .
       - name: Push to Docker Hub
         uses: docker/build-push-action@v1
         with:
