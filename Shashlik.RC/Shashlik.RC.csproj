@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="data\rc.db" />
     <None Remove="rc.db" />
     <None Remove="Utils\ARLRDBD.TTF" />
   </ItemGroup>
