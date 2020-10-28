@@ -21,3 +21,4 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: 280780363/shashlik-rc-server
           tag_with_ref: true
+          tags: latest
