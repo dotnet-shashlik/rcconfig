@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using System.IO;
 
 namespace Shashlik.RC
 {
@@ -16,7 +17,7 @@ namespace Shashlik.RC
            Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration(r =>
                 {
-                    r.SetBasePath("./data");
+                    r.SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "data"));
                 })
                 .ConfigureWebHostDefaults((webBuilder) =>
                 {

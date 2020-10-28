@@ -13,6 +13,7 @@ using Shashlik.RC.Data.Entities;
 using Shashlik.RC.Models;
 using Shashlik.RC.Utils;
 using Shashlik.RC.WebSocket;
+using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Controllers
 {
@@ -358,7 +359,7 @@ namespace Shashlik.RC.Controllers
             var total = await query.CountAsync();
             var list = query
                 .OrderByDescending(r => r.Id)
-                .Paging(pageIndex, 20)
+                .DoPage(pageIndex, 20)
                 .Select(r => new ModifyRecordModel
                 {
                     Id = r.Id,

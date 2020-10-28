@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Shashlik.RC.Utils;
+using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Models
 {

@@ -14,6 +14,7 @@ using Shashlik.RC.Data;
 using Shashlik.RC.Data.Entities;
 using Shashlik.RC.Models;
 using Shashlik.RC.Utils;
+using Shashlik.Utils.Helpers;
 
 namespace Shashlik.RC.Controllers
 {
@@ -55,7 +56,7 @@ namespace Shashlik.RC.Controllers
         {
             var ms = new MemoryStream();
             var code = ImgHelper.BuildVerifyCode(ms, 4, 136, 32);
-            HttpContext.Session.SetString("VERIFYCODE", code.ToUpper());
+            HttpContext.Session.SetString("VERIFYCODE", code.ToUpperInvariant());
             return File(ms.ToArray(), "image/gif");
         }
 
@@ -67,7 +68,7 @@ namespace Shashlik.RC.Controllers
             string error = null;
             if (!ModelState.IsValid)
                 error = ModelState.SelectMany(r => r.Value.Errors.Select(f => f.ErrorMessage)).FirstOrDefault();
-            else if (HttpContext.Session.GetString("VERIFYCODE") != loginModel.Code?.ToUpper())
+            else if (HttpContext.Session.GetString("VERIFYCODE") != loginModel.Code?.ToUpperInvariant())
                 error = "验证码错误";
 
             if (error != null)
@@ -81,7 +82,7 @@ namespace Shashlik.RC.Controllers
             string role = null;
             if (loginModel.UserName == admin.UserName)
             {
-                if (loginModel.Password.Md532().ToUpper() == admin.Password)
+                if (HashHelper.MD5(loginModel.Password).ToUpperInvariant() == admin.Password)
                 {
                     claimIdentity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
                     claimIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier, "1"));
@@ -92,7 +93,7 @@ namespace Shashlik.RC.Controllers
             }
             else
             {
-                var pwd = loginModel.Password.Md532().ToUpper();
+                var pwd = HashHelper.MD5(loginModel.Password).ToUpperInvariant();
                 var app = dbContext.Set<Apps>().FirstOrDefault(r => r.Id == loginModel.UserName && r.Password == pwd);
                 if (app != null && app.Enabled)
                 {
@@ -150,14 +151,14 @@ namespace Shashlik.RC.Controllers
         {
             var app = await dbContext.Set<Apps>().Where(r => r.Id == appId).FirstOrDefaultAsync();
 
-            var oldpwd = input.OldPassword.Md532().ToUpper();
+            var oldpwd = HashHelper.MD5(input.OldPassword).ToUpperInvariant();
             if (app.Password != oldpwd)
             {
                 ViewData["Errors"] = "旧密码错误";
                 return View();
             }
 
-            var newpwd = input.Password.Md532().ToUpper();
+            var newpwd = HashHelper.MD5(input.Password).ToUpperInvariant();
             app.Password = newpwd;
             await dbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

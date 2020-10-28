@@ -63,7 +63,7 @@ namespace Jinkong.RC.Config
                     throw new InvalidOperationException("invalid rc options value of: RC.Polling. ");
 
                 var source = new RCConfigSource(options.Server, options.AppId, options.AppKey,
-                    options.Polling.HasValue ? TimeSpan.FromSeconds(options.Polling.Value) : (TimeSpan?) null)
+                    options.Polling.HasValue ? TimeSpan.FromSeconds(options.Polling.Value) : (TimeSpan?)null)
                 {
                     Env = host.HostingEnvironment.EnvironmentName
                 };
@@ -153,7 +153,7 @@ namespace Jinkong.RC.Config
             await client.Start();
         }
 
-        public static async void UseRCRealTimeUpdate(this IApplicationBuilder app)
+        public static void UseRCRealTimeUpdate(this IApplicationBuilder app)
         {
             var options = app.ApplicationServices.GetRequiredService<IOptions<RCOptions>>().Value;
             UseRCRealTimeUpdate(app, options.AppId, options.AppKey, options.Websocket);

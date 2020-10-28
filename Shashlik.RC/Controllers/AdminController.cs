@@ -7,6 +7,7 @@ using Shashlik.RC.Data;
 using Shashlik.RC.Data.Entities;
 using Shashlik.RC.Models;
 using Shashlik.RC.Utils;
+using Shashlik.Utils.Helpers;
 
 namespace Shashlik.RC.Controllers
 {
@@ -108,7 +109,7 @@ namespace Shashlik.RC.Controllers
             {
                 Id = Guid16().ToUpper(),
                 Name = model.Name,
-                Password = model.Password.Md532().ToUpper(),
+                Password = HashHelper.MD5(model.Password).ToUpperInvariant(),
                 Desc = model.Desc,
                 CreateTime = DateTime.Now
             };

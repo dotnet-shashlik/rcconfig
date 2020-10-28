@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
+using Shashlik.Utils.Extensions;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -58,7 +59,7 @@ namespace Shashlik.RC.Utils
         {
             if (url.IsNullOrWhiteSpace())
                 return false;
-            if (!url.IsUrl())
+            if (!url.IsMatch(Consts.Regexs.Url))
                 return false;
 
             using (HttpClient client = new HttpClient())
@@ -102,7 +103,7 @@ namespace Shashlik.RC.Utils
             var size = 20;// 字体大小
 
             Font font = null;
-            using (var fontSm = typeof(ImgHelper).Assembly.GetManifestResourceStream("RC.Utils.ARLRDBD.TTF"))
+            using (var fontSm = typeof(ImgHelper).Assembly.GetManifestResourceStream("Shashlik.RC.Utils.ARLRDBD.TTF"))
             {
                 // 字体
                 var install_Family = new FontCollection().Install(fontSm);

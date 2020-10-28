@@ -3,20 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shashlik.RC", "Shashlik.RC\Shashlik.RC.csproj", "{0B54A323-980D-4B2A-A8CC-83FF27B8A968}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shashlik.RC", "Shashlik.RC\Shashlik.RC.csproj", "{0B54A323-980D-4B2A-A8CC-83FF27B8A968}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shashlik.RC.Config", "Shashlik.RC.Config\Shashlik.RC.Config.csproj", "{81886191-3306-4F92-84FA-9FDA16FA343B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shashlik.RC.Config", "Shashlik.RC.Config\Shashlik.RC.Config.csproj", "{81886191-3306-4F92-84FA-9FDA16FA343B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shashlik.RC.Config.Demo", "Shashlik.RC.Config.Demo\Shashlik.RC.Config.Demo.csproj", "{6643F197-6FFE-448C-BCFA-2B7B0C66F97B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shashlik.RC.Config.Demo", "Shashlik.RC.Config.Demo\Shashlik.RC.Config.Demo.csproj", "{6643F197-6FFE-448C-BCFA-2B7B0C66F97B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shashlik.RC.Data", "Shashlik.RC.Data\Shashlik.RC.Data.csproj", "{A384DD33-14CA-44F6-A641-954DED2B28C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shashlik.RC.Data", "Shashlik.RC.Data\Shashlik.RC.Data.csproj", "{A384DD33-14CA-44F6-A641-954DED2B28C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shashlik.RC.Data.SqlLite", "Shashlik.RC.Data.SqlLite\Shashlik.RC.Data.SqlLite.csproj", "{BFFF41BC-B508-40F0-B595-0A279E076F5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shashlik.RC.Data.SqlLite", "Shashlik.RC.Data.SqlLite\Shashlik.RC.Data.SqlLite.csproj", "{BFFF41BC-B508-40F0-B595-0A279E076F5F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution items", "solution items", "{D42039CD-A0E9-4248-948C-A2BE49188F51}"
-ProjectSection(SolutionItems) = preProject
-	common.xml = common.xml
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		common.xml = common.xml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

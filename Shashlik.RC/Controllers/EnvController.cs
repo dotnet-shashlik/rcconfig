@@ -8,6 +8,7 @@ using Shashlik.RC.Data;
 using Shashlik.RC.Data.Entities;
 using Shashlik.RC.Models;
 using Shashlik.RC.Utils;
+using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Controllers
 {
@@ -99,7 +100,7 @@ namespace Shashlik.RC.Controllers
                     AppId = appId,
                     Desc = model.Desc,
                     IpWhites = ipWhites.ToList(),
-                    Key = Guid.NewGuid().ToString("n").ToUpper()
+                    Key = Guid.NewGuid().ToString("n").ToUpperInvariant()
                 });
             }
 
@@ -131,7 +132,7 @@ namespace Shashlik.RC.Controllers
                 AppId = appId,
                 Name = env.Name + "_copy",
                 IpWhites = env.IpWhites.Select(r => new IpWhites { Ip = r.Ip }).ToList(),
-                Key = Guid.NewGuid().ToString("n").ToUpper(),
+                Key = Guid.NewGuid().ToString("n").ToUpperInvariant(),
                 Configs = env.Configs.Select(r => new Configs
                 {
                     Content = r.Content,
@@ -192,7 +193,7 @@ namespace Shashlik.RC.Controllers
             if (env == null)
                 return NotFound();
 
-            env.Key = Guid.NewGuid().ToString("n").ToUpper();
+            env.Key = Guid.NewGuid().ToString("n").ToUpperInvariant();
             dbContext.SaveChanges();
             return RedirectToAction(nameof(Index), new { id });
         }

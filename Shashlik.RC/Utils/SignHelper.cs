@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using Shashlik.Utils.Extensions;
+using Shashlik.Utils.Helpers;
 
 namespace Shashlik.RC.Utils
 {
@@ -28,7 +30,7 @@ namespace Shashlik.RC.Utils
             list = list.Select(r => new KeyValuePair<string, string>(r.Key.Trim().ToLower(), r.Value)).OrderBy(r => r.Key);
             var str = list.Select(r => $"{r.Key}={r.Value}").Join("&");
             str += $"&appkey={key}";
-            return str.Md532().ToUpper();
+            return HashHelper.MD5(str).ToUpperInvariant();
         }
 
         /// <summary>
@@ -76,7 +78,7 @@ namespace Shashlik.RC.Utils
             var list = ps.Select(r => new KeyValuePair<string, string>(r.Key.Trim().ToLower(), r.Value?.ToString())).OrderBy(r => r.Key).ToList();
             var str = list.Select(r => $"{r.Key.Trim().ToLower()}={r.Value}").Join("&");
             str += $"&appkey={key}";
-            return str.Md532().ToUpper() == psSign.ToString();
+            return HashHelper.MD5(str).ToUpperInvariant() == psSign.ToString();
         }
 
         /// <summary>

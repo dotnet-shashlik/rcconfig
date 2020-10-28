@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Shashlik.RC.Data;
 using Shashlik.RC.Data.Entities;
 using Shashlik.RC.Utils;
+using Shashlik.Utils.Extensions;
+using Shashlik.Utils.Helpers;
 
 namespace Shashlik.RC.WebSocket
 {
@@ -59,7 +61,7 @@ namespace Shashlik.RC.WebSocket
                         }
 
                         var key = $"appid={appIdStr}&env={envStr}&timestamp={timestamp}";
-                        if (SecurityHelper.HMACSHA256(key, envEnbtity.Key) != signStr)
+                        if (HashHelper.HMACSHA256(key, envEnbtity.Key) != signStr)
                         {
                             context.Response.StatusCode = 403;
                             return;

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Shashlik.RC.Utils;
+using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.WebSocket
 {
@@ -99,7 +100,7 @@ namespace Shashlik.RC.WebSocket
             {
                 command,
                 data
-            }.ToJsonWithCamelCasePropertyNames();
+            }.ToJsonWithCamelCase();
 
             var byteArray = new ArraySegment<byte>(Encoding.UTF8.GetBytes(messageToSend));
             var connections = GetSocket(appId, env);
