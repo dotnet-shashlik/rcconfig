@@ -6,6 +6,6 @@
     <RepositoryUrl>https://github.com/dotnet-shashlik/rcconfig/tree/main</RepositoryUrl>
     <PackageTags>shashlik.rc</PackageTags>
     <Authors>dotnet-shashlik</Authors>
-    <Version>0.1.0-preview-00002</Version>
+    <Version>0.1.0-preview-00003</Version>
   </PropertyGroup>
 </Project>

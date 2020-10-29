@@ -2,9 +2,9 @@ name: shashlik-rc-nuget
 
 on:
   push:
-    branches: [release]
+    branches: [ release ]
   pull_request:
-    branches: [release]
+    branches: [ release ]
 
 jobs:
   build:
@@ -15,6 +15,6 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
       - name: Pack
-        run: dotnet pack ./Shashlik.RC.Config/Shashlik.RC.Config.csproj --configuration Release --output ./nugetPackages
+        run: dotnet pack ./Shashlik.RC.Config/Shashlik.RC.Config.csproj -p:SymbolPackageFormat=snupkg --include-symbols  --include-source --configuration Release --output ./nugetPackages
       - name: Publish
         run: dotnet nuget push "./nugetPackages/*.nupkg" -k ${{ secrets.NUGET }} -s https://api.nuget.org/v3/index.json

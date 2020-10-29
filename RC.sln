@@ -16,6 +16,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution items", "solution items", "{D42039CD-A0E9-4248-948C-A2BE49188F51}"
 	ProjectSection(SolutionItems) = preProject
 		common.xml = common.xml
+		.github\workflows\docker-hub-push.yml = .github\workflows\docker-hub-push.yml
+		.github\workflows\nuget-push.yml = .github\workflows\nuget-push.yml
 	EndProjectSection
 EndProject
 Global
