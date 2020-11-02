@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shashlik.RC.Data", "Shashli
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shashlik.RC.Data.SqlLite", "Shashlik.RC.Data.SqlLite\Shashlik.RC.Data.SqlLite.csproj", "{BFFF41BC-B508-40F0-B595-0A279E076F5F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution items", "solution items", "{D42039CD-A0E9-4248-948C-A2BE49188F51}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{D42039CD-A0E9-4248-948C-A2BE49188F51}"
 	ProjectSection(SolutionItems) = preProject
 		common.xml = common.xml
 		.github\workflows\docker-hub-push.yml = .github\workflows\docker-hub-push.yml
