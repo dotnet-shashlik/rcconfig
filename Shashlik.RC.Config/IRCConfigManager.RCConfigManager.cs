@@ -1,17 +1,12 @@
-﻿namespace Jinkong.RC.Config
+﻿namespace Shashlik.RC.Config
 {
-    class RCConfigManager : IRCConfigManager
+    internal class RCConfigManager : IRCConfigManager
     {
         public ConfigModel Get(string configName)
         {
             var result = RequestHelper.Get(configName);
 
-            return new ConfigModel
-            {
-                Content = result["content"]?.ToString(),
-                Name = result["name"]?.ToString(),
-                Type = result["type"]?.ToString()
-            };
+            return new ConfigModel {Content = result["content"]?.ToString(), Name = result["name"]?.ToString(), Type = result["type"]?.ToString()};
         }
     }
 }

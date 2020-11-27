@@ -4,7 +4,9 @@ using Newtonsoft.Json.Linq;
 using Shashlik.Utils.Extensions;
 using Shashlik.Utils.Helpers;
 
-namespace Jinkong.RC.Config
+// ReSharper disable StringLiteralTypo
+
+namespace Shashlik.RC.Config
 {
     /// <summary>
     /// 参数签名帮助类
@@ -37,13 +39,13 @@ namespace Jinkong.RC.Config
         /// <summary>
         /// 生成签名
         /// </summary>
-        /// <param name="ps"></param>
+        /// <param name="jObject"></param>
         /// <returns></returns>
         public string BuildSignJObject(JObject jObject)
         {
             IDictionary<string, string> ps = new Dictionary<string, string>();
             foreach (var item in jObject)
-                ps.Add(item.Key, item.Value.Value<string>());
+                ps.Add(item.Key, item.Value!.Value<string>());
 
             return BuildSign(ps);
         }
@@ -51,14 +53,13 @@ namespace Jinkong.RC.Config
         /// <summary>
         /// 生成签名
         /// </summary>
-        /// <param name="ps"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
         public string BuildSignModel<TModel>(TModel model)
             where TModel : class
         {
             return BuildSign(
-                model.MapToDictionary().ToDictionary(r => r.Key, r => r.Value?.ToString()) as
-                    IDictionary<string, string>);
+                model.MapToDictionary().ToDictionary(r => r.Key, r => r.Value?.ToString()));
         }
 
         /// <summary>
@@ -69,12 +70,12 @@ namespace Jinkong.RC.Config
         public bool IsValidSign(IEnumerable<KeyValuePair<string, object>> ps)
         {
             var key = SecretKey;
-
-            var psSign = ps.FirstOrDefault(r => r.Key == "sign").Value;
-            if (psSign == null || psSign.ToString().IsNullOrWhiteSpace())
+            var keyValuePairs = ps.ToList();
+            var psSign = keyValuePairs.FirstOrDefault(r => r.Key == "sign").Value;
+            if (psSign is null || psSign.ToString()!.IsNullOrWhiteSpace())
                 return false;
 
-            ps = ps.Where(r => r.Key != "sign" && r.Value != null && !r.Value.ToString().IsNullOrWhiteSpace()).ToList();
+            ps = keyValuePairs.Where(r => r.Key != "sign" && r.Value != null && !r.Value.ToString()!.IsNullOrWhiteSpace()).ToList();
             if (!ps.Any())
                 return false;
 
@@ -88,13 +89,13 @@ namespace Jinkong.RC.Config
         /// <summary>
         /// 签名验证
         /// </summary>
-        /// <param name="ps"></param>
+        /// <param name="jObject"></param>
         /// <returns></returns>
         public bool IsValidSignJObject(JObject jObject)
         {
             List<KeyValuePair<string, object>> ps = new List<KeyValuePair<string, object>>();
             foreach (var item in jObject)
-                ps.Add(new KeyValuePair<string, object>(item.Key.Trim().ToLower(), item.Value.Value<object>()));
+                ps.Add(new KeyValuePair<string, object>(item.Key.Trim().ToLower(), item.Value!.Value<object>()));
             return IsValidSign(ps);
         }
 

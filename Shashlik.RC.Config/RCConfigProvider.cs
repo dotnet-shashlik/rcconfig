@@ -1,14 +1,14 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Shashlik.Utils.Extensions;
 using Shashlik.Utils.Helpers;
 
-namespace Jinkong.RC.Config
+namespace Shashlik.RC.Config
 {
     public class RCConfigProvider : ConfigurationProvider
     {
@@ -30,22 +30,25 @@ namespace Jinkong.RC.Config
         /// </summary>
         private void Polling()
         {
-            TimerHelper.SetTimeout(() =>
-            {
-                try
+            if (Source.Polling.HasValue)
+                TimerHelper.SetTimeout(() =>
                 {
-                    Load();
-                    Polling();
-                }
-                catch { }
-
-            }, Source.Polling.Value);
+                    try
+                    {
+                        Load();
+                        Polling();
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
+                }, Source.Polling.Value);
         }
 
         public override void Load()
         {
             var result = RequestHelper.Get();
-            var configs = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(result["data"].ToString());
+            var configs = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(result["data"]!.ToString()!);
             IDictionary<string, string> _data = new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (var item in configs)
             {
@@ -62,19 +65,15 @@ namespace Jinkong.RC.Config
                     continue;
                 }
 
-                using (var serviceProvider = InternalService.Services.BuildServiceProvider())
-                {
-                    var parseList = serviceProvider.GetServices<IParse>();
-                    var parse = parseList.SingleOrDefault(r => r.Type.EqualsIgnoreCase(type));
-                    if (parse == null)
-                        throw new Exception($"invalid configuration type:{type}");
-                    using (MemoryStream ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(content)))
-                    {
-                        var data = parse.Parse(ms);
-                        foreach (var keyValue in data)
-                            _data.Add(keyValue.Key, keyValue.Value);
-                    }
-                }
+                using var serviceProvider = InternalService.Services.BuildServiceProvider();
+                var parseList = serviceProvider.GetServices<IParse>();
+                var parse = parseList.SingleOrDefault(r => r.Type.EqualsIgnoreCase(type));
+                if (parse == null)
+                    throw new Exception($"invalid configuration type:{type}");
+                using MemoryStream ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(content));
+                var data = parse.Parse(ms);
+                foreach (var keyValue in data)
+                    _data.Add(keyValue.Key, keyValue.Value);
             }
 
             Data = _data;

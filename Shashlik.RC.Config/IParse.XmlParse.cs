@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Xml;
 using System.Security.Cryptography.Xml;
+using System.Xml;
 using Microsoft.Extensions.Configuration;
 
-namespace Jinkong.RC.Config
+namespace Shashlik.RC.Config
 {
     /// <summary>
     /// xml内容解析
@@ -99,7 +99,6 @@ namespace Jinkong.RC.Config
 
                         default:
                             throw new FormatException("xml format error!");
-                            ;
                     }
                     preNodeType = reader.NodeType;
                     // If this element is a self-closing element,
@@ -126,12 +125,6 @@ namespace Jinkong.RC.Config
                     break;
                 }
             }
-        }
-
-        private static string GetLineInfo(XmlReader reader)
-        {
-            var lineInfo = reader as IXmlLineInfo;
-            return lineInfo == null ? string.Empty : "xml format error!";
         }
 
         private void ProcessAttributes(XmlReader reader, Stack<string> prefixStack, IDictionary<string, string> data,

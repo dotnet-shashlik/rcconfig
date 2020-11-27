@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Jinkong.RC.Config
+namespace Shashlik.RC.Config
 {
     /// <summary>
     /// 配置变化事件

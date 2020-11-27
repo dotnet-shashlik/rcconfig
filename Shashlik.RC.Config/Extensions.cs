@@ -1,23 +1,23 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-using Shashlik.Utils.Extensions;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Builder;
-using Websocket.Client;
-using System.Threading;
+﻿using System;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Shashlik.Utils.Extensions;
 using Shashlik.Utils.Helpers;
+using Websocket.Client;
 
 // ReSharper disable UnusedMethodReturnValue.Global
 
 // ReSharper disable InconsistentNaming
 
-namespace Jinkong.RC.Config
+namespace Shashlik.RC.Config
 {
     public static class Extensions
     {

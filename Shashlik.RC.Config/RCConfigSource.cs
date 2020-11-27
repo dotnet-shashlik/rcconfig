@@ -1,9 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
+using Microsoft.Extensions.Configuration;
 
-namespace Jinkong.RC.Config
+namespace Shashlik.RC.Config
 {
     public class RCConfigSource : IConfigurationSource
     {

@@ -1,11 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Jinkong.RC.Config
+namespace Shashlik.RC.Config
 {
-    class InternalService
+    internal class InternalService
     {
         public static IServiceCollection Services { get; } = new ServiceCollection();
     }

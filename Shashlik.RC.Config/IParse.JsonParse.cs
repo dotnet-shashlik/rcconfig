@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Jinkong.RC.Config
+namespace Shashlik.RC.Config
 {
     /// <summary>
     /// json内容解析

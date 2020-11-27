@@ -1,7 +1,7 @@
 ﻿
 // ReSharper disable InconsistentNaming
 
-namespace Jinkong.RC.Config
+namespace Shashlik.RC.Config
 {
     public class RCOptions
     {

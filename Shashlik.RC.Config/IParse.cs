@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
-namespace Jinkong.RC.Config
+namespace Shashlik.RC.Config
 {
     /// <summary>
     /// 内容解析

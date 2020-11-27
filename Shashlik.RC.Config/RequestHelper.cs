@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Shashlik.Utils.Helpers;
 
-namespace Jinkong.RC.Config
+namespace Shashlik.RC.Config
 {
     class RequestHelper
     {
@@ -11,11 +11,10 @@ namespace Jinkong.RC.Config
 
         public static Dictionary<string, object> Get(string config = null)
         {
-            var model = new ConfigGetModel { };
-            model.config = config;
-            model.random = Guid.NewGuid().ToString("n");
-            model.env = RCConfigSource.Instance.Env;
-            model.appId = RCConfigSource.Instance.AppId;
+            var model = new ConfigGetModel
+            {
+                config = config, random = Guid.NewGuid().ToString("n"), env = RCConfigSource.Instance.Env, appId = RCConfigSource.Instance.AppId
+            };
             var sign = SignHelper.BuildSignModel(model);
             model.sign = sign;
 
