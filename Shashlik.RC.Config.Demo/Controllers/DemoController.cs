@@ -6,10 +6,10 @@ namespace Shashlik.RC.Config.Demo.Controllers
     [ApiController]
     public class DemoController : ControllerBase
     {
-        [HttpGet("/demo")]
-        public object Test([FromServices] IConfiguration configuration)
+        [HttpGet("/demo/{key}")]
+        public object Test([FromServices] IConfiguration configuration, string key)
         {
-            return configuration.GetValue<string>("Demo");
+            return configuration.GetValue<string>(key);
         }
     }
 }

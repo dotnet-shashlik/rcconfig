@@ -23,7 +23,7 @@ namespace Shashlik.RC.Config
                 Polling();
         }
 
-        RCConfigSource Source { get; }
+        private RCConfigSource Source { get; }
 
         /// <summary>
         /// 轮询更新配置
@@ -31,12 +31,11 @@ namespace Shashlik.RC.Config
         private void Polling()
         {
             if (Source.Polling.HasValue)
-                TimerHelper.SetTimeout(() =>
+                TimerHelper.SetInterval(() =>
                 {
                     try
                     {
                         Load();
-                        Polling();
                     }
                     catch
                     {
@@ -49,6 +48,7 @@ namespace Shashlik.RC.Config
         {
             var result = RequestHelper.Get();
             var configs = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(result["data"]!.ToString()!);
+            // ReSharper disable once InconsistentNaming
             IDictionary<string, string> _data = new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (var item in configs)
             {
@@ -58,19 +58,12 @@ namespace Shashlik.RC.Config
                 if (content.IsNullOrWhiteSpace())
                     continue;
 
-                // 如果是纯文本,name为key,content为value
-                if (type.EqualsIgnoreCase("text"))
-                {
-                    _data.Add(name, content);
-                    continue;
-                }
-
                 using var serviceProvider = InternalService.Services.BuildServiceProvider();
                 var parseList = serviceProvider.GetServices<IParse>();
                 var parse = parseList.SingleOrDefault(r => r.Type.EqualsIgnoreCase(type));
                 if (parse == null)
-                    throw new Exception($"invalid configuration type:{type}");
-                using MemoryStream ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(content));
+                    throw new Exception($"invalid configuration type: {type}");
+                using var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(content));
                 var data = parse.Parse(ms);
                 foreach (var keyValue in data)
                     _data.Add(keyValue.Key, keyValue.Value);

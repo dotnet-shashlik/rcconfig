@@ -13,6 +13,8 @@ using Shashlik.Utils.Extensions;
 using Shashlik.Utils.Helpers;
 using Websocket.Client;
 
+// ReSharper disable UseObjectOrCollectionInitializer
+
 // ReSharper disable UnusedMethodReturnValue.Global
 
 // ReSharper disable InconsistentNaming
@@ -113,7 +115,7 @@ namespace Shashlik.RC.Config
                     Thread.Sleep(30 * 1000);
                     client.Send("heartbeat");
                 }
-            });
+            }, breakSource.Token);
 
             client.MessageReceived
                 .Synchronize(GATE1)

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 namespace Shashlik.RC.Config.Demo
@@ -12,6 +13,7 @@ namespace Shashlik.RC.Config.Demo
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((a, b) => { b.AddJsonFile("test.json", false, true); })
                 .UseRCConfiguration()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
