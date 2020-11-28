@@ -4,15 +4,15 @@ using Shashlik.EfCore;
 
 // ReSharper disable InconsistentNaming
 
-namespace Shashlik.RC.Data.SqlLite
+namespace Shashlik.RC.Data.MySql
 {
     public static class Extensions
     {
-        public static void AddSqlLiteData(this IServiceCollection services, string connString)
+        public static void AddMySqlData(this IServiceCollection services, string connString)
         {
             services.AddDbContext<RCDbContext>(r =>
             {
-                r.UseSqlite(connString,
+                r.UseMySql(connString,
                     builder => builder.MigrationsAssembly(typeof(Extensions).Assembly.GetName().FullName));
             });
         }

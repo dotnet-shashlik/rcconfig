@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Shashlik.EfCore;
 
 namespace Shashlik.RC.Data.Entities
 {

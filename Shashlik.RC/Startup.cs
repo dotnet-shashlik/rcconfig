@@ -3,13 +3,22 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Shashlik.Kernel;
+using Shashlik.RC.Data;
+using Shashlik.RC.Data.MySql;
+using Shashlik.RC.Data.PostgreSql;
 using Shashlik.RC.Data.SqlLite;
+using Shashlik.RC.Data.SqlServer;
 using Shashlik.RC.WebSocket;
 using Shashlik.Utils.Extensions;
+
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
 
 namespace Shashlik.RC
 {
@@ -25,8 +34,34 @@ namespace Shashlik.RC
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var conn = Configuration.GetConnectionString("default").EmptyToNull() ?? "Data Source=./data/rc.db;";
-            services.AddRCDataSqlLite(conn, true);
+            var conn = Configuration.GetConnectionString("default");
+            if (conn.IsNullOrWhiteSpace())
+                conn = Environment.GetEnvironmentVariable("CONN");
+            if (conn.IsNullOrWhiteSpace())
+                conn = "Data Source=./data/rc.db;";
+            var dbType = Configuration.GetConnectionString("DbType");
+            if (dbType.IsNullOrWhiteSpace())
+                dbType = Environment.GetEnvironmentVariable("DBTYPE");
+            if (dbType.IsNullOrWhiteSpace())
+                dbType = "sqlite";
+
+            switch (dbType)
+            {
+                case "sqlite":
+                    services.AddSqlLiteData(conn);
+                    break;
+                case "mysql":
+                    services.AddMySqlData(conn);
+                    break;
+                case "npgsql":
+                    services.AddNpgsqlData(conn);
+                    break;
+                case "sqlserver":
+                    services.AddSqlServerData(conn);
+                    break;
+                default: throw new InvalidOperationException("invalid db type");
+            }
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -60,6 +95,8 @@ namespace Shashlik.RC
             services.AddAntiforgery();
 
             services.AddSingleton<WebSocketContext>();
+
+            services.AddShashlik(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

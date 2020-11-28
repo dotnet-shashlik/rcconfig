@@ -4,17 +4,21 @@ using Shashlik.EfCore;
 
 // ReSharper disable InconsistentNaming
 
-namespace Shashlik.RC.Data.SqlLite
+namespace Shashlik.RC.Data.SqlServer
 {
     public static class Extensions
     {
-        public static void AddSqlLiteData(this IServiceCollection services, string connString)
+        public static void AddSqlServerData(this IServiceCollection services, string connString,
+            bool autoMigration = false)
         {
             services.AddDbContext<RCDbContext>(r =>
             {
-                r.UseSqlite(connString,
+                r.UseSqlServer(connString,
                     builder => builder.MigrationsAssembly(typeof(Extensions).Assembly.GetName().FullName));
             });
+
+            if (autoMigration)
+                services.Migration<RCDbContext>();
         }
     }
 }

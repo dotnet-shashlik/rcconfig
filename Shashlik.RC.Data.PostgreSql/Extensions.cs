@@ -4,15 +4,15 @@ using Shashlik.EfCore;
 
 // ReSharper disable InconsistentNaming
 
-namespace Shashlik.RC.Data.SqlLite
+namespace Shashlik.RC.Data.PostgreSql
 {
     public static class Extensions
     {
-        public static void AddSqlLiteData(this IServiceCollection services, string connString)
+        public static void AddNpgsqlData(this IServiceCollection services, string connString)
         {
             services.AddDbContext<RCDbContext>(r =>
             {
-                r.UseSqlite(connString,
+                r.UseNpgsql(connString,
                     builder => builder.MigrationsAssembly(typeof(Extensions).Assembly.GetName().FullName));
             });
         }
