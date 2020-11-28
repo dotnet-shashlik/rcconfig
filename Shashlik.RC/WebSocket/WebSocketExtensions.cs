@@ -11,7 +11,7 @@ using Shashlik.Utils.Helpers;
 
 namespace Shashlik.RC.WebSocket
 {
-    public static class Extensions
+    public static class WebSocketExtensions
     {
         /// <summary>
         /// 

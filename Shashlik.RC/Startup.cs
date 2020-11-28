@@ -26,10 +26,7 @@ namespace Shashlik.RC
         public void ConfigureServices(IServiceCollection services)
         {
             var conn = Configuration.GetConnectionString("default").EmptyToNull() ?? "Data Source=./data/rc.db;";
-            Console.WriteLine($"【rc connection】: {conn}");
-
             services.AddRCDataSqlLite(conn, true);
-
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -37,20 +34,17 @@ namespace Shashlik.RC
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddAuthentication(r =>
-            {
-                r.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-
-            })
-            .AddCookie(options =>
-            {
-                options.LoginPath = "/account/login";
-                options.AccessDeniedPath = "/account/login";
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
-                options.SlidingExpiration = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-            });
+            services
+                .AddAuthentication(r => { r.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme; })
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/account/login";
+                    options.AccessDeniedPath = "/account/login";
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.IsEssential = true;
+                    options.SlidingExpiration = true;
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                });
 
             services.AddAuthorization();
             services.AddSession(options =>
@@ -79,6 +73,7 @@ namespace Shashlik.RC
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
             app.UseRouting();
 
             app.UseSession();

@@ -8,7 +8,7 @@
         public int Id { get; set; }
 
         /// <summary>
-        /// 配置类型,json,xml,yaml,ini....
+        /// 配置类型,json,yaml
         /// </summary>
         public string Type { get; set; }
 

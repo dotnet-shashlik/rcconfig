@@ -19,10 +19,9 @@
     </div>
 
 
-
     <form asp-action="Index" class="form-horizontal" id="configform">
-        <input type="hidden" name="Id" value="@(Model?.Id)" />
-        <input type="hidden" name="EnvId" value="@ViewData["EnvId"]" />
+        <input type="hidden" name="Id" value="@(Model?.Id)"/>
+        <input type="hidden" name="EnvId" value="@ViewData["EnvId"]"/>
         <div class="form-group">
             <label for="Name" class="col-sm-2 control-label"></label>
             <div class="col-sm-8">
@@ -62,25 +61,13 @@
                     json
                 </label>
                 <label>
-                    <input type="radio" name="Type" id="rd2" value="xml" onclick="editor.setOption('mode', 'xml');">
-                    xml
-                </label>
-                <label>
                     <input type="radio" name="Type" id="rd3" value="yaml" onclick="editor.setOption('mode', 'yaml');">
                     yaml
                 </label>
-                @*<label>
-                        <input type="radio" name="Type" id="rd4" value="ini">
-                        ini
-                    </label>*@
-                @*<label>
-                        <input type="radio" name="Type" id="rd5" value="text">
-                        text(纯文本)
-                    </label>*@
             </div>
             <script>
                 $(function () {
-                    var type = '@(Model?.Type??"json")';
+                    var type = '@(Model?.Type ?? "json")';
                     $('.radio-group input[value='+type+']').prop('checked', true);
                 });
             </script>
@@ -99,7 +86,7 @@
         </div>
     </form>
     <script>
-        var type = '@(Model?.Type??"javascript")';
+        var type = '@(Model?.Type ?? "javascript")';
         if (type === "json") type = "javascript";
         window.editor = CodeMirror.fromTextArea(document.getElementById("Content"), {
             lineNumbers: true,

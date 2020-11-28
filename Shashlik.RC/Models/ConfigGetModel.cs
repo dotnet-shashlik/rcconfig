@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+// ReSharper disable InconsistentNaming
 
 namespace Shashlik.RC.Models
 {
@@ -13,10 +14,8 @@ namespace Shashlik.RC.Models
         [Required, MaxLength(16), MinLength(16)]
         public string appId { get; set; }
 
-        [Required, MaxLength(32)]
-        public string env { get; set; }
+        [Required, MaxLength(32)] public string env { get; set; }
 
-        [MaxLength(32)]
-        public string config { get; set; }
+        [MaxLength(32)] public string config { get; set; }
     }
 }

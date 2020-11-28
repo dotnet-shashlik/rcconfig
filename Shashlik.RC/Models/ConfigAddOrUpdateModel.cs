@@ -35,11 +35,6 @@ namespace Shashlik.RC.Models
         public string Name { get; set; }
 
         /// <summary>
-        /// 配置名称是否作为配置节点
-        /// </summary>
-        public bool NameIsSection { get; set; }
-
-        /// <summary>
         /// 配置描述
         /// </summary>
         [MaxLength(512, ErrorMessage = "配置描述最大512个字符")]

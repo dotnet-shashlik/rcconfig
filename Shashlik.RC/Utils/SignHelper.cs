@@ -36,13 +36,13 @@ namespace Shashlik.RC.Utils
         /// <summary>
         /// 生成签名
         /// </summary>
-        /// <param name="ps"></param>
+        /// <param name="jObject"></param>
         /// <returns></returns>
         public string BuildSignJObject(JObject jObject)
         {
             IDictionary<string, string> ps = new Dictionary<string, string>();
             foreach (var item in jObject)
-                ps.Add(item.Key, item.Value.Value<string>());
+                ps.Add(item.Key, item.Value!.Value<string>());
 
             return BuildSign(ps);
         }
@@ -50,12 +50,15 @@ namespace Shashlik.RC.Utils
         /// <summary>
         /// 生成签名
         /// </summary>
-        /// <param name="ps"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
         public string BuildSignModel<TModel>(TModel model)
             where TModel : class
         {
-            return BuildSign(model.MapToDictionary().ToDictionary(r => r.Key, r => r.Value?.ToString()) as IDictionary<string, string>);
+            return BuildSign(model
+                .MapToDictionary()
+                .ToDictionary(r => r.Key, r => r.Value?.ToString())
+            );
         }
 
         /// <summary>
@@ -66,12 +69,12 @@ namespace Shashlik.RC.Utils
         public bool IsValidSign(IEnumerable<KeyValuePair<string, object>> ps)
         {
             var key = SecretKey;
-
-            var psSign = ps.FirstOrDefault(r => r.Key == "sign").Value;
+            var keyValuePairs = ps.ToList();
+            var psSign = keyValuePairs.FirstOrDefault(r => r.Key == "sign").Value;
             if (psSign == null || psSign.ToString().IsNullOrWhiteSpace())
                 return false;
 
-            ps = ps.Where(r => r.Key != "sign" && r.Value != null && !r.Value.ToString().IsNullOrWhiteSpace()).ToList();
+            ps = keyValuePairs.Where(r => r.Key != "sign" && r.Value != null && !r.Value.ToString().IsNullOrWhiteSpace()).ToList();
             if (!ps.Any())
                 return false;
 
@@ -84,13 +87,13 @@ namespace Shashlik.RC.Utils
         /// <summary>
         /// 签名验证
         /// </summary>
-        /// <param name="ps"></param>
+        /// <param name="jObject"></param>
         /// <returns></returns>
         public bool IsValidSignJObject(JObject jObject)
         {
             List<KeyValuePair<string, object>> ps = new List<KeyValuePair<string, object>>();
             foreach (var item in jObject)
-                ps.Add(new KeyValuePair<string, object>(item.Key.Trim().ToLower(), item.Value.Value<object>()));
+                ps.Add(new KeyValuePair<string, object>(item.Key.Trim().ToLower(), item.Value!.Value<object>()));
             return IsValidSign(ps);
         }
 

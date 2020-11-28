@@ -13,18 +13,18 @@ namespace Shashlik.RC.Controllers
     {
         public AppController(RCDbContext dbContext)
         {
-            this.dbContext = dbContext;
+            this.DbContext = dbContext;
         }
 
-        RCDbContext dbContext { get; }
+        private RCDbContext DbContext { get; }
 
-        string appId => User.Claims.FirstOrDefault(r => r.Type == ClaimTypes.NameIdentifier).Value;
+        private string AppId => User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         [Authorize(Roles = Roles.App)]
         public IActionResult Index()
         {
-            var app = dbContext.Set<Apps>()
-                .Where(r => r.Id == appId && r.Enabled)
+            var app = DbContext.Set<Apps>()
+                .Where(r => r.Id == AppId && r.Enabled)
                 .Select(r => new AppDetailModel
                 {
                     AppId = r.Id,

@@ -5,7 +5,7 @@ using Shashlik.Utils.Helpers;
 
 namespace Shashlik.RC.Config
 {
-    class RequestHelper
+    internal class RequestHelper
     {
         static SignHelper SignHelper => new SignHelper(RCConfigSource.Instance.SecretKey);
 

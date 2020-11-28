@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Shashlik.RC.Utils;
 using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.WebSocket
@@ -34,12 +32,12 @@ namespace Shashlik.RC.WebSocket
             if (OnLineSockets.TryGetValue(key, out var list))
                 list.Add(socket);
             else
-                OnLineSockets.TryAdd(key, new List<System.Net.WebSockets.WebSocket> { socket });
+                OnLineSockets.TryAdd(key, new List<System.Net.WebSockets.WebSocket> {socket});
 
             try
             {
                 var buffer = new byte[1024 * 4];
-                WebSocketReceiveResult result = null;
+                WebSocketReceiveResult result;
                 do
                 {
                     await Task.Delay(10);
@@ -49,34 +47,37 @@ namespace Shashlik.RC.WebSocket
                     {
                         // ignore, 发送的什么内容都不管
                     }
-                }
-                while (!result.CloseStatus.HasValue);
+                } while (!result.CloseStatus.HasValue);
             }
             catch (OperationCanceledException)
             {
             }
             catch (WebSocketException)
             {
-
             }
             finally
             {
                 try
                 {
-                    list?.Remove(socket);
-                    await socket?.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None);
-                    socket?.Dispose();
-                    socket = null;
-
+                    if (socket != null)
+                    {
+                        list?.Remove(socket);
+                        await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None);
+                        socket.Dispose();
+                    }
                 }
-                catch { }
+                catch
+                {
+                    // ignored
+                }
             }
         }
 
         /// <summary>
         /// 获取指定id的连接
         /// </summary>
-        /// <param name="connectionId"></param>
+        /// <param name="appId"></param>
+        /// <param name="env"></param>
         /// <returns></returns>
         internal List<System.Net.WebSockets.WebSocket> GetSocket(string appId, string env)
         {
@@ -87,9 +88,10 @@ namespace Shashlik.RC.WebSocket
         /// <summary>
         /// 发送消息
         /// </summary>
-        /// <typeparam name="TMsg"></typeparam>
+        /// <param name="appId"></param>
+        /// <param name="env"></param>
         /// <param name="command"></param>
-        /// <param name="msg"></param>
+        /// <param name="data"></param>
         /// <returns></returns>
         public async Task SendAsync(string appId, string env, string command, object data)
         {
@@ -113,7 +115,10 @@ namespace Shashlik.RC.WebSocket
                     {
                         await socket.SendAsync(byteArray, WebSocketMessageType.Text, true, CancellationToken.None);
                     }
-                    catch { }
+                    catch
+                    {
+                        // ignored
+                    }
                 }
             }
         }
@@ -127,11 +132,17 @@ namespace Shashlik.RC.WebSocket
                 {
                     try
                     {
-                        if (socket.State != WebSocketState.Closed)
-                            socket?.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None).Wait();
-                        socket?.Dispose();
+                        if (socket != null)
+                        {
+                            if (socket.State != WebSocketState.Closed)
+                                socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None).Wait();
+                            socket.Dispose();
+                        }
                     }
-                    catch { }
+                    catch
+                    {
+                        // ignored
+                    }
                 }
             }
         }

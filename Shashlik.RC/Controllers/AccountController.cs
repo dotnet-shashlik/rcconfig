@@ -16,18 +16,20 @@ using Shashlik.RC.Models;
 using Shashlik.RC.Utils;
 using Shashlik.Utils.Helpers;
 
+// ReSharper disable StringLiteralTypo
+
 namespace Shashlik.RC.Controllers
 {
     public class AccountController : Controller
     {
-
         public AccountController(RCDbContext dbContext)
         {
-            this.dbContext = dbContext;
+            DbContext = dbContext;
         }
 
-        RCDbContext dbContext { get; }
-        string appId => User.Claims.FirstOrDefault(r => r.Type == ClaimTypes.NameIdentifier).Value;
+        private RCDbContext DbContext { get; }
+
+        private string AppId => User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         [HttpGet]
         [AllowAnonymous]
@@ -40,6 +42,7 @@ namespace Shashlik.RC.Controllers
                 else if (User.IsInRole(Roles.App))
                     return RedirectToAction("index", "admin");
             }
+
             return RedirectToAction(nameof(Login));
         }
 
@@ -96,7 +99,7 @@ namespace Shashlik.RC.Controllers
             else
             {
                 var pwd = HashHelper.MD5(loginModel.Password).ToUpperInvariant();
-                var app = dbContext.Set<Apps>().FirstOrDefault(r => r.Id == loginModel.UserName && r.Password == pwd);
+                var app = DbContext.Set<Apps>().FirstOrDefault(r => r.Id == loginModel.UserName && r.Password == pwd);
                 if (app != null && app.Enabled)
                 {
                     claimIdentity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -107,7 +110,7 @@ namespace Shashlik.RC.Controllers
                 }
                 else if (app != null && !app.Enabled)
                 {
-                    ViewData["Errors"] = "应用审核中";
+                    ViewData["Errors"] = "应用已禁用";
                     return View();
                 }
             }
@@ -151,18 +154,18 @@ namespace Shashlik.RC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Pwd(ChangePasswordInput input)
         {
-            var app = await dbContext.Set<Apps>().Where(r => r.Id == appId).FirstOrDefaultAsync();
+            var app = await DbContext.Set<Apps>().Where(r => r.Id == AppId).FirstOrDefaultAsync();
 
-            var oldpwd = HashHelper.MD5(input.OldPassword).ToUpperInvariant();
-            if (app.Password != oldpwd)
+            var oldPwd = HashHelper.MD5(input.OldPassword).ToUpperInvariant();
+            if (app.Password != oldPwd)
             {
                 ViewData["Errors"] = "旧密码错误";
                 return View();
             }
 
-            var newpwd = HashHelper.MD5(input.Password).ToUpperInvariant();
-            app.Password = newpwd;
-            await dbContext.SaveChangesAsync();
+            var newPwd = HashHelper.MD5(input.Password).ToUpperInvariant();
+            app.Password = newPwd;
+            await DbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
     }

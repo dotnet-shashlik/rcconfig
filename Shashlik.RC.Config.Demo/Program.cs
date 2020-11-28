@@ -1,4 +1,3 @@
-using Jinkong.RC.Config;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 

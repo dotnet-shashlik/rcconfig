@@ -19,7 +19,7 @@ using Websocket.Client;
 
 namespace Shashlik.RC.Config
 {
-    public static class Extensions
+    public static class RCExtensions
     {
         /// <summary>
         /// 
@@ -44,8 +44,6 @@ namespace Shashlik.RC.Config
             // 内部服务
             InternalService.Services.AddSingleton<IRCConfigManager, RCConfigManager>();
             InternalService.Services.AddSingleton<IParse, JsonParse>();
-            InternalService.Services.AddSingleton<IParse, XmlParse>();
-            InternalService.Services.AddSingleton<IParse, IniParse>();
             InternalService.Services.AddSingleton<IParse, YamlParse>();
 
             builder.ConfigureAppConfiguration((host, config) =>
@@ -57,7 +55,7 @@ namespace Shashlik.RC.Config
                     throw new InvalidOperationException("invalid rc options value of: RC.Polling. ");
 
                 var source = new RCConfigSource(options.Server, options.AppId, options.AppKey,
-                    options.Polling.HasValue ? TimeSpan.FromSeconds(options.Polling.Value) : (TimeSpan?)null)
+                    options.Polling.HasValue ? TimeSpan.FromSeconds(options.Polling.Value) : (TimeSpan?) null)
                 {
                     Env = host.HostingEnvironment.EnvironmentName
                 };

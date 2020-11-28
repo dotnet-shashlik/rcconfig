@@ -22,14 +22,13 @@ namespace Shashlik.RC.Controllers
     {
         public ConfigController(RCDbContext dbContext, WebSocketContext webSocketContext)
         {
-            this.dbContext = dbContext;
-            this.webSocketContext = webSocketContext;
+            DbContext = dbContext;
+            WebSocketContext = webSocketContext;
         }
 
-        RCDbContext dbContext { get; }
-        WebSocketContext webSocketContext { get; }
-
-        string appId => User.Claims.FirstOrDefault(r => r.Type == ClaimTypes.NameIdentifier).Value;
+        private RCDbContext DbContext { get; }
+        private WebSocketContext WebSocketContext { get; }
+        private string AppId => User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         [HttpGet]
         public IActionResult Index(int? id, int? envId)
@@ -45,7 +44,7 @@ namespace Shashlik.RC.Controllers
                 envId = config.EnvId;
             }
 
-            var env = dbContext.Set<Envs>().FirstOrDefault(r => r.AppId == appId && r.Id == envId);
+            var env = DbContext.Set<Envs>().FirstOrDefault(r => r.AppId == AppId && r.Id == envId);
             if (env == null)
                 return BadRequest("参数错误");
 
@@ -65,6 +64,7 @@ namespace Shashlik.RC.Controllers
                 ViewData["Errors"] = ModelState.SelectMany(r => r.Value.Errors.Select(f => f.ErrorMessage)).FirstOrDefault();
                 return View();
             }
+
             if (model.Type == Enums.ConfigType.json)
             {
                 if (model.Content.IsNullOrWhiteSpace())
@@ -83,10 +83,11 @@ namespace Shashlik.RC.Controllers
             Configs config;
             if (model.Id.HasValue)
             {
-                var nameIsSection = model.NameIsSection ? 1 : 0;
+                config = DbContext.Set<Configs>().FirstOrDefault(r => r.Id == model.Id && r.Env.AppId == AppId);
+                if (config is null)
+                    return NotFound();
 
-                config = dbContext.Set<Configs>().FirstOrDefault(r => r.Id == model.Id && r.Env.AppId == appId);
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
                 sb.AppendLine($"修改配置:{config.Name}[{config.Desc}]");
                 if (config.Name.Trim() != model.Name.Trim())
                     sb.AppendLine($"修改配置名称:{config.Name}->{model.Name}");
@@ -98,29 +99,29 @@ namespace Shashlik.RC.Controllers
                 config.Type = model.Type.ToString();
                 config.Name = model.Name;
                 config.Desc = model.Desc;
-                dbContext.SaveChanges();
+                await DbContext.SaveChangesAsync();
             }
             else
             {
                 config =
-                   new Configs
-                   {
-                       Content = model.Content,
-                       Enabled = false,
-                       Desc = model.Desc,
-                       EnvId = model.EnvId,
-                       Name = model.Name,
-                       Type = model.Type.ToString(),
-                   };
-                dbContext.Add(config);
-                dbContext.SaveChanges();
+                    new Configs
+                    {
+                        Content = model.Content,
+                        Enabled = false,
+                        Desc = model.Desc,
+                        EnvId = model.EnvId,
+                        Name = model.Name,
+                        Type = model.Type.ToString(),
+                    };
+                DbContext.Add(config);
+                await DbContext.SaveChangesAsync();
 
                 await Modify(config.Id, model.EnvId, config.Name, $"新增配置:{config.Name}", "", model.Content);
             }
 
-            var config1 = dbContext.Set<Configs>()
-                 .Include(r => r.Env.App)
-                 .FirstOrDefault(r => r.Env.AppId == appId && r.Id == config.Id);
+            var config1 = DbContext.Set<Configs>()
+                .Include(r => r.Env.App)
+                .FirstOrDefault(r => r.Env.AppId == AppId && r.Id == config.Id);
             if (config1 == null)
                 return BadRequest("参数错误");
 
@@ -134,46 +135,43 @@ namespace Shashlik.RC.Controllers
         ConfigModel GetConfigModel(int configId)
         {
             return
-            dbContext.Set<Configs>()
-                .Where(r => r.Id == configId && r.Env.AppId == appId)
-                .Select(r => new ConfigModel
-                {
-                    Content = r.Content,
-                    Desc = r.Desc,
-                    Enabled = r.Enabled,
-                    EnvId = r.EnvId,
-                    EnvName = r.Env.Name,
-                    EnvDesc = r.Env.Desc,
-                    Id = r.Id,
-                    Name = r.Name,
-                    Type = r.Type,
-                })
-                .FirstOrDefault();
+                DbContext.Set<Configs>()
+                    .Where(r => r.Id == configId && r.Env.AppId == AppId)
+                    .Select(r => new ConfigModel
+                    {
+                        Content = r.Content,
+                        Desc = r.Desc,
+                        Enabled = r.Enabled,
+                        EnvId = r.EnvId,
+                        EnvName = r.Env.Name,
+                        EnvDesc = r.Env.Desc,
+                        Id = r.Id,
+                        Name = r.Name,
+                        Type = r.Type,
+                    })
+                    .FirstOrDefault();
         }
 
         [HttpGet]
         [HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
-            var config = dbContext.Set<Configs>().Include(r => r.Env.App).FirstOrDefault(r => r.Id == id && r.Env.AppId == appId);
+            var config = DbContext.Set<Configs>().Include(r => r.Env.App).FirstOrDefault(r => r.Id == id && r.Env.AppId == AppId);
             if (config == null)
                 return NotFound();
 
             config.IsDeleted = true;
             config.DeleteTime = DateTime.Now;
             await Modify(id, config.EnvId, config.Name, $"删除配置:{config.Name}[{config.Desc}]", "", "");
-            dbContext.SaveChanges();
+            await DbContext.SaveChangesAsync();
 
             return RedirectToAction("index", "app");
         }
 
         /// <summary>
-        /// 获取配置
+        /// 获取配置数据
         /// </summary>
-        /// <param name="appId"></param>
-        /// <param name="secretKey"></param>
-        /// <param name="env"></param>
-        /// <param name="config"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
@@ -184,7 +182,7 @@ namespace Shashlik.RC.Controllers
 
             if (model.config.IsNullOrWhiteSpace())
             {
-                var configEntity = dbContext.Set<Envs>()
+                var configEntity = DbContext.Set<Envs>()
                     .Where(r => r.AppId == model.appId && r.Name == model.env)
                     .Select(r => new
                     {
@@ -231,21 +229,21 @@ namespace Shashlik.RC.Controllers
             else
             {
                 var configEntity =
-                dbContext.Set<Configs>()
-                    .Where(r => r.Env.AppId == model.appId && r.Name == model.config && r.Env.Name == model.env)
-                    .Select(r => new
-                    {
-                        r.Env.AppId,
-                        r.Env.Key,
-                        IpWhites = r.Env.IpWhites.Select(f => f.Ip).ToList(),
-                        ConfigModel = new ConfigApiModel
+                    DbContext.Set<Configs>()
+                        .Where(r => r.Env.AppId == model.appId && r.Name == model.config && r.Env.Name == model.env)
+                        .Select(r => new
                         {
-                            content = r.Content,
-                            name = r.Name,
-                            type = r.Type
-                        },
-                    })
-                    .FirstOrDefault();
+                            r.Env.AppId,
+                            r.Env.Key,
+                            IpWhites = r.Env.IpWhites.Select(f => f.Ip).ToList(),
+                            ConfigModel = new ConfigApiModel
+                            {
+                                content = r.Content,
+                                name = r.Name,
+                                type = r.Type
+                            },
+                        })
+                        .FirstOrDefault();
 
                 if (configEntity == null)
                     return NotFound();
@@ -284,46 +282,49 @@ namespace Shashlik.RC.Controllers
         [HttpPut]
         public async Task<IActionResult> Enabled(int id)
         {
-            var config = dbContext.Set<Configs>()
-                 .Include(r => r.Env.App)
-                 .FirstOrDefault(r => r.Env.AppId == appId && r.Id == id);
+            var config = DbContext.Set<Configs>()
+                .Include(r => r.Env.App)
+                .FirstOrDefault(r => r.Env.AppId == AppId && r.Id == id);
             if (config == null)
                 return NotFound();
             config.Enabled = true;
 
             await Modify(id, config.EnvId, config.Name, $"启用配置:{config.Name}[{config.Desc}]", "", "");
-            dbContext.SaveChanges();
+            await DbContext.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index), new { id });
+            return RedirectToAction(nameof(Index), new {id});
         }
 
         [HttpGet]
         [HttpPut]
         public async Task<IActionResult> Disabled(int id)
         {
-            var config = dbContext.Set<Configs>()
+            var config = DbContext.Set<Configs>()
                 .Include(r => r.Env.App)
-                .FirstOrDefault(r => r.Env.AppId == appId && r.Id == id);
+                .FirstOrDefault(r => r.Env.AppId == AppId && r.Id == id);
             if (config == null)
                 return NotFound();
             config.Enabled = false;
 
             await Modify(id, config.EnvId, config.Name, $"禁用配置:{config.Name}[{config.Desc}]", "", "");
-            dbContext.SaveChanges();
+            await DbContext.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index), new { id });
+            return RedirectToAction(nameof(Index), new {id});
         }
 
         /// <summary>
         /// 配置内容修改
         /// </summary>
         /// <param name="configId"></param>
+        /// <param name="envId"></param>
+        /// <param name="configName"></param>
+        /// <param name="desc"></param>
         /// <param name="before"></param>
         /// <param name="after"></param>
         /// <returns></returns>
-        async Task Modify(int configId, int envId, string configName, string desc, string before, string after)
+        private async Task Modify(int configId, int envId, string configName, string desc, string before, string after)
         {
-            dbContext.Add(new ModifyRecords
+            DbContext.Add(new ModifyRecords
             {
                 ConfigId = configId,
                 Desc = desc,
@@ -331,15 +332,14 @@ namespace Shashlik.RC.Controllers
                 BeforeContent = before,
                 AfterContent = after
             });
-            var env = dbContext.Set<Envs>().Where(r => r.Id == envId).Select(r => r.Name).FirstOrDefault();
-            await webSocketContext.SendAsync(appId, env, "refresh", new { config = configName });
+            var env = DbContext.Set<Envs>().Where(r => r.Id == envId).Select(r => r.Name).FirstOrDefault();
+            await WebSocketContext.SendAsync(AppId, env, "refresh", new {config = configName});
         }
 
         /// <summary>
         /// 查看修改记录
         /// </summary>
         /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
         /// <param name="envId"></param>
         /// <param name="configId"></param>
         /// <returns></returns>
@@ -349,12 +349,12 @@ namespace Shashlik.RC.Controllers
                 pageIndex = 1;
 
             var query =
-            dbContext
-                .Set<ModifyRecords>()
-                .IgnoreQueryFilters()
-                .Where(r => r.Config.Env.AppId == appId)
-                .WhereIf(envId.HasValue, r => r.Config.EnvId == envId)
-                .WhereIf(configId.HasValue, r => r.ConfigId == configId);
+                DbContext
+                    .Set<ModifyRecords>()
+                    .IgnoreQueryFilters()
+                    .Where(r => r.Config.Env.AppId == AppId)
+                    .WhereIf(envId.HasValue, r => r.Config.EnvId == envId)
+                    .WhereIf(configId.HasValue, r => r.ConfigId == configId);
 
             var total = await query.CountAsync();
             var list = query
@@ -387,7 +387,7 @@ namespace Shashlik.RC.Controllers
         /// <returns></returns>
         public IActionResult Compare(int id)
         {
-            if (!dbContext.Set<ModifyRecords>().Any(r => r.Id == id))
+            if (!DbContext.Set<ModifyRecords>().Any(r => r.Id == id))
                 return NotFound();
 
             ViewData["Id"] = id;
@@ -401,7 +401,7 @@ namespace Shashlik.RC.Controllers
         /// <returns></returns>
         public async Task<IActionResult> GetCompareContent(int id)
         {
-            var record = await dbContext
+            var record = await DbContext
                 .Set<ModifyRecords>()
                 .IgnoreQueryFilters()
                 .Where(r => r.Id == id)

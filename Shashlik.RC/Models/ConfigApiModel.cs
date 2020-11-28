@@ -1,4 +1,5 @@
-﻿namespace Shashlik.RC.Models
+﻿// ReSharper disable InconsistentNaming
+namespace Shashlik.RC.Models
 {
     public class ConfigApiModel
     {

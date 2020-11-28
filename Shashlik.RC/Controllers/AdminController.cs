@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Shashlik.RC.Data;
 using Shashlik.RC.Data.Entities;
 using Shashlik.RC.Models;
-using Shashlik.RC.Utils;
 using Shashlik.Utils.Helpers;
 
 namespace Shashlik.RC.Controllers
@@ -14,13 +13,12 @@ namespace Shashlik.RC.Controllers
     [Authorize(Roles = Roles.Admin)]
     public class AdminController : Controller
     {
-
         public AdminController(RCDbContext dbContext)
         {
-            this.dbContext = dbContext;
+            DbContext = dbContext;
         }
 
-        RCDbContext dbContext { get; }
+        private RCDbContext DbContext { get; }
 
         /// <summary>
         /// 首页
@@ -30,16 +28,16 @@ namespace Shashlik.RC.Controllers
         public IActionResult Index()
         {
             var model =
-            dbContext.Set<Apps>()
-                .OrderByDescending(r => r.CreateTime)
-                .Select(r => new AppModel
-                {
-                    AppId = r.Id,
-                    Desc = r.Desc,
-                    Name = r.Name,
-                    Enabled = r.Enabled
-                })
-                .ToList();
+                DbContext.Set<Apps>()
+                    .OrderByDescending(r => r.CreateTime)
+                    .Select(r => new AppModel
+                    {
+                        AppId = r.Id,
+                        Desc = r.Desc,
+                        Name = r.Name,
+                        Enabled = r.Enabled
+                    })
+                    .ToList();
 
             return View(model);
         }
@@ -53,13 +51,13 @@ namespace Shashlik.RC.Controllers
         [HttpPut]
         public IActionResult Enabled(string id)
         {
-            var app = dbContext.Set<Apps>().FirstOrDefault(r => r.Id == id);
+            var app = DbContext.Set<Apps>().FirstOrDefault(r => r.Id == id);
 
             if (app == null)
                 return NotFound();
 
             app.Enabled = true;
-            dbContext.SaveChanges();
+            DbContext.SaveChanges();
 
             return RedirectToAction(nameof(Index));
         }
@@ -73,13 +71,13 @@ namespace Shashlik.RC.Controllers
         [HttpPut]
         public IActionResult Disabled(string id)
         {
-            var app = dbContext.Set<Apps>().FirstOrDefault(r => r.Id == id);
+            var app = DbContext.Set<Apps>().FirstOrDefault(r => r.Id == id);
 
             if (app == null)
                 return NotFound();
 
             app.Enabled = false;
-            dbContext.SaveChanges();
+            DbContext.SaveChanges();
 
             return RedirectToAction(nameof(Index));
         }
@@ -105,26 +103,26 @@ namespace Shashlik.RC.Controllers
             }
 
             var app =
-            new Apps
-            {
-                Id = Guid16().ToUpper(),
-                Name = model.Name,
-                Password = HashHelper.MD5(model.Password).ToUpperInvariant(),
-                Desc = model.Desc,
-                CreateTime = DateTime.Now
-            };
-            dbContext.Add(app);
+                new Apps
+                {
+                    Id = Guid16().ToUpper(),
+                    Name = model.Name,
+                    Password = HashHelper.MD5(model.Password).ToUpperInvariant(),
+                    Desc = model.Desc,
+                    CreateTime = DateTime.Now
+                };
+            DbContext.Add(app);
 
-            await dbContext.SaveChangesAsync();
+            await DbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        string Guid16()
+        private static string Guid16()
         {
-            long i = 1;
-            foreach (byte b in Guid.NewGuid().ToByteArray())
-                i *= b + 1;
-            return string.Format("{0:x}", i - DateTime.Now.Ticks);
+            long i = Guid.NewGuid()
+                .ToByteArray()
+                .Aggregate<byte, long>(1, (current, b) => current * (b + 1));
+            return $"{i - DateTime.Now.Ticks:x}";
         }
     }
 }

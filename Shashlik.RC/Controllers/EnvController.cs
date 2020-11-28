@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Shashlik.RC.Data;
 using Shashlik.RC.Data.Entities;
 using Shashlik.RC.Models;
-using Shashlik.RC.Utils;
 using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Controllers
@@ -17,11 +16,11 @@ namespace Shashlik.RC.Controllers
     {
         public EnvController(RCDbContext dbContext)
         {
-            this.dbContext = dbContext;
+            this.DbContext = dbContext;
         }
 
-        RCDbContext dbContext { get; }
-        string appId => User.Claims.FirstOrDefault(r => r.Type == ClaimTypes.NameIdentifier).Value;
+        private RCDbContext DbContext { get; }
+        private string AppId => User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         /// <summary>
         /// 新增/编辑环境 变量
@@ -34,25 +33,25 @@ namespace Shashlik.RC.Controllers
             if (id.HasValue)
             {
                 ViewData.Model =
-                dbContext.Set<Envs>()
-                    .Where(r => r.Id == id && r.AppId == appId)
-                    .Select(r => new EnvModel
-                    {
-                        Id = r.Id,
-                        Name = r.Name,
-                        IpWhites = r.IpWhites.Select(f => f.Ip).ToList(),
-                        Desc = r.Desc,
-                        Key = r.Key,
-                        Configs = r.Configs.Select(f => new ConfigSimpleModel
+                    DbContext.Set<Envs>()
+                        .Where(r => r.Id == id && r.AppId == AppId)
+                        .Select(r => new EnvModel
                         {
-                            Desc = f.Desc,
-                            Id = f.Id,
-                            Name = f.Name,
-                            Type = f.Type,
-                            Enabled = f.Enabled
-                        }).ToList()
-                    })
-                    .FirstOrDefault();
+                            Id = r.Id,
+                            Name = r.Name,
+                            IpWhites = r.IpWhites.Select(f => f.Ip).ToList(),
+                            Desc = r.Desc,
+                            Key = r.Key,
+                            Configs = r.Configs.Select(f => new ConfigSimpleModel
+                            {
+                                Desc = f.Desc,
+                                Id = f.Id,
+                                Name = f.Name,
+                                Type = f.Type,
+                                Enabled = f.Enabled
+                            }).ToList()
+                        })
+                        .FirstOrDefault();
                 if (ViewData.Model == null)
                     return NotFound();
             }
@@ -69,24 +68,25 @@ namespace Shashlik.RC.Controllers
                 ViewData["Errors"] = ModelState.SelectMany(r => r.Value.Errors.Select(f => f.ErrorMessage)).FirstOrDefault();
                 return View();
             }
-            model.IpWhites = model.IpWhites ?? "";
+
+            model.IpWhites ??= "";
             var ipWhites =
-              model.IpWhites.Split("\n", StringSplitOptions.RemoveEmptyEntries)
-                  .Where(r => !r.IsNullOrWhiteSpace())
-                  .Distinct()
-                  .Select(r => new IpWhites { Ip = r.Trim() });
+                model.IpWhites.Split("\n", StringSplitOptions.RemoveEmptyEntries)
+                    .Where(r => !r.IsNullOrWhiteSpace())
+                    .Distinct()
+                    .Select(r => new IpWhites {Ip = r.Trim()})
+                    .ToList();
 
             if (model.Id.HasValue)
             {
-                var env =
-                dbContext.Set<Envs>()
+                var env = DbContext
+                    .Set<Envs>()
                     .Include(r => r.IpWhites)
-                    .Where(r => r.Id == model.Id && r.AppId == appId)
-                    .FirstOrDefault();
+                    .FirstOrDefault(r => r.Id == model.Id && r.AppId == AppId);
                 if (env == null)
                     return NotFound();
 
-                dbContext.RemoveRange(env.IpWhites);
+                DbContext.RemoveRange(env.IpWhites);
                 env.Name = model.Name;
                 env.Desc = model.Desc;
                 if (!ipWhites.IsNullOrEmpty())
@@ -94,17 +94,17 @@ namespace Shashlik.RC.Controllers
             }
             else
             {
-                dbContext.Add(new Envs
+                DbContext.Add(new Envs
                 {
                     Name = model.Name,
-                    AppId = appId,
+                    AppId = AppId,
                     Desc = model.Desc,
                     IpWhites = ipWhites.ToList(),
                     Key = Guid.NewGuid().ToString("n").ToUpperInvariant()
                 });
             }
 
-            dbContext.SaveChanges();
+            DbContext.SaveChanges();
             return RedirectToAction("index", "app");
         }
 
@@ -118,20 +118,20 @@ namespace Shashlik.RC.Controllers
         public IActionResult Copy(int id)
         {
             var env =
-            dbContext.Set<Envs>()
-                .Where(r => r.Id == id && r.AppId == appId)
-                .Include(r => r.IpWhites)
-                .Include(r => r.Configs)
-                .FirstOrDefault();
+                DbContext.Set<Envs>()
+                    .Where(r => r.Id == id && r.AppId == AppId)
+                    .Include(r => r.IpWhites)
+                    .Include(r => r.Configs)
+                    .FirstOrDefault();
 
             if (env == null)
                 return NotFound();
 
             var copyEnv = new Envs
             {
-                AppId = appId,
+                AppId = AppId,
                 Name = env.Name + "_copy",
-                IpWhites = env.IpWhites.Select(r => new IpWhites { Ip = r.Ip }).ToList(),
+                IpWhites = env.IpWhites.Select(r => new IpWhites {Ip = r.Ip}).ToList(),
                 Key = Guid.NewGuid().ToString("n").ToUpperInvariant(),
                 Configs = env.Configs.Select(r => new Configs
                 {
@@ -142,8 +142,8 @@ namespace Shashlik.RC.Controllers
                     Enabled = r.Enabled
                 }).ToList()
             };
-            dbContext.Add(copyEnv);
-            dbContext.SaveChanges();
+            DbContext.Add(copyEnv);
+            DbContext.SaveChanges();
 
             return RedirectToAction("index", "app");
         }
@@ -158,19 +158,19 @@ namespace Shashlik.RC.Controllers
         public IActionResult Delete(int id)
         {
             var env =
-            dbContext.Set<Envs>()
-                .Where(r => r.Id == id && r.AppId == appId)
-                .Include(r => r.IpWhites)
-                .Include(r => r.Configs)
-                .FirstOrDefault();
+                DbContext.Set<Envs>()
+                    .Where(r => r.Id == id && r.AppId == AppId)
+                    .Include(r => r.IpWhites)
+                    .Include(r => r.Configs)
+                    .FirstOrDefault();
 
             if (env == null)
                 return NotFound();
 
-            dbContext.RemoveRange(env.IpWhites);
-            dbContext.RemoveRange(env.Configs);
-            dbContext.Remove(env);
-            dbContext.SaveChanges();
+            DbContext.RemoveRange(env.IpWhites);
+            DbContext.RemoveRange(env.Configs);
+            DbContext.Remove(env);
+            DbContext.SaveChanges();
             return RedirectToAction("index", "app");
         }
 
@@ -184,18 +184,18 @@ namespace Shashlik.RC.Controllers
         public IActionResult RefreshKey(int id)
         {
             var env =
-              dbContext.Set<Envs>()
-                  .Where(r => r.Id == id && r.AppId == appId)
-                  .Include(r => r.IpWhites)
-                  .Include(r => r.Configs)
-                  .FirstOrDefault();
+                DbContext.Set<Envs>()
+                    .Where(r => r.Id == id && r.AppId == AppId)
+                    .Include(r => r.IpWhites)
+                    .Include(r => r.Configs)
+                    .FirstOrDefault();
 
             if (env == null)
                 return NotFound();
 
             env.Key = Guid.NewGuid().ToString("n").ToUpperInvariant();
-            dbContext.SaveChanges();
-            return RedirectToAction(nameof(Index), new { id });
+            DbContext.SaveChanges();
+            return RedirectToAction(nameof(Index), new {id});
         }
     }
 }
