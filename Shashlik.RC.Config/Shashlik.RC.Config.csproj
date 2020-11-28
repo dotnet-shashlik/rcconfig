@@ -1,15 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+    <Import Project="../common.xml"/>
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
-        <FrameworkReference Include="Microsoft.AspNetCore.App" />
-        <PackageReference Include="RestSharp" Version="106.11.7" />
-        <PackageReference Include="Shashlik.Utils" Version="1.0.0-rc2" />
-        <PackageReference Include="Websocket.Client" Version="4.3.21" />
-        <PackageReference Include="YamlDotNet" Version="9.1.0" />
+        <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+        <PackageReference Include="RestSharp" Version="106.11.7"/>
+        <PackageReference Include="Shashlik.Utils" Version="1.0.0-rc2"/>
+        <PackageReference Include="Websocket.Client" Version="4.3.21"/>
+        <PackageReference Include="YamlDotNet" Version="9.1.0"/>
     </ItemGroup>
 
 </Project>
