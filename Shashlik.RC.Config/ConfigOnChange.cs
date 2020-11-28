@@ -5,7 +5,7 @@ namespace Shashlik.RC.Config
     /// <summary>
     /// 配置变化事件
     /// </summary>
-    class ConfigOnChange
+    internal class ConfigOnChange
     {
         /// <summary>
         /// string(configName)

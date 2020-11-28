@@ -6,7 +6,7 @@ namespace Shashlik.RC.Config
     /// <summary>
     /// 内容解析
     /// </summary>
-    interface IParse
+    internal interface IParse
     {
         string Type { get; }
 
