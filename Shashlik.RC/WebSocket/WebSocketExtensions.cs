@@ -45,23 +45,23 @@ namespace Shashlik.RC.WebSocket
                         var appIdStr = appId.ToString();
                         var envStr = env.ToString();
                         var signStr = sign.ToString();
-                        var appEntitiy = dbContext.Set<Apps>().Include(r => r.Envs)
+                        var appEntity = dbContext.Set<Apps>().Include(r => r.Envs)
                             .FirstOrDefault(r => r.Id == appIdStr);
-                        if (appEntitiy == null)
+                        if (appEntity is null)
                         {
                             context.Response.StatusCode = 404;
                             return;
                         }
 
-                        var envEnbtity = appEntitiy.Envs.FirstOrDefault(r => r.Name == envStr);
-                        if (!appEntitiy.Enabled || envEnbtity == null)
+                        var envEntity = appEntity.Envs.FirstOrDefault(r => r.Name == envStr);
+                        if (!appEntity.Enabled || envEntity is null)
                         {
                             context.Response.StatusCode = 404;
                             return;
                         }
 
                         var key = $"appid={appIdStr}&env={envStr}&timestamp={timestamp}";
-                        if (HashHelper.HMACSHA256(key, envEnbtity.Key) != signStr)
+                        if (HashHelper.HMACSHA256(key, envEntity.Key) != signStr)
                         {
                             context.Response.StatusCode = 403;
                             return;
