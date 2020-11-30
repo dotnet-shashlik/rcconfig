@@ -6,7 +6,7 @@
         <RepositoryUrl>https://github.com/dotnet-shashlik/rcconfig/tree/main</RepositoryUrl>
         <PackageTags>shashlik.rc</PackageTags>
         <Authors>dotnet-shashlik</Authors>
-        <Version>0.1.0-preview-00007</Version>
+        <Version>1.0.0-rc1</Version>
     </PropertyGroup>
 
     <!--    see: https://cloud.tencent.com/developer/article/1673096    -->
