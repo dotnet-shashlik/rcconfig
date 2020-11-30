@@ -4,8 +4,8 @@
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "DB_TYPE": "mysql",
-        "CONN": "server=192.168.50.178;database=rctest;user id=testuser;password=123123;",
+        "DB_TYPE": "sqlite",
+        "CONN": "Data Source=./data/rc.db;",
         "ADMIN_USER": "admin",
         "ADMIN_PASS": "123123"
       },
