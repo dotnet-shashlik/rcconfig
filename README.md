@@ -139,3 +139,23 @@ namespace Shashlik.RC.Config.Demo
         // ...
     }
 ```
+
+## pictures
+
+- login
+![login](./pictures/1.png)
+
+- admin
+![admin](./pictures/2.png)
+
+- add app
+![add app](./pictures/3.png)
+
+- configurations
+![configurations](./pictures/4.png)
+
+- add environment
+![add environment](./pictures/5.png)
+
+- config file
+![config file](./pictures/6.png)
