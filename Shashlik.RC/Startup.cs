@@ -13,6 +13,7 @@ using Shashlik.Kernel;
 using Shashlik.RC.Data;
 using Shashlik.RC.Data.MySql;
 using Shashlik.RC.Data.PostgreSql;
+using Shashlik.RC.Data.Sqlite;
 using Shashlik.RC.Data.SqlLite;
 using Shashlik.RC.Data.SqlServer;
 using Shashlik.RC.WebSocket;
@@ -48,7 +49,7 @@ namespace Shashlik.RC
             switch (dbType)
             {
                 case "sqlite":
-                    services.AddSqlLiteData(conn);
+                    services.AddSqliteData(conn);
                     break;
                 case "mysql":
                     services.AddMySqlData(conn);
@@ -130,3 +131,6 @@ namespace Shashlik.RC
         }
     }
 }
+
+// sqlite: dotnet ef migrations add AddAccountLock -c RCDbContext  -o Migrations -p ./Shashlik.RC.Data.SqlLite/Shashlik.RC.Data.SqlLite.csproj -s ./Shashlik.RC/Shashlik.RC.csproj
+// mysql:  dotnet ef migrations add AddAccountLock -c RCDbContext  -o Migrations -p ./Shashlik.RC.Data.MySql/Shashlik.RC.Data.MySql.csproj -s ./Shashlik.RC/Shashlik.RC.csproj

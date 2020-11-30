@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shashlik.RC.Config.Demo", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shashlik.RC.Data", "Shashlik.RC.Data\Shashlik.RC.Data.csproj", "{A384DD33-14CA-44F6-A641-954DED2B28C7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shashlik.RC.Data.SqlLite", "Shashlik.RC.Data.SqlLite\Shashlik.RC.Data.SqlLite.csproj", "{BFFF41BC-B508-40F0-B595-0A279E076F5F}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{D42039CD-A0E9-4248-948C-A2BE49188F51}"
 	ProjectSection(SolutionItems) = preProject
 		common.xml = common.xml
@@ -25,6 +23,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shashlik.RC.Data.PostgreSql", "Shashlik.RC.Data.PostgreSql\Shashlik.RC.Data.PostgreSql.csproj", "{41AD4326-6DB0-400F-AFE9-01C66C590A6D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shashlik.RC.Data.SqlServer", "Shashlik.RC.Data.SqlServer\Shashlik.RC.Data.SqlServer.csproj", "{2C065129-FC09-4117-AC63-3D875CBC11FD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shashlik.RC.Data.Sqlite", "Shashlik.RC.Data.Sqlite\Shashlik.RC.Data.Sqlite.csproj", "{2B519EBC-EFCD-4691-A8C1-ABAFD6F5F9D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,10 +48,6 @@ Global
 		{A384DD33-14CA-44F6-A641-954DED2B28C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A384DD33-14CA-44F6-A641-954DED2B28C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A384DD33-14CA-44F6-A641-954DED2B28C7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BFFF41BC-B508-40F0-B595-0A279E076F5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BFFF41BC-B508-40F0-B595-0A279E076F5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BFFF41BC-B508-40F0-B595-0A279E076F5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BFFF41BC-B508-40F0-B595-0A279E076F5F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4E70FBA1-9157-4FE1-A7DA-27E2AD134EBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4E70FBA1-9157-4FE1-A7DA-27E2AD134EBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E70FBA1-9157-4FE1-A7DA-27E2AD134EBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -64,6 +60,10 @@ Global
 		{2C065129-FC09-4117-AC63-3D875CBC11FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C065129-FC09-4117-AC63-3D875CBC11FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C065129-FC09-4117-AC63-3D875CBC11FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B519EBC-EFCD-4691-A8C1-ABAFD6F5F9D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B519EBC-EFCD-4691-A8C1-ABAFD6F5F9D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B519EBC-EFCD-4691-A8C1-ABAFD6F5F9D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B519EBC-EFCD-4691-A8C1-ABAFD6F5F9D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

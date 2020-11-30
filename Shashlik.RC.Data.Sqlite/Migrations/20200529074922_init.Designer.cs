@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Shashlik.RC.Data.SqlLite.Migrations
+namespace Shashlik.RC.Data.Sqlite.Migrations
 {
     [DbContext(typeof(RCDbContext))]
     [Migration("20200529074922_init")]
