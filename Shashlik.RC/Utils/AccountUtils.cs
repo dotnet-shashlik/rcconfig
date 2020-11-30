@@ -14,11 +14,13 @@ namespace Shashlik.RC.Utils
         {
             lock (Lck)
             {
-                var entity = dbContext.Set<AccountLocks>().FirstOrDefault(r => r.Id == account)
-                             ?? new AccountLocks
-                             {
-                                 Id = account
-                             };
+                var entity = dbContext.Set<AccountLocks>().FirstOrDefault(r => r.Id == account);
+
+                if (entity is null)
+                {
+                    entity = new AccountLocks {Id = account};
+                    dbContext.Add(entity);
+                }
 
                 if (entity.LoginFailedCount >= 5)
                 {
@@ -38,11 +40,12 @@ namespace Shashlik.RC.Utils
         {
             lock (Lck)
             {
-                var entity = dbContext.Set<AccountLocks>().FirstOrDefault(r => r.Id == account)
-                             ?? new AccountLocks
-                             {
-                                 Id = account
-                             };
+                var entity = dbContext.Set<AccountLocks>().FirstOrDefault(r => r.Id == account);
+                if (entity is null)
+                {
+                    entity = new AccountLocks {Id = account};
+                    dbContext.Add(entity);
+                }
 
                 entity.LoginFailedCount = 0;
                 entity.LockEnd = 0;
@@ -52,11 +55,13 @@ namespace Shashlik.RC.Utils
 
         public static bool IsLockout(this DbContext dbContext, string account)
         {
-            var entity = dbContext.Set<AccountLocks>().FirstOrDefault(r => r.Id == account)
-                         ?? new AccountLocks
-                         {
-                             Id = account
-                         };
+            var entity = dbContext.Set<AccountLocks>().FirstOrDefault(r => r.Id == account);
+
+            if (entity is null)
+            {
+                entity = new AccountLocks {Id = account};
+                dbContext.Add(entity);
+            }
 
             return entity.LockEnd >= DateTime.Now.GetLongDate();
         }
