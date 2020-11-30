@@ -87,6 +87,12 @@ namespace Shashlik.RC.Controllers
             string role = null;
             if (loginModel.UserName == adminUser)
             {
+                if (DbContext.IsLockout(adminUser))
+                {
+                    ViewData["Errors"] = "账户已锁定";
+                    return View();
+                }
+
                 if (loginModel.Password == adminPassword)
                 {
                     claimIdentity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -94,23 +100,45 @@ namespace Shashlik.RC.Controllers
                     claimIdentity.AddClaim(new Claim(ClaimTypes.Role, Roles.Admin));
                     claimIdentity.AddClaim(new Claim(ClaimTypes.Name, adminUser));
                     role = Roles.Admin;
+                    DbContext.ResetLockEnd(adminUser);
                 }
+                else
+                    DbContext.LoginFailed(adminUser);
             }
             else
             {
-                var pwd = HashHelper.MD5(loginModel.Password).ToUpperInvariant();
-                var app = DbContext.Set<Apps>().FirstOrDefault(r => r.Id == loginModel.UserName && r.Password == pwd);
-                if (app != null && app.Enabled)
+                var app = DbContext.Set<Apps>().FirstOrDefault(r => r.Id == loginModel.UserName);
+                if (app is null)
+                {
+                    ViewData["Errors"] = "用户名或密码错误";
+                    return View();
+                }
+
+                if (DbContext.IsLockout(loginModel.UserName))
+                {
+                    ViewData["Errors"] = "账户已锁定";
+                    return View();
+                }
+
+                if (!PasswordUtils.Verify(app.Password, loginModel.Password))
+                {
+                    DbContext.LoginFailed(loginModel.UserName);
+                    ViewData["Errors"] = "用户名或密码错误";
+                    return View();
+                }
+
+                if (app.Enabled)
                 {
                     claimIdentity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
                     claimIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier, app.Id));
                     claimIdentity.AddClaim(new Claim(ClaimTypes.Role, Roles.App));
                     claimIdentity.AddClaim(new Claim(ClaimTypes.Name, app.Name));
                     role = Roles.App;
+                    DbContext.ResetLockEnd(loginModel.UserName);
                 }
-                else if (app != null && !app.Enabled)
+                else if (!app.Enabled)
                 {
-                    ViewData["Errors"] = "应用已禁用";
+                    ViewData["Errors"] = "账户已禁用";
                     return View();
                 }
             }
