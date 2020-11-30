@@ -35,7 +35,7 @@ namespace Shashlik.RC
                 conn = Environment.GetEnvironmentVariable("CONN");
             if (conn.IsNullOrWhiteSpace())
                 conn = "Data Source=./data/rc.db;";
-            var dbType = Configuration.GetConnectionString("DbType");
+            var dbType = Configuration.GetValue<string>("DbType");
             if (dbType.IsNullOrWhiteSpace())
                 dbType = Environment.GetEnvironmentVariable("DB_TYPE");
             if (dbType.IsNullOrWhiteSpace())

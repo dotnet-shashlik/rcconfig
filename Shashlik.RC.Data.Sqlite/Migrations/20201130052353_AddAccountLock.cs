@@ -6,9 +6,10 @@ namespace Shashlik.RC.Data.Sqlite.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "NotifyUrl",
-                table: "Envs");
+            //5.0才支持
+            // migrationBuilder.DropColumn(
+            //     name: "NotifyUrl",
+            //     table: "Envs");
 
             migrationBuilder.CreateTable(
                 name: "AccountLocks",
@@ -18,10 +19,7 @@ namespace Shashlik.RC.Data.Sqlite.Migrations
                     LockEnd = table.Column<long>(nullable: false),
                     LoginFailedCount = table.Column<int>(nullable: false)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AccountLocks", x => x.Id);
-                });
+                constraints: table => { table.PrimaryKey("PK_AccountLocks", x => x.Id); });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -29,11 +27,11 @@ namespace Shashlik.RC.Data.Sqlite.Migrations
             migrationBuilder.DropTable(
                 name: "AccountLocks");
 
-            migrationBuilder.AddColumn<string>(
-                name: "NotifyUrl",
-                table: "Envs",
-                maxLength: 512,
-                nullable: true);
+            // migrationBuilder.AddColumn<string>(
+            //     name: "NotifyUrl",
+            //     table: "Envs",
+            //     maxLength: 512,
+            //     nullable: true);
         }
     }
 }

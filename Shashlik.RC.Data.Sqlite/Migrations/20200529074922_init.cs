@@ -33,7 +33,7 @@ namespace Shashlik.RC.Data.Sqlite.Migrations
                     Key = table.Column<string>(maxLength: 64, nullable: false),
                     Name = table.Column<string>(maxLength: 32, nullable: false),
                     Desc = table.Column<string>(maxLength: 32, nullable: true),
-                    NotifyUrl = table.Column<string>(maxLength: 512, nullable: true)
+                    // NotifyUrl = table.Column<string>(maxLength: 512, nullable: true)
                 },
                 constraints: table =>
                 {
