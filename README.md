@@ -9,6 +9,8 @@ Shashlik RC 是一个使用.net core 开发的远程配置中心。功能非常�
 ```
 sudo git clone https://github.com/dotnet-shashlik/rcconfig.git
 
+cd rcconfig
+
 sudo docker-compose up -d
 ```
 
