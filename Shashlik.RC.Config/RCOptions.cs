@@ -18,13 +18,18 @@
         public string AppKey { get; set; }
 
         /// <summary>
-        /// websocket connection url
+        /// get configuration api url 
         /// </summary>
-        public string Websocket { get; set; }
+        public string ApiUrl => $"{Server.TrimEnd('/')}/config/get";
 
         /// <summary>
-        /// 轮询间隔, 单位秒
+        /// websocket connection url
         /// </summary>
-        public int? Polling { get; set; }
+        public string Websocket => $"{Server.ToLower().Replace("http://", "ws://").Replace("https://", "wss://").TrimEnd('/')}/ws/subscribe";
+
+        /// <summary>
+        /// 轮询间隔, 单位秒, 0:不轮询
+        /// </summary>
+        public int Polling { get; set; } = 0;
     }
 }

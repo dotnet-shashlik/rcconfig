@@ -5,31 +5,14 @@ namespace Shashlik.RC.Config
 {
     public class RCConfigSource : IConfigurationSource
     {
-        public RCConfigSource(string rCServer, string appId, string secretKey, TimeSpan? polling = null)
+        public RCConfigSource(RCOptions options, string env, TimeSpan? polling = null)
         {
-            RCServer = rCServer;
-            AppId = appId;
-            SecretKey = secretKey;
-            if (polling.HasValue && polling.Value.TotalMilliseconds < 0)
-                throw new ArgumentException("轮询时间必须大于0", nameof(polling));
-
+            Options = options;
+            Env = env;
             Polling = polling;
         }
 
-        /// <summary>
-        /// RC服务器地址
-        /// </summary>
-        internal string RCServer { get; set; }
-
-        /// <summary>
-        /// 应用id
-        /// </summary>
-        internal string AppId { get; set; }
-
-        /// <summary>
-        /// SecretKey
-        /// </summary>
-        internal string SecretKey { get; set; }
+        internal RCOptions Options { get; set; }
 
         /// <summary>
         /// 环境变量

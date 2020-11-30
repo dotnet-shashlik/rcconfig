@@ -53,14 +53,11 @@ namespace Shashlik.RC.Config
                 var configurationRoot = config.Build();
                 var options = configurationRoot.GetSection("RCConfig").Get<RCOptions>();
 
-                if (options.Polling.HasValue && options.Polling < 0)
+                if (options.Polling < 0)
                     throw new InvalidOperationException("invalid rc options value of: RC.Polling. ");
 
-                var source = new RCConfigSource(options.Server, options.AppId, options.AppKey,
-                    options.Polling.HasValue ? TimeSpan.FromSeconds(options.Polling.Value) : (TimeSpan?) null)
-                {
-                    Env = host.HostingEnvironment.EnvironmentName
-                };
+                var source = new RCConfigSource(options, host.HostingEnvironment.EnvironmentName,
+                    options.Polling > 0 ? TimeSpan.FromSeconds(options.Polling) : (TimeSpan?) null);
 
                 config.AddRCConfigProvider(source);
             });
