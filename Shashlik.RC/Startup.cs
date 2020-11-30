@@ -3,18 +3,13 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Shashlik.Kernel;
-using Shashlik.RC.Data;
 using Shashlik.RC.Data.MySql;
 using Shashlik.RC.Data.PostgreSql;
 using Shashlik.RC.Data.Sqlite;
-using Shashlik.RC.Data.SqlLite;
 using Shashlik.RC.Data.SqlServer;
 using Shashlik.RC.WebSocket;
 using Shashlik.Utils.Extensions;
@@ -132,5 +127,7 @@ namespace Shashlik.RC
     }
 }
 
-// sqlite: dotnet ef migrations add AddAccountLock -c RCDbContext  -o Migrations -p ./Shashlik.RC.Data.SqlLite/Shashlik.RC.Data.SqlLite.csproj -s ./Shashlik.RC/Shashlik.RC.csproj
-// mysql:  dotnet ef migrations add AddAccountLock -c RCDbContext  -o Migrations -p ./Shashlik.RC.Data.MySql/Shashlik.RC.Data.MySql.csproj -s ./Shashlik.RC/Shashlik.RC.csproj
+// sqlite:         dotnet ef migrations add AddAccountLock -c RCDbContext  -o Migrations -p ./Shashlik.RC.Data.SqlLite/Shashlik.RC.Data.SqlLite.csproj -s ./Shashlik.RC/Shashlik.RC.csproj
+// mysql:          dotnet ef migrations add AddAccountLock -c RCDbContext  -o Migrations -p ./Shashlik.RC.Data.MySql/Shashlik.RC.Data.MySql.csproj -s ./Shashlik.RC/Shashlik.RC.csproj
+// postgresql:     dotnet ef migrations add AddAccountLock -c RCDbContext  -o Migrations -p ./Shashlik.RC.Data.PostgreSql/Shashlik.RC.Data.PostgreSql.csproj -s ./Shashlik.RC/Shashlik.RC.csproj
+// sqlserver:      dotnet ef migrations add AddAccountLock -c RCDbContext  -o Migrations -p ./Shashlik.RC.Data.SqlServer/Shashlik.RC.Data.SqlServer.csproj -s ./Shashlik.RC/Shashlik.RC.csproj

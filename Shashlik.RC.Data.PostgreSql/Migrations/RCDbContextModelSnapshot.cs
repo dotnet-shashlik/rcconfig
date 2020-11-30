@@ -19,6 +19,22 @@ namespace Shashlik.RC.Data.PostgreSql.Migrations
                 .HasAnnotation("ProductVersion", "3.1.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            modelBuilder.Entity("Shashlik.RC.Data.Entities.AccountLocks", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<long>("LockEnd")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("LoginFailedCount")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AccountLocks");
+                });
+
             modelBuilder.Entity("Shashlik.RC.Data.Entities.Apps", b =>
                 {
                     b.Property<string>("Id")

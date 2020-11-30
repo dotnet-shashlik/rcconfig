@@ -17,6 +17,22 @@ namespace Shashlik.RC.Data.MySql.Migrations
                 .HasAnnotation("ProductVersion", "3.1.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            modelBuilder.Entity("Shashlik.RC.Data.Entities.AccountLocks", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
+
+                    b.Property<long>("LockEnd")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("LoginFailedCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AccountLocks");
+                });
+
             modelBuilder.Entity("Shashlik.RC.Data.Entities.Apps", b =>
                 {
                     b.Property<string>("Id")
