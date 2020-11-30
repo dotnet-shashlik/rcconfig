@@ -27,7 +27,7 @@ DB_TYPE: sqlite
 CONN: Data Source=./data/rc.db;
 ```
 
-嗯，就这么简单，你就启动了一个 Shashlik RC 服务端。可以修改 docker-compose.yml 文件的环境变量以使用实际的配置。访问地址：http://<your host>/Account/Login。
+嗯，就这么简单，你就启动了一个 Shashlik RC 服务端。可以修改 docker-compose.yml 文件的环境变量以使用实际的配置。访问地址：http://{your host}/Account/Login。
 
 ## 配置文件配置服务端
 
