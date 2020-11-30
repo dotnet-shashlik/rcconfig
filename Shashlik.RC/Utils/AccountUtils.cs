@@ -56,13 +56,8 @@ namespace Shashlik.RC.Utils
         public static bool IsLockout(this DbContext dbContext, string account)
         {
             var entity = dbContext.Set<AccountLocks>().FirstOrDefault(r => r.Id == account);
-
             if (entity is null)
-            {
-                entity = new AccountLocks {Id = account};
-                dbContext.Add(entity);
-            }
-
+                return false;
             return entity.LockEnd >= DateTime.Now.GetLongDate();
         }
     }

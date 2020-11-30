@@ -37,7 +37,7 @@ namespace Shashlik.RC
                 conn = "Data Source=./data/rc.db;";
             var dbType = Configuration.GetConnectionString("DbType");
             if (dbType.IsNullOrWhiteSpace())
-                dbType = Environment.GetEnvironmentVariable("DBTYPE");
+                dbType = Environment.GetEnvironmentVariable("DB_TYPE");
             if (dbType.IsNullOrWhiteSpace())
                 dbType = "sqlite";
 
