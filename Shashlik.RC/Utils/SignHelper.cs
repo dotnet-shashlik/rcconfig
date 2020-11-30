@@ -16,7 +16,7 @@ namespace Shashlik.RC.Utils
             SecretKey = secretKey;
         }
 
-        string SecretKey { get; }
+        private string SecretKey { get; }
 
         /// <summary>
         /// 生成签名

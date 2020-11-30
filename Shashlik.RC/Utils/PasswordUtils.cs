@@ -15,7 +15,7 @@ namespace Shashlik.RC.Utils
                 return true;
 
             // 兼容旧版本MD5密码
-            return HashHelper.MD5(plainPassword).ToUpperInvariant() == passwordHash.ToUpperInvariant();
+            return HashHelper.MD5(plainPassword).ToUpperInvariant().Equals(passwordHash.ToUpperInvariant());
         }
     }
 }

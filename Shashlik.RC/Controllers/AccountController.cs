@@ -184,15 +184,13 @@ namespace Shashlik.RC.Controllers
         {
             var app = await DbContext.Set<Apps>().Where(r => r.Id == AppId).FirstOrDefaultAsync();
 
-            var oldPwd = HashHelper.MD5(input.OldPassword).ToUpperInvariant();
-            if (app.Password != oldPwd)
+            if (!PasswordUtils.Verify(app.Password, input.OldPassword))
             {
                 ViewData["Errors"] = "旧密码错误";
                 return View();
             }
 
-            var newPwd = HashHelper.MD5(input.Password).ToUpperInvariant();
-            app.Password = newPwd;
+            app.Password = PasswordUtils.HashPassword(input.Password);
             await DbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
