@@ -32,7 +32,6 @@
     <ProjectReference Include="..\Shashlik.RC.Data.MySql\Shashlik.RC.Data.MySql.csproj" />
     <ProjectReference Include="..\Shashlik.RC.Data.PostgreSql\Shashlik.RC.Data.PostgreSql.csproj" />
     <ProjectReference Include="..\Shashlik.RC.Data.Sqlite\Shashlik.RC.Data.Sqlite.csproj" />
-    <ProjectReference Include="..\Shashlik.RC.Data.SqlLite\Shashlik.RC.Data.SqlLite.csproj" />
     <ProjectReference Include="..\Shashlik.RC.Data.SqlServer\Shashlik.RC.Data.SqlServer.csproj" />
     <ProjectReference Include="..\Shashlik.RC.Data\Shashlik.RC.Data.csproj" />
   </ItemGroup>
