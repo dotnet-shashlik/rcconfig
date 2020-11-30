@@ -1,14 +1,20 @@
 version: "2"
 services:
   shashlik-rc-server:
-    image: 280780363/shashlik-rc-server        
+    image: 280780363/shashlik-rc-server
     hostname: shashlik-rc-server
     container_name: shashlik-rc-server
     network_mode: host    
-    privileged: true
     environment:
+      # 绑定url、端口
       ASPNETCORE_URLS: http://*:8989
+      # 管理员账户
       ADMIN_USER: admin
+      # 管理密码
       ADMIN_PASS: 123123
+      # 数据库类型: sqlite/mysql/npgsql/sqlserver
+      DB_TYPE: sqlite
+      # 数据库连接字符串
+      CONN: Data Source=./data/rc.db;
     volumes:
       - ./data:/app/data
