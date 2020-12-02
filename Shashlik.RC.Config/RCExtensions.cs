@@ -2,7 +2,6 @@
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,9 +13,7 @@ using Shashlik.Utils.Helpers;
 using Websocket.Client;
 
 // ReSharper disable UseObjectOrCollectionInitializer
-
 // ReSharper disable UnusedMethodReturnValue.Global
-
 // ReSharper disable InconsistentNaming
 
 namespace Shashlik.RC.Config
@@ -76,20 +73,20 @@ namespace Shashlik.RC.Config
         /// <summary>
         /// 使用websocket连接rc实时更新
         /// </summary>
-        /// <param name="app"></param>
-        /// <param name="appId"></param>
-        /// <param name="secret"></param>
-        /// <param name="websocketAddress"></param>
-        public static async void UseRCRealTimeUpdate(this IApplicationBuilder app, string appId, string secret,
+        /// <param name="serviceProvider"></param>
+        /// <param name="appId">app id</param>
+        /// <param name="appKey">app key</param>
+        /// <param name="websocketAddress">websocket connection address</param>
+        public static async void UseRCRealTimeUpdate(this IServiceProvider serviceProvider, string appId, string appKey,
             string websocketAddress)
         {
             var t = DateTime.Now.GetLongDate();
             var key =
-                $"appid={appId}&env={app.ApplicationServices.GetService<IHostEnvironment>().EnvironmentName}&timestamp={t}";
-            var sign = HashHelper.HMACSHA256(key, secret);
+                $"appid={appId}&env={serviceProvider.GetRequiredService<IHostEnvironment>().EnvironmentName}&timestamp={t}";
+            var sign = HashHelper.HMACSHA256(key, appKey);
             key += $"&sign={sign.UrlEncode()}";
             var url = new Uri(websocketAddress + "?" + key);
-            var logger = app.ApplicationServices.GetService<ILoggerFactory>().CreateLogger("rc.websocket");
+            var logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("rc.websocket");
 
             var client = new WebsocketClient(url);
             // 服务端是2分钟
@@ -150,10 +147,10 @@ namespace Shashlik.RC.Config
             await client.Start();
         }
 
-        public static void UseRCRealTimeUpdate(this IApplicationBuilder app)
+        public static void UseRCRealTimeUpdate(this IServiceProvider serviceProvider)
         {
-            var options = app.ApplicationServices.GetRequiredService<IOptions<RCOptions>>().Value;
-            UseRCRealTimeUpdate(app, options.AppId, options.AppKey, options.Websocket);
+            var options = serviceProvider.GetRequiredService<IOptions<RCOptions>>().Value;
+            UseRCRealTimeUpdate(serviceProvider, options.AppId, options.AppKey, options.Websocket);
         }
 
         public class RefreshModel
