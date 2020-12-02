@@ -12,17 +12,17 @@ namespace Shashlik.RC.Config
             Polling = polling;
         }
 
-        internal RCOptions Options { get; set; }
+        internal RCOptions Options { get; }
 
         /// <summary>
         /// 环境变量
         /// </summary>
-        internal string Env { get; set; }
+        internal string Env { get; }
 
         /// <summary>
         /// 轮询加载配置,配置不开启轮询
         /// </summary>
-        internal TimeSpan? Polling { get; set; }
+        internal TimeSpan? Polling { get; }
 
         internal static RCConfigSource Instance { get; private set; }
 
