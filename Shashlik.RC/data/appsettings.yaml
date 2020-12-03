@@ -2,13 +2,13 @@ Logging:
   LogLevel:
     Default: Information
 AllowedHosts: "*"
-# 管理员账户
-ADMIN_USER: admin
-# 管理密码
-ADMIN_PASS: 123123
-# 数据库类型: sqlite/mysql/npgsql/sqlserver
-DB_TYPE: sqlite
-# 数据库连接字符串
-DB_CONN: Data Source=./data/rc.db;
-# 数据库版本，mysql需要，默认值5.7，其他版本需要手动定义
-#DB_VERSION: "8.0"
+## 管理员账户
+#ADMIN_USER: admin
+## 管理密码
+#ADMIN_PASS: 123123
+## 数据库类型: sqlite/mysql/npgsql/sqlserver
+#DB_TYPE: sqlite
+## 数据库连接字符串
+#DB_CONN: Data Source=./data/rc.db;
+## 数据库版本，mysql需要，默认值5.7，其他版本需要手动定义
+##DB_VERSION: "8.0"
