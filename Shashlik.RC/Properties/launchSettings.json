@@ -5,7 +5,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DB_TYPE": "sqlite",
-        "CONN": "Data Source=./data/rc.db;",
+        "DB_CONN": "Data Source=./data/rc.db;",
         "ADMIN_USER": "admin",
         "ADMIN_PASS": "123123"
       },
