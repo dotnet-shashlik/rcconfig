@@ -27,35 +27,27 @@ ADMIN_PASS: 123123
 DB_TYPE: sqlite
 # 数据库连接字符串
 DB_CONN: Data Source=./data/rc.db;
+# 数据库版本，mysql需要，默认值5.7，其他版本需要手动定义
+#DB_VERSION: "8.0"
 ```
-
 嗯，就这么简单，你就启动了一个 Shashlik RC 服务端。可以修改 docker-compose.yml 文件的环境变量以使用实际的配置。访问地址：http://{your host}/Account/Login。
 
 ## 配置文件配置服务端
 
-如果你需要自行部署，不适用 docker，也不想用环境变量，也可以在配置文件配置。**配置文件优先级高于环境变量**。例：
+如果你需要自行部署，不适用 docker，也不想用环境变量，也可以在配置文件配置(./data/appsettings.yaml)。**配置文件优先级高于环境变量**。例：
 
-```json
-{
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information"
-    }
-  },
-  "AllowedHosts": "*",
-  "ConnectionStrings": {
-    // 连接字符串
-    "default": "Data Source=./data/rc.db;"
-  },
-  // 数据库类型: sqlite/mysql/npgsql/sqlserver
-  "DbType": "sqlite",
-  "Admin": {
-    // 管理员账户
-    "UserName": "admin",
-    // 管理密码
-    "Password": "123123"
-  }
-}
+```yaml
+# 连接字符串
+ConnectionStrings:
+  Default: Data Source=./data/rc.db;
+# 数据库类型： sqlite/mysql/npgsql/sqlserver
+DbType: sqlite
+# 数据库版本，mysql需要，默认值5.7，其他版本需要显示定义
+#DbVersion: "8.0"
+# 管理员账户密码
+Admin:
+  UserName: admin
+  Password: '123123'
 ```
 
 ## 新增应用
@@ -68,7 +60,7 @@ DB_CONN: Data Source=./data/rc.db;
 
 ## 新增配置环境
 
-例 Devolepment/Test/Production，客户端将直接使用当前程序的环境名称。
+例 Development/Test/Production，客户端将直接使用当前程序的环境名称。
 
 ## 新增配置文件
 
