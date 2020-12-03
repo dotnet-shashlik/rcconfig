@@ -4,6 +4,8 @@
 
 Shashlik RC 是一个使用.net core 开发的远程配置中心。功能非常简单实用，就是存储程序的配置文件，目前支持 json 和 yaml 格式，以解决本地文件式配置的繁琐和管理问题，比如集群、分布式、容器环境下文件式配置会让人崩溃。那么 Shashlik RC 就是为了解决这些问题而出现的。它没有那么多繁琐、庞大的功能，它仅仅只是将的文件配置统一在配置中心管理，如果你需要服务注册？权限管理？流程治理？那么 Shashlik RC 显然不适合你，出门右转有`Apollo`、`Nacos`等等。Shashlik RC 目前只支持单机部署，使用 websocket 实时推送配置更新，占用资源非常少。
 
+Shashlik RC 分为应用管理端，即管理员登录，管理各个应用。应用配置端，登录具体的应用，管理该应用所有的配置数据。
+
 ## docker 快速启动 server
 
 ```
@@ -13,8 +15,18 @@ cd rcconfig
 
 sudo docker-compose up -d
 ```
+嗯，就这么简单，你就启动了一个 Shashlik RC 服务端。可以修改 docker-compose.yml 文件的环境变量以使用实际的配置。访问地址：http://{your host}/Account/Login。
 
-默认配置
+## 服务端配置
+
+- 服务端可配置项：
+    - ADMIN_USER: 管理员账户，默认值：admin
+    - ADMIN_PASS: 管理员密码，默认值:123123
+    - DB_TYPE: 数据库类型，默认值：sqlite
+    - DB_CONN: 数据库连接字符串，默认值：Data Source=./data/rc.db;
+    - DB_VERSION: 数据库版本，mysql需要，默认值：5.7
+
+- 默认环境变量配置(docker-compose.yaml)：
 
 ```yaml
 # 绑定url、端口
@@ -30,24 +42,25 @@ DB_CONN: Data Source=./data/rc.db;
 # 数据库版本，mysql需要，默认值5.7，其他版本需要手动定义
 #DB_VERSION: "8.0"
 ```
-嗯，就这么简单，你就启动了一个 Shashlik RC 服务端。可以修改 docker-compose.yml 文件的环境变量以使用实际的配置。访问地址：http://{your host}/Account/Login。
 
-## 配置文件配置服务端
-
-如果你需要自行部署，不使用 docker，也不想用环境变量，也可以在配置文件配置(./data/appsettings.yaml)。**配置文件优先级高于环境变量**。例：
+- 配置文件配置
+配置文件目录：./data/appsettings.yaml。docker-compose已默认挂载./data目录，可以直接修改。**配置文件优先级高于环境变量**。例：
 
 ```yaml
-# 连接字符串
-ConnectionStrings:
-  Default: Data Source=./data/rc.db;
-# 数据库类型： sqlite/mysql/npgsql/sqlserver
-DbType: sqlite
-# 数据库版本，mysql需要，默认值5.7，其他版本需要显示定义
-#DbVersion: "8.0"
-# 管理员账户密码
-Admin:
-  UserName: admin
-  Password: '123123'
+Logging:
+  LogLevel:
+    Default: Information
+AllowedHosts: "*"
+# 管理员账户
+ADMIN_USER: admin
+# 管理密码
+ADMIN_PASS: 123123
+# 数据库类型: sqlite/mysql/npgsql/sqlserver
+DB_TYPE: sqlite
+# 数据库连接字符串
+DB_CONN: Data Source=./data/rc.db;
+# 数据库版本，mysql需要，默认值5.7，其他版本需要手动定义
+#DB_VERSION: "8.0"
 ```
 
 ## 新增应用

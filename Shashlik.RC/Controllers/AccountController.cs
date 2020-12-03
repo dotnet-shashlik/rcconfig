@@ -79,8 +79,8 @@ namespace Shashlik.RC.Controllers
                 return View();
             }
 
-            var adminUser = configuration.GetValue<string>("Admin:UserName") ?? Environment.GetEnvironmentVariable("ADMIN_USER");
-            var adminPassword = configuration.GetValue<string>("Admin:Password") ?? Environment.GetEnvironmentVariable("ADMIN_PASS");
+            var adminUser = configuration.GetValue<string>("ADMIN_USER") ?? Environment.GetEnvironmentVariable("ADMIN_USER");
+            var adminPassword = configuration.GetValue<string>("ADMIN_PASS") ?? Environment.GetEnvironmentVariable("ADMIN_PASS");
 
             ClaimsIdentity claimIdentity = null;
             string role = null;

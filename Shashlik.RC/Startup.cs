@@ -30,17 +30,17 @@ namespace Shashlik.RC
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var conn = Configuration.GetConnectionString("Default");
+            var conn = Configuration.GetValue<string>("DB_CONN");
             if (conn.IsNullOrWhiteSpace())
                 conn = Environment.GetEnvironmentVariable("DB_CONN");
             if (conn.IsNullOrWhiteSpace())
                 conn = "Data Source=./data/rc.db;";
-            var dbType = Configuration.GetValue<string>("DbType");
+            var dbType = Configuration.GetValue<string>("DB_TYPE");
             if (dbType.IsNullOrWhiteSpace())
                 dbType = Environment.GetEnvironmentVariable("DB_TYPE");
             if (dbType.IsNullOrWhiteSpace())
                 dbType = "sqlite";
-            var dbVersion = Configuration.GetValue<string>("DbVersion");
+            var dbVersion = Configuration.GetValue<string>("DB_VERSION");
             if (dbVersion.IsNullOrWhiteSpace())
                 dbVersion = Environment.GetEnvironmentVariable("DB_VERSION");
             if (dbVersion.IsNullOrWhiteSpace())
