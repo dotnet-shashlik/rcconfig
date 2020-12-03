@@ -14,7 +14,6 @@ using Shashlik.RC.Data;
 using Shashlik.RC.Data.Entities;
 using Shashlik.RC.Models;
 using Shashlik.RC.Utils;
-using Shashlik.Utils.Helpers;
 
 // ReSharper disable StringLiteralTypo
 
@@ -35,7 +34,7 @@ namespace Shashlik.RC.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            if (HttpContext.User.Identity.IsAuthenticated)
+            if (HttpContext.User.Identity?.IsAuthenticated ?? false)
             {
                 if (User.IsInRole(Roles.App))
                     return RedirectToAction("index", "app");
@@ -98,7 +97,7 @@ namespace Shashlik.RC.Controllers
                     claimIdentity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
                     claimIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier, "1"));
                     claimIdentity.AddClaim(new Claim(ClaimTypes.Role, Roles.Admin));
-                    claimIdentity.AddClaim(new Claim(ClaimTypes.Name, adminUser));
+                    claimIdentity.AddClaim(new Claim(ClaimTypes.Name, adminUser!));
                     role = Roles.Admin;
                     DbContext.ResetLockEnd(adminUser);
                 }

@@ -202,7 +202,7 @@ namespace Shashlik.RC.Controllers
                 if (configEntity == null)
                     return NotFound();
 
-                var ip = HttpContext.Connection.RemoteIpAddress.ToString();
+                var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
                 if (configEntity.IpWhites.Any(r => r == "*" || r == ip))
                 {
                     var helper = new SignHelper(configEntity.SecretKey);
@@ -248,7 +248,7 @@ namespace Shashlik.RC.Controllers
                 if (configEntity == null)
                     return NotFound();
 
-                var ip = HttpContext.Connection.RemoteIpAddress.ToString();
+                var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
                 if (configEntity.IpWhites.Any(r => r == "*" || r == ip))
                 {
                     var helper = new SignHelper(configEntity.Key);
