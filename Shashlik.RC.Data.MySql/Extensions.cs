@@ -8,11 +8,11 @@ namespace Shashlik.RC.Data.MySql
 {
     public static class Extensions
     {
-        public static void AddMySqlData(this IServiceCollection services, string connString)
+        public static void AddMySqlData(this IServiceCollection services, string connString, string version)
         {
             services.AddDbContext<RCDbContext>(r =>
             {
-                r.UseMySql(connString,
+                r.UseMySql(connString, ServerVersion.FromString(version),
                     builder => builder.MigrationsAssembly(typeof(Extensions).Assembly.GetName().FullName));
             });
         }

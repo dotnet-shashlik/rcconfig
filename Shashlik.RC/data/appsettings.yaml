@@ -7,6 +7,8 @@ AllowedHosts: "*"
 #  Default: Data Source=./data/rc.db;
 ## 数据库类型： sqlite/mysql/npgsql/sqlserver
 #DbType: sqlite
+## 数据库版本，mysql需要，默认值5.7，其他版本需要显示定义
+##DbVersion: "8.0"
 ## 管理员账户密码
 #Admin:
 #  UserName: admin

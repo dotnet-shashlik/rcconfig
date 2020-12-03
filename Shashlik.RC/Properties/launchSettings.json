@@ -6,6 +6,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DB_TYPE": "sqlite",
         "DB_CONN": "Data Source=./data/rc.db;",
+        "DB_VERSION": "5.7",
         "ADMIN_USER": "admin",
         "ADMIN_PASS": "123123"
       },
