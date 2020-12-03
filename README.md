@@ -34,7 +34,7 @@ DB_CONN: Data Source=./data/rc.db;
 
 ## 配置文件配置服务端
 
-如果你需要自行部署，不适用 docker，也不想用环境变量，也可以在配置文件配置(./data/appsettings.yaml)。**配置文件优先级高于环境变量**。例：
+如果你需要自行部署，不使用 docker，也不想用环境变量，也可以在配置文件配置(./data/appsettings.yaml)。**配置文件优先级高于环境变量**。例：
 
 ```yaml
 # 连接字符串
