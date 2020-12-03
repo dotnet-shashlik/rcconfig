@@ -44,7 +44,7 @@ namespace Shashlik.RC
             if (dbVersion.IsNullOrWhiteSpace())
                 dbVersion = Environment.GetEnvironmentVariable("DB_VERSION");
             if (dbVersion.IsNullOrWhiteSpace())
-                dbVersion = "8.0";
+                dbVersion = "5.7";
 
             switch (dbType)
             {
