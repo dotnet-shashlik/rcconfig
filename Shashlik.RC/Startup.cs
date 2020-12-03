@@ -32,7 +32,7 @@ namespace Shashlik.RC
         {
             var conn = Configuration.GetConnectionString("default");
             if (conn.IsNullOrWhiteSpace())
-                conn = Environment.GetEnvironmentVariable("CONN");
+                conn = Environment.GetEnvironmentVariable("DB_CONN");
             if (conn.IsNullOrWhiteSpace())
                 conn = "Data Source=./data/rc.db;";
             var dbType = Configuration.GetValue<string>("DbType");

@@ -15,6 +15,6 @@ services:
       # 数据库类型: sqlite/mysql/npgsql/sqlserver
       DB_TYPE: sqlite
       # 数据库连接字符串
-      CONN: Data Source=./data/rc.db;
+      DB_CONN: Data Source=./data/rc.db;
     volumes:
       - ./data:/app/data
