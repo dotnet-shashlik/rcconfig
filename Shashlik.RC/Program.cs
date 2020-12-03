@@ -14,10 +14,11 @@ namespace Shashlik.RC
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
-           Host.CreateDefaultBuilder(args)
+            Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration(r =>
                 {
-                    r.SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "data"));
+                    var file = new FileInfo("./appsettings.json").FullName;
+                    r.AddYamlFile(file);
                 })
                 .ConfigureWebHostDefaults((webBuilder) =>
                 {

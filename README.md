@@ -26,7 +26,7 @@ ADMIN_PASS: 123123
 # 数据库类型: sqlite/mysql/npgsql/sqlserver
 DB_TYPE: sqlite
 # 数据库连接字符串
-CONN: Data Source=./data/rc.db;
+DB_CONN: Data Source=./data/rc.db;
 ```
 
 嗯，就这么简单，你就启动了一个 Shashlik RC 服务端。可以修改 docker-compose.yml 文件的环境变量以使用实际的配置。访问地址：http://{your host}/Account/Login。
