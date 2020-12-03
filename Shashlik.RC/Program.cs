@@ -17,7 +17,7 @@ namespace Shashlik.RC
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration(r =>
                 {
-                    var file = new FileInfo("./appsettings.json").FullName;
+                    var file = new FileInfo("./data/appsettings.yaml").FullName;
                     r.AddYamlFile(file);
                 })
                 .ConfigureWebHostDefaults((webBuilder) =>

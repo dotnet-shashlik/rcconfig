@@ -2,12 +2,12 @@ Logging:
   LogLevel:
     Default: Information
 AllowedHosts: "*"
-# 连接字符串
-ConnectionStrings:
-  Default: Data Source=./data/rc.db;
-# 数据库类型： sqlite/mysql/npgsql/sqlserver
-DbType: sqlite
-# 管理员账户密码
-Admin:
-  UserName: admin
-  Password: '123123'
+## 连接字符串
+#ConnectionStrings:
+#  Default: Data Source=./data/rc.db;
+## 数据库类型： sqlite/mysql/npgsql/sqlserver
+#DbType: sqlite
+## 管理员账户密码
+#Admin:
+#  UserName: admin
+#  Password: '123123'
