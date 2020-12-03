@@ -26,7 +26,7 @@ sudo docker-compose up -d
     - DB_CONN: 数据库连接字符串，默认值：Data Source=./data/rc.db;
     - DB_VERSION: 数据库版本，mysql需要，默认值：5.7
 
-- 默认环境变量配置(docker-compose.yaml)：
+- 环境变量配置(docker-compose.yaml)：
 
 ```yaml
 # 绑定url、端口
@@ -44,6 +44,7 @@ DB_CONN: Data Source=./data/rc.db;
 ```
 
 - 配置文件配置
+
 配置文件目录：./data/appsettings.yaml。docker-compose已默认挂载./data目录，可以直接修改。**配置文件优先级高于环境变量**。例：
 
 ```yaml
