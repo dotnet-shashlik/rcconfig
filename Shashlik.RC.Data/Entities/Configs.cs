@@ -9,7 +9,7 @@ namespace Shashlik.RC.Data.Entities
     /// <summary>
     /// 配置内容
     /// </summary>
-    public class Configs : IEntity<int>
+    public class Configs : IEntity<int>, ISoftDeleted<DateTime>
     {
         /// <summary>
         /// 配置id
@@ -80,7 +80,7 @@ namespace Shashlik.RC.Data.Entities
 
             builder.Property(r => r.Type).HasMaxLength(32).IsRequired();
             builder.Property(r => r.Name).HasMaxLength(32).IsRequired();
-            builder.HasIndex(r => new { r.EnvId, r.Name }).IsUnique();
+            builder.HasIndex(r => new {r.EnvId, r.Name}).IsUnique();
 
             builder.Property(r => r.Desc).HasMaxLength(512);
         }
