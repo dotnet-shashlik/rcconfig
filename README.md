@@ -64,6 +64,17 @@ DB_CONN: Data Source=./data/rc.db;
 #DB_VERSION: "8.0"
 ```
 
+## 源码结构
+
+ - Shashlik.RC: 服务端项目
+ - Shashlik.RC.Config: .net 客户端，已发布到nuget。使用命令安装`Install-Package Shashlik.RC.Config`
+ - Shashlik.RC.Config.Demo: .net 客户端demo，可以同时启动`Shashlik.RC`和`Shashlik.RC.Config.Demo`，服务端：http://localhost:5000，demo客户端：http://localhost:6001/demo/demo
+ - Shashlik.RC.Data: 配置存储lib
+ - Shashlik.RC.Data.MySql: MySql存储驱动
+ - Shashlik.RC.Data.PostgreSql: PostgreSql存储驱动
+ - Shashlik.RC.Data.Sqlite: Sqlite存储驱动
+ - Shashlik.RC.Data.SqlServer: SqlServer存储驱动 
+
 ## 新增应用
 
 使用管理账户、密码登录管理中心，新增应用。AppId 才是具体应用登录的账户。
