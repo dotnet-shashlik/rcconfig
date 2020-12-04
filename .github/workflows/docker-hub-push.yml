@@ -11,7 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v1.7.2
+        with:
+          dotnet-version: 5.0.100
       - name: PublishProject
         run: dotnet publish ./Shashlik.RC/Shashlik.RC.csproj --configuration Release --output ./dist
       - name: Docker build and push to Docker Hub
