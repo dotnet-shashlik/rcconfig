@@ -75,7 +75,7 @@
         <div class="form-group">
             <label for="Content" class="col-sm-2 control-label">配置内容</label>
             <div class="col-sm-8 div-content">
-                <textarea class="form-control" name="Content" id="Content" style="width: 100%; height: 600px;" placeholder="配置内容">@(Model?.Content)</textarea>
+                <textarea class="form-control" name="Content" id="Content"  placeholder="配置内容">@(Model?.Content)</textarea>
             </div>
         </div>
         <div class="form-group">
@@ -94,5 +94,7 @@
             matchBrackets: true,
             theme: 'material-darker'
         });
+        
+        window.editor.setSize("auto","500px");
     </script>
 </div>
