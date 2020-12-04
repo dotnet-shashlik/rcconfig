@@ -94,7 +94,7 @@ namespace Shashlik.RC.Controllers
                 if (config.Type != model.Type.ToString())
                     sb.AppendLine($"修改类型:{config.Type}->{model.Type}");
 
-                await Modify(config.Id, model.EnvId, config.Name, sb.ToString(), config.Content, model.Content);
+                await Modify(config.Id, model.EnvId, config.Name, sb.ToString(), config.Content, model.Content, config.Enabled);
                 config.Content = model.Content;
                 config.Type = model.Type.ToString();
                 config.Name = model.Name;
@@ -321,8 +321,9 @@ namespace Shashlik.RC.Controllers
         /// <param name="desc"></param>
         /// <param name="before"></param>
         /// <param name="after"></param>
+        /// <param name="pushRefresh">是否推送更新</param>
         /// <returns></returns>
-        private async Task Modify(int configId, int envId, string configName, string desc, string before, string after)
+        private async Task Modify(int configId, int envId, string configName, string desc, string before, string after, bool pushRefresh = true)
         {
             DbContext.Add(new ModifyRecords
             {
@@ -333,7 +334,8 @@ namespace Shashlik.RC.Controllers
                 AfterContent = after
             });
             var env = DbContext.Set<Envs>().Where(r => r.Id == envId).Select(r => r.Name).FirstOrDefault();
-            await WebSocketContext.SendAsync(AppId, env, "refresh", new {config = configName});
+            if (pushRefresh)
+                await WebSocketContext.SendAsync(AppId, env, "refresh", new {config = configName});
         }
 
         /// <summary>
