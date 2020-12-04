@@ -141,7 +141,7 @@ namespace Shashlik.RC.Config.Demo
     {
         // ...
         app.UseRouting();
-        app.UseRCRealTimeUpdate();
+        app.ApplicationServices.UseRCRealTimeUpdate();
         // ...
     }
 ```
