@@ -5,7 +5,7 @@ using NetEscapades.Configuration.Yaml;
 namespace Shashlik.RC.Config
 {
     /// <summary>
-    /// ini内容解析
+    /// yaml内容解析
     /// </summary>
     internal class YamlParse : IParse
     {
