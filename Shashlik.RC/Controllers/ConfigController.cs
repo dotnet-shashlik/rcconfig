@@ -80,12 +80,6 @@ namespace Shashlik.RC.Controllers
                 }
             }
 
-            if (await DbContext.Set<Configs>().AnyAsync(r => r.Name == model.Name))
-            {
-                ViewData["Errors"] = $"配置\"{model.Name}\"已存在";
-                return View();
-            }
-
             Configs config;
             if (model.Id.HasValue)
             {
@@ -109,6 +103,12 @@ namespace Shashlik.RC.Controllers
             }
             else
             {
+                if (await DbContext.Set<Configs>().AnyAsync(r => r.Name == model.Name))
+                {
+                    ViewData["Errors"] = $"配置\"{model.Name}\"已存在";
+                    return View();
+                }
+
                 config =
                     new Configs
                     {
