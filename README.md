@@ -8,6 +8,7 @@ Shashlik RC 分为应用管理端，即管理员登录，管理各个应用。�
 
 ## docker 快速启动 server
 
+镜像源： [https://hub.docker.com/r/280780363/shashlik-rc-server](https://hub.docker.com/r/280780363/shashlik-rc-server)
 ```
 sudo git clone https://github.com/dotnet-shashlik/rcconfig.git
 
