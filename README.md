@@ -25,7 +25,6 @@ sudo docker-compose up -d
     - ADMIN_PASS: 管理员密码，默认值:123123
     - DB_TYPE: 数据库类型，默认值：sqlite
     - DB_CONN: 数据库连接字符串，默认值：Data Source=./data/rc.db;
-    - DB_VERSION: 数据库版本，mysql需要，默认值：5.7
 
 - 环境变量配置(docker-compose.yaml)：
 
@@ -40,8 +39,6 @@ ADMIN_PASS: 123123
 DB_TYPE: sqlite
 # 数据库连接字符串
 DB_CONN: Data Source=./data/rc.db;
-# 数据库版本，mysql需要，默认值5.7，其他版本需要手动定义
-#DB_VERSION: "8.0"
 ```
 
 - 配置文件配置
@@ -61,8 +58,6 @@ ADMIN_PASS: 123123
 DB_TYPE: sqlite
 # 数据库连接字符串
 DB_CONN: Data Source=./data/rc.db;
-# 数据库版本，mysql需要，默认值5.7，其他版本需要手动定义
-#DB_VERSION: "8.0"
 ```
 
 ## 源码结构
@@ -102,7 +97,7 @@ Install-Package Shashlik.RC.Config
 ```
 
 2. 配置连接
-   在 appsettings.json 中增加 server
+   在 appsettings.json 中增加 server配置。
 
 ```json
 {

@@ -41,11 +41,6 @@ namespace Shashlik.RC
                 dbType = Environment.GetEnvironmentVariable("DB_TYPE");
             if (dbType.IsNullOrWhiteSpace())
                 dbType = "sqlite";
-            var dbVersion = Configuration.GetValue<string>("DB_VERSION");
-            if (dbVersion.IsNullOrWhiteSpace())
-                dbVersion = Environment.GetEnvironmentVariable("DB_VERSION");
-            if (dbVersion.IsNullOrWhiteSpace())
-                dbVersion = "5.7";
 
             switch (dbType)
             {
@@ -53,7 +48,7 @@ namespace Shashlik.RC
                     services.AddSqliteData(conn);
                     break;
                 case "mysql":
-                    services.AddMySqlData(conn, dbVersion);
+                    services.AddMySqlData(conn);
                     break;
                 case "npgsql":
                     services.AddNpgsqlData(conn);
