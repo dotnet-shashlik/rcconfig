@@ -29,7 +29,10 @@ namespace Shashlik.RC.Data.Entities
     {
         public void Configure(EntityTypeBuilder<ModifyRecords> builder)
         {
-            builder.HasOne(r => r.Config).WithMany(r => r.ModifyRecords).HasForeignKey(r => r.ConfigId);
+            builder.HasOne(r => r.Config)
+                .WithMany(r => r.ModifyRecords)
+                .HasForeignKey(r => r.ConfigId)
+                .IsRequired(false);
         }
     }
 }
