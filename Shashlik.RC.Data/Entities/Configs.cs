@@ -80,8 +80,6 @@ namespace Shashlik.RC.Data.Entities
 
             builder.Property(r => r.Type).HasMaxLength(32).IsRequired();
             builder.Property(r => r.Name).HasMaxLength(32).IsRequired();
-            builder.HasIndex(r => new {r.EnvId, r.Name}).IsUnique();
-
             builder.Property(r => r.Desc).HasMaxLength(512);
         }
     }
