@@ -1,4 +1,4 @@
-name: shashlik-rc-nuget
+name: build and push nuget package
 
 on:
   push:

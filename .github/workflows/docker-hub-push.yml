@@ -1,8 +1,8 @@
-name: shashlik-rc-server-docker
+name: build and push docker image
 
 on:
-  push:
-    branches: [ docker ]
+  release:
+    types: [ published ]
 
 jobs:
   build:
