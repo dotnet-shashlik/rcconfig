@@ -2,31 +2,35 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Shashlik.RC.Data;
 
-namespace Shashlik.RC.Data.MySql.Migrations
+namespace Shashlik.RC.Data.PostgreSql.Migrations
 {
     [DbContext(typeof(RCDbContext))]
-    partial class RCDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210128033518_RemoveConfigEnvIdNameUniqueIndex")]
+    partial class RemoveConfigEnvIdNameUniqueIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 64)
+                .UseIdentityByDefaultColumns()
+                .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.0");
 
             modelBuilder.Entity("Shashlik.RC.Data.Entities.AccountLocks", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
+                        .HasColumnType("text");
 
                     b.Property<long>("LockEnd")
                         .HasColumnType("bigint");
 
                     b.Property<int>("LoginFailedCount")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -37,25 +41,25 @@ namespace Shashlik.RC.Data.MySql.Migrations
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32) CHARACTER SET utf8mb4");
+                        .HasColumnType("character varying(32)");
 
                     b.Property<DateTime>("CreateTime")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Desc")
                         .HasMaxLength(512)
-                        .HasColumnType("varchar(512) CHARACTER SET utf8mb4");
+                        .HasColumnType("character varying(512)");
 
                     b.Property<bool>("Enabled")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32) CHARACTER SET utf8mb4");
+                        .HasColumnType("character varying(32)");
 
                     b.Property<string>("Password")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -66,36 +70,37 @@ namespace Shashlik.RC.Data.MySql.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer")
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<string>("Content")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("DeleteTime")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Desc")
                         .HasMaxLength(512)
-                        .HasColumnType("varchar(512) CHARACTER SET utf8mb4");
+                        .HasColumnType("character varying(512)");
 
                     b.Property<bool>("Enabled")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<int>("EnvId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32) CHARACTER SET utf8mb4");
+                        .HasColumnType("character varying(32)");
 
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32) CHARACTER SET utf8mb4");
+                        .HasColumnType("character varying(32)");
 
                     b.HasKey("Id");
 
@@ -108,26 +113,27 @@ namespace Shashlik.RC.Data.MySql.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer")
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<string>("AppId")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32) CHARACTER SET utf8mb4");
+                        .HasColumnType("character varying(32)");
 
                     b.Property<string>("Desc")
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32) CHARACTER SET utf8mb4");
+                        .HasColumnType("character varying(32)");
 
                     b.Property<string>("Key")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64) CHARACTER SET utf8mb4");
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32) CHARACTER SET utf8mb4");
+                        .HasColumnType("character varying(32)");
 
                     b.HasKey("Id");
 
@@ -141,15 +147,16 @@ namespace Shashlik.RC.Data.MySql.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer")
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<int>("EnvId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Ip")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("varchar(32) CHARACTER SET utf8mb4");
+                        .HasColumnType("character varying(32)");
 
                     b.HasKey("Id");
 
@@ -162,22 +169,23 @@ namespace Shashlik.RC.Data.MySql.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer")
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<string>("AfterContent")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                        .HasColumnType("text");
 
                     b.Property<string>("BeforeContent")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                        .HasColumnType("text");
 
                     b.Property<int>("ConfigId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Desc")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("ModifyTime")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 

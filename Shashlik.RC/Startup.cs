@@ -132,8 +132,3 @@ namespace Shashlik.RC
         }
     }
 }
-
-// sqlite:         dotnet ef migrations add AddAccountLock -c RCDbContext  -o Migrations -p ./Shashlik.RC.Data.SqlLite/Shashlik.RC.Data.SqlLite.csproj -s ./Shashlik.RC/Shashlik.RC.csproj
-// mysql:          dotnet ef migrations add AddAccountLock -c RCDbContext  -o Migrations -p ./Shashlik.RC.Data.MySql/Shashlik.RC.Data.MySql.csproj -s ./Shashlik.RC/Shashlik.RC.csproj
-// postgresql:     dotnet ef migrations add AddAccountLock -c RCDbContext  -o Migrations -p ./Shashlik.RC.Data.PostgreSql/Shashlik.RC.Data.PostgreSql.csproj -s ./Shashlik.RC/Shashlik.RC.csproj
-// sqlserver:      dotnet ef migrations add AddAccountLock -c RCDbContext  -o Migrations -p ./Shashlik.RC.Data.SqlServer/Shashlik.RC.Data.SqlServer.csproj -s ./Shashlik.RC/Shashlik.RC.csproj

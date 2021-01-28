@@ -15,9 +15,9 @@ namespace Shashlik.RC.Data.SqlServer.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.9")
+                .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "5.0.0");
 
             modelBuilder.Entity("Shashlik.RC.Data.Entities.AccountLocks", b =>
                 {
@@ -38,23 +38,23 @@ namespace Shashlik.RC.Data.SqlServer.Migrations
             modelBuilder.Entity("Shashlik.RC.Data.Entities.Apps", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(32)")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<DateTime>("CreateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Desc")
-                        .HasColumnType("nvarchar(512)")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(32)")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
@@ -69,7 +69,7 @@ namespace Shashlik.RC.Data.SqlServer.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .UseIdentityColumn();
 
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
@@ -78,8 +78,8 @@ namespace Shashlik.RC.Data.SqlServer.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Desc")
-                        .HasColumnType("nvarchar(512)")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("bit");
@@ -92,18 +92,17 @@ namespace Shashlik.RC.Data.SqlServer.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(32)")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("nvarchar(32)")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EnvId", "Name")
-                        .IsUnique();
+                    b.HasIndex("EnvId");
 
                     b.ToTable("Configs");
                 });
@@ -113,26 +112,26 @@ namespace Shashlik.RC.Data.SqlServer.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .UseIdentityColumn();
 
                     b.Property<string>("AppId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(32)")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<string>("Desc")
-                        .HasColumnType("nvarchar(32)")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<string>("Key")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(32)")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.HasKey("Id");
 
@@ -147,15 +146,15 @@ namespace Shashlik.RC.Data.SqlServer.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .UseIdentityColumn();
 
                     b.Property<int>("EnvId")
                         .HasColumnType("int");
 
                     b.Property<string>("Ip")
                         .IsRequired()
-                        .HasColumnType("nvarchar(32)")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.HasKey("Id");
 
@@ -169,7 +168,7 @@ namespace Shashlik.RC.Data.SqlServer.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .UseIdentityColumn();
 
                     b.Property<string>("AfterContent")
                         .HasColumnType("nvarchar(max)");
@@ -200,6 +199,8 @@ namespace Shashlik.RC.Data.SqlServer.Migrations
                         .HasForeignKey("EnvId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Env");
                 });
 
             modelBuilder.Entity("Shashlik.RC.Data.Entities.Envs", b =>
@@ -209,6 +210,8 @@ namespace Shashlik.RC.Data.SqlServer.Migrations
                         .HasForeignKey("AppId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("App");
                 });
 
             modelBuilder.Entity("Shashlik.RC.Data.Entities.IpWhites", b =>
@@ -218,15 +221,34 @@ namespace Shashlik.RC.Data.SqlServer.Migrations
                         .HasForeignKey("EnvId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Env");
                 });
 
             modelBuilder.Entity("Shashlik.RC.Data.Entities.ModifyRecords", b =>
                 {
                     b.HasOne("Shashlik.RC.Data.Entities.Configs", "Config")
                         .WithMany("ModifyRecords")
-                        .HasForeignKey("ConfigId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ConfigId");
+
+                    b.Navigation("Config");
+                });
+
+            modelBuilder.Entity("Shashlik.RC.Data.Entities.Apps", b =>
+                {
+                    b.Navigation("Envs");
+                });
+
+            modelBuilder.Entity("Shashlik.RC.Data.Entities.Configs", b =>
+                {
+                    b.Navigation("ModifyRecords");
+                });
+
+            modelBuilder.Entity("Shashlik.RC.Data.Entities.Envs", b =>
+                {
+                    b.Navigation("Configs");
+
+                    b.Navigation("IpWhites");
                 });
 #pragma warning restore 612, 618
         }

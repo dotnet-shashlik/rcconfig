@@ -15,9 +15,9 @@ namespace Shashlik.RC.Data.PostgreSql.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
-                .HasAnnotation("ProductVersion", "3.1.9")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .UseIdentityByDefaultColumns()
+                .HasAnnotation("Relational:MaxIdentifierLength", 63)
+                .HasAnnotation("ProductVersion", "5.0.0");
 
             modelBuilder.Entity("Shashlik.RC.Data.Entities.AccountLocks", b =>
                 {
@@ -38,23 +38,23 @@ namespace Shashlik.RC.Data.PostgreSql.Migrations
             modelBuilder.Entity("Shashlik.RC.Data.Entities.Apps", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("character varying(32)")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.Property<DateTime>("CreateTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Desc")
-                        .HasColumnType("character varying(512)")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("character varying(32)")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.Property<string>("Password")
                         .HasColumnType("text");
@@ -69,7 +69,7 @@ namespace Shashlik.RC.Data.PostgreSql.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<string>("Content")
                         .HasColumnType("text");
@@ -78,8 +78,8 @@ namespace Shashlik.RC.Data.PostgreSql.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Desc")
-                        .HasColumnType("character varying(512)")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("boolean");
@@ -92,18 +92,17 @@ namespace Shashlik.RC.Data.PostgreSql.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("character varying(32)")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("character varying(32)")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EnvId", "Name")
-                        .IsUnique();
+                    b.HasIndex("EnvId");
 
                     b.ToTable("Configs");
                 });
@@ -113,26 +112,26 @@ namespace Shashlik.RC.Data.PostgreSql.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<string>("AppId")
                         .IsRequired()
-                        .HasColumnType("character varying(32)")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.Property<string>("Desc")
-                        .HasColumnType("character varying(32)")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.Property<string>("Key")
                         .IsRequired()
-                        .HasColumnType("character varying(64)")
-                        .HasMaxLength(64);
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("character varying(32)")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.HasKey("Id");
 
@@ -147,15 +146,15 @@ namespace Shashlik.RC.Data.PostgreSql.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<int>("EnvId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Ip")
                         .IsRequired()
-                        .HasColumnType("character varying(32)")
-                        .HasMaxLength(32);
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.HasKey("Id");
 
@@ -169,7 +168,7 @@ namespace Shashlik.RC.Data.PostgreSql.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<string>("AfterContent")
                         .HasColumnType("text");
@@ -200,6 +199,8 @@ namespace Shashlik.RC.Data.PostgreSql.Migrations
                         .HasForeignKey("EnvId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Env");
                 });
 
             modelBuilder.Entity("Shashlik.RC.Data.Entities.Envs", b =>
@@ -209,6 +210,8 @@ namespace Shashlik.RC.Data.PostgreSql.Migrations
                         .HasForeignKey("AppId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("App");
                 });
 
             modelBuilder.Entity("Shashlik.RC.Data.Entities.IpWhites", b =>
@@ -218,15 +221,34 @@ namespace Shashlik.RC.Data.PostgreSql.Migrations
                         .HasForeignKey("EnvId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Env");
                 });
 
             modelBuilder.Entity("Shashlik.RC.Data.Entities.ModifyRecords", b =>
                 {
                     b.HasOne("Shashlik.RC.Data.Entities.Configs", "Config")
                         .WithMany("ModifyRecords")
-                        .HasForeignKey("ConfigId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ConfigId");
+
+                    b.Navigation("Config");
+                });
+
+            modelBuilder.Entity("Shashlik.RC.Data.Entities.Apps", b =>
+                {
+                    b.Navigation("Envs");
+                });
+
+            modelBuilder.Entity("Shashlik.RC.Data.Entities.Configs", b =>
+                {
+                    b.Navigation("ModifyRecords");
+                });
+
+            modelBuilder.Entity("Shashlik.RC.Data.Entities.Envs", b =>
+                {
+                    b.Navigation("Configs");
+
+                    b.Navigation("IpWhites");
                 });
 #pragma warning restore 612, 618
         }
