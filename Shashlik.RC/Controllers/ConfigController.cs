@@ -103,7 +103,7 @@ namespace Shashlik.RC.Controllers
             }
             else
             {
-                if (await DbContext.Set<Configs>().AnyAsync(r => r.Name == model.Name))
+                if (await DbContext.Set<Configs>().AnyAsync(r => r.EnvId == model.EnvId && r.Name == model.Name))
                 {
                     ViewData["Errors"] = $"配置\"{model.Name}\"已存在";
                     return View();
