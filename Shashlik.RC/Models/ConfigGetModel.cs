@@ -11,7 +11,7 @@ namespace Shashlik.RC.Models
         [Required, MaxLength(32), MinLength(32)]
         public string random { get; set; }
 
-        [Required, MaxLength(32), MinLength(8)]
+        [Required, MaxLength(32)]
         public string appId { get; set; }
 
         [Required, MaxLength(32)] public string env { get; set; }
