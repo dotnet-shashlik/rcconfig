@@ -65,6 +65,10 @@ namespace Shashlik.RC.Controllers
                 return View();
             }
 
+            var env = DbContext.Set<Envs>().FirstOrDefault(r => r.Id == model.EnvId);
+            if (env == null)
+                return BadRequest("参数错误");
+
             if (model.Type == Enums.ConfigType.json)
             {
                 if (model.Content.IsNullOrWhiteSpace())
@@ -125,15 +129,9 @@ namespace Shashlik.RC.Controllers
                 await Modify(config.Id, model.EnvId, config.Name, $"新增配置:{config.Name}", "", model.Content);
             }
 
-            var config1 = DbContext.Set<Configs>()
-                .Include(r => r.Env.App)
-                .FirstOrDefault(r => r.Env.AppId == AppId && r.Id == config.Id);
-            if (config1 == null)
-                return BadRequest("参数错误");
-
-            ViewData["EnvId"] = config1.Env.Id;
-            ViewData["EnvName"] = config1.Env.Name;
-            ViewData["EnvDesc"] = config1.Env.Desc;
+            ViewData["EnvId"] = env.Id;
+            ViewData["EnvName"] = env.Name;
+            ViewData["EnvDesc"] = env.Desc;
 
             return RedirectToAction(nameof(Index));
         }
@@ -298,7 +296,7 @@ namespace Shashlik.RC.Controllers
             await Modify(id, config.EnvId, config.Name, $"启用配置:{config.Name}[{config.Desc}]", "", "");
             await DbContext.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index), new {id});
+            return RedirectToAction(nameof(Index), new { id });
         }
 
         [HttpGet]
@@ -315,7 +313,7 @@ namespace Shashlik.RC.Controllers
             await Modify(id, config.EnvId, config.Name, $"禁用配置:{config.Name}[{config.Desc}]", "", "");
             await DbContext.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index), new {id});
+            return RedirectToAction(nameof(Index), new { id });
         }
 
         /// <summary>
@@ -341,7 +339,7 @@ namespace Shashlik.RC.Controllers
             });
             var env = DbContext.Set<Envs>().Where(r => r.Id == envId).Select(r => r.Name).FirstOrDefault();
             if (pushRefresh)
-                await WebSocketContext.SendAsync(AppId, env, "refresh", new {config = configName});
+                await WebSocketContext.SendAsync(AppId, env, "refresh", new { config = configName });
         }
 
         /// <summary>
