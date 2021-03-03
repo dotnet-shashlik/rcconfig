@@ -105,7 +105,7 @@ namespace Shashlik.RC.Controllers
             var app =
                 new Apps
                 {
-                    Id = Guid16().ToUpper(),
+                    Id = Guid.NewGuid().ToString("N"),
                     Name = model.Name,
                     Password = PasswordUtils.HashPassword(model.Password),
                     Desc = model.Desc,
@@ -115,14 +115,6 @@ namespace Shashlik.RC.Controllers
 
             await DbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private static string Guid16()
-        {
-            long i = Guid.NewGuid()
-                .ToByteArray()
-                .Aggregate<byte, long>(1, (current, b) => current * (b + 1));
-            return $"{i - DateTime.Now.Ticks:x}";
         }
     }
 }
