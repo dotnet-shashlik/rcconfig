@@ -70,6 +70,7 @@ namespace Shashlik.RC.Config
             }
 
             Data = _data;
+            OnReload();
         }
     }
 }
