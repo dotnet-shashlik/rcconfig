@@ -19,6 +19,7 @@ namespace Shashlik.RC.Data
         public DbSet<Environments> Environments { get; set; }
         public DbSet<ConfigurationFiles> Files { get; set; }
         public DbSet<Logs> Logs { get; set; }
+        public DbSet<SignatureKeys> SignatureKeys { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -27,6 +28,7 @@ namespace Shashlik.RC.Data
             builder.ApplyConfiguration(new Environments.Configs());
             builder.ApplyConfiguration(new ConfigurationFiles.Configs());
             builder.ApplyConfiguration(new Logs.Configs());
+            builder.ApplyConfiguration(new SignatureKeys.Configs());
         }
     }
 }

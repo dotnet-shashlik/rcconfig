@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using IdentityServer4.Models;
+using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Shashlik.RC.Common;
@@ -8,7 +9,7 @@ namespace Shashlik.RC.IdentityServer
 {
     public static class Ids4Extensions
     {
-        public const string Client = "shashlik-rc-ui";
+        public const string Client = "shashlik-rc-admin";
         public const string Api = "shashlik-rc-api";
         public const string PasswordGrantType = "password";
 
@@ -42,6 +43,8 @@ namespace Shashlik.RC.IdentityServer
                 .AddAspNetIdentity<IdentityUser<int>>()
                 .AddProfileService<ProfileService>()
                 ;
+
+            services.AddTransient<IValidationKeysStore, EfSignatureKeyStore>();
         }
     }
 }
