@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Shashlik.RC.Utils;
 using static Shashlik.RC.Enums;
 
 namespace Shashlik.RC.Models

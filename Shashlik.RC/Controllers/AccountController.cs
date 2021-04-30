@@ -13,7 +13,6 @@ using Microsoft.Extensions.Configuration;
 using Shashlik.RC.Data;
 using Shashlik.RC.Data.Entities;
 using Shashlik.RC.Models;
-using Shashlik.RC.Utils;
 
 // ReSharper disable StringLiteralTypo
 

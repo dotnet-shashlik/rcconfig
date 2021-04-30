@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Shashlik.RC.Utils;
+using Shashlik.RC.Common;
 using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Cluster

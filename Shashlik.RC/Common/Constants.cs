@@ -1,4 +1,4 @@
-﻿namespace Shashlik.RC.Utils
+﻿namespace Shashlik.RC.Common
 {
     /// <summary>
     /// 常量

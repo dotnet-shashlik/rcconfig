@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Shashlik.RC.Data;
 using Shashlik.RC.Data.Entities;
-using Shashlik.RC.Utils;
 using Shashlik.Utils.Extensions;
 using Shashlik.Utils.Helpers;
 

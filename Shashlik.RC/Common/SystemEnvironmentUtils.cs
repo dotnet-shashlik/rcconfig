@@ -2,8 +2,11 @@
 using Shashlik.RC.Permission;
 using Shashlik.Utils.Extensions;
 
-namespace Shashlik.RC.Utils
+namespace Shashlik.RC.Common
 {
+    /// <summary>
+    /// 系统环境变量
+    /// </summary>
     public class SystemEnvironmentUtils
     {
         static SystemEnvironmentUtils()

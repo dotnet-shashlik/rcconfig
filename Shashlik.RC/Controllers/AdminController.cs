@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Shashlik.RC.Data;
 using Shashlik.RC.Data.Entities;
 using Shashlik.RC.Models;
-using Shashlik.RC.Utils;
 
 namespace Shashlik.RC.Controllers
 {

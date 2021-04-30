@@ -2,13 +2,14 @@
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Shashlik.RC.Common;
 
 namespace Shashlik.RC.IdentityServer
 {
     public static class Ids4Extensions
     {
-        public const string Client = "shashlik-ui";
-        public const string Api = "shashlik-api";
+        public const string Client = "shashlik-rc-ui";
+        public const string Api = "shashlik-rc-api";
         public const string PasswordGrantType = "password";
 
         public static void UserIds4(this IServiceCollection services)
@@ -18,7 +19,7 @@ namespace Shashlik.RC.IdentityServer
                 {
                     new()
                     {
-                        AccessTokenLifetime = 60 * 60 * 2,
+                        AccessTokenLifetime = SystemEnvironmentUtils.AccessTokenLifetime,
                         AccessTokenType = AccessTokenType.Jwt,
                         AllowedGrantTypes = {PasswordGrantType},
                         AllowedScopes = {Api},
@@ -39,6 +40,7 @@ namespace Shashlik.RC.IdentityServer
                     }
                 })
                 .AddAspNetIdentity<IdentityUser<int>>()
+                .AddProfileService<ProfileService>()
                 ;
         }
     }
