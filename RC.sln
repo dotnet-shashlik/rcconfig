@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shashlik.RC", "Shashlik.RC\Shashlik.RC.csproj", "{0B54A323-980D-4B2A-A8CC-83FF27B8A968}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shashlik.RC.Config", "Shashlik.RC.Config\Shashlik.RC.Config.csproj", "{81886191-3306-4F92-84FA-9FDA16FA343B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shashlik.RC.Config.Demo", "Shashlik.RC.Config.Demo\Shashlik.RC.Config.Demo.csproj", "{6643F197-6FFE-448C-BCFA-2B7B0C66F97B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shashlik.RC.Data", "Shashlik.RC.Data\Shashlik.RC.Data.csproj", "{A384DD33-14CA-44F6-A641-954DED2B28C7}"
@@ -37,6 +35,10 @@ ProjectSection(SolutionItems) = preProject
 	Dockerfile = Dockerfile
 EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shashlik.RC.Client", "Shashlik.RC.Client\Shashlik.RC.Client.csproj", "{4D08885C-73EA-47F4-B007-2406D1E040ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{534E5CD0-C190-4167-9AA5-40C1D6C5D452}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,10 +49,6 @@ Global
 		{0B54A323-980D-4B2A-A8CC-83FF27B8A968}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B54A323-980D-4B2A-A8CC-83FF27B8A968}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B54A323-980D-4B2A-A8CC-83FF27B8A968}.Release|Any CPU.Build.0 = Release|Any CPU
-		{81886191-3306-4F92-84FA-9FDA16FA343B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{81886191-3306-4F92-84FA-9FDA16FA343B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{81886191-3306-4F92-84FA-9FDA16FA343B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{81886191-3306-4F92-84FA-9FDA16FA343B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6643F197-6FFE-448C-BCFA-2B7B0C66F97B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6643F197-6FFE-448C-BCFA-2B7B0C66F97B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6643F197-6FFE-448C-BCFA-2B7B0C66F97B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -75,6 +73,14 @@ Global
 		{2B519EBC-EFCD-4691-A8C1-ABAFD6F5F9D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B519EBC-EFCD-4691-A8C1-ABAFD6F5F9D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B519EBC-EFCD-4691-A8C1-ABAFD6F5F9D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D08885C-73EA-47F4-B007-2406D1E040ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D08885C-73EA-47F4-B007-2406D1E040ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D08885C-73EA-47F4-B007-2406D1E040ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D08885C-73EA-47F4-B007-2406D1E040ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{534E5CD0-C190-4167-9AA5-40C1D6C5D452}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{534E5CD0-C190-4167-9AA5-40C1D6C5D452}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{534E5CD0-C190-4167-9AA5-40C1D6C5D452}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{534E5CD0-C190-4167-9AA5-40C1D6C5D452}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

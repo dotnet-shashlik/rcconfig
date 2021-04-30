@@ -17,8 +17,7 @@ namespace Shashlik.RC.WebSocket
         /// <summary>
         /// 当前在线连接
         /// </summary>
-        private static ConcurrentDictionary<string, List<System.Net.WebSockets.WebSocket>> OnLineSockets { get; }
-            = new ConcurrentDictionary<string, List<System.Net.WebSockets.WebSocket>>();
+        private static ConcurrentDictionary<string, List<System.Net.WebSockets.WebSocket>> OnLineSockets { get; } = new();
 
         /// <summary>
         /// 添加一个新的在线连接
@@ -42,18 +41,23 @@ namespace Shashlik.RC.WebSocket
                 {
                     await Task.Delay(10);
                     // 客户端必须保持间隔一定时间发送消息到服务端,告诉自己活着, 否则超时后直接取消,然后杀掉连接
+                    // heart beat
                     result = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token);
                     if (result.MessageType == WebSocketMessageType.Text)
                     {
                         // ignore, 发送的什么内容都不管
                     }
+                    else
+                        break;
                 } while (!result.CloseStatus.HasValue);
             }
             catch (OperationCanceledException)
             {
+                // ignore
             }
             catch (WebSocketException)
             {
+                // ignore
             }
             finally
             {

@@ -41,7 +41,7 @@ namespace Shashlik.RC.WebSocket
                             return;
                         }
 
-                        var dbContext = context.RequestServices.GetService<RCDbContext>();
+                        var dbContext = context.RequestServices.GetRequiredService<RCDbContext>();
                         var appIdStr = appId.ToString();
                         var envStr = env.ToString();
                         var signStr = sign.ToString();

@@ -5,7 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Shashlik.RC.Config\Shashlik.RC.Config.csproj" />
+      <ProjectReference Include="..\Shashlik.RC.Client\Shashlik.RC.Client.csproj" />
     </ItemGroup>
 
 

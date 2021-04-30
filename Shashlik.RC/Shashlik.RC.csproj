@@ -1,41 +1,37 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net5</TargetFramework>
-    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="data\rc.db" />
-    <None Remove="rc.db" />
-    <None Remove="Utils\ARLRDBD.TTF" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Remove="data\rc.db" />
+        <None Remove="rc.db" />
+        <None Remove="Utils\ARLRDBD.TTF" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="Utils\ARLRDBD.TTF" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="IdentityServer4" Version="4.1.2" />
+        <PackageReference Include="IdentityServer4.AspNetIdentity" Version="4.1.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.5" />
+        <PackageReference Include="NetEscapades.Configuration.Yaml" Version="2.1.0" />
+        <PackageReference Include="Shashlik.Utils" Version="1.0.0" />
+        <PackageReference Include="Shashlik.Kernel" Version="1.0.0" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="BCrypt.Net-Next" Version="4.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.3" />
-    <PackageReference Include="NetEscapades.Configuration.Yaml" Version="2.1.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Shashlik.Utils" Version="1.0.0-rc6" />
-    <PackageReference Include="Shashlik.Kernel" Version="1.0.0-rc6" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0006" />
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0006" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Shashlik.RC.Data.MySql\Shashlik.RC.Data.MySql.csproj" />
+        <ProjectReference Include="..\Shashlik.RC.Data.PostgreSql\Shashlik.RC.Data.PostgreSql.csproj" />
+        <ProjectReference Include="..\Shashlik.RC.Data.Sqlite\Shashlik.RC.Data.Sqlite.csproj" />
+        <ProjectReference Include="..\Shashlik.RC.Data.SqlServer\Shashlik.RC.Data.SqlServer.csproj" />
+        <ProjectReference Include="..\Shashlik.RC.Data\Shashlik.RC.Data.csproj" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Shashlik.RC.Data.MySql\Shashlik.RC.Data.MySql.csproj" />
-    <ProjectReference Include="..\Shashlik.RC.Data.PostgreSql\Shashlik.RC.Data.PostgreSql.csproj" />
-    <ProjectReference Include="..\Shashlik.RC.Data.Sqlite\Shashlik.RC.Data.Sqlite.csproj" />
-    <ProjectReference Include="..\Shashlik.RC.Data.SqlServer\Shashlik.RC.Data.SqlServer.csproj" />
-    <ProjectReference Include="..\Shashlik.RC.Data\Shashlik.RC.Data.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Services\Dtos" />
+        <Folder Include="Services\Inputs" />
+    </ItemGroup>
 
 </Project>

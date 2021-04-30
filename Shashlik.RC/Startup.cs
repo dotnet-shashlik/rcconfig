@@ -31,14 +31,10 @@ namespace Shashlik.RC
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var conn = Configuration.GetValue<string>("DB_CONN");
-            if (conn.IsNullOrWhiteSpace())
-                conn = Environment.GetEnvironmentVariable("DB_CONN");
+            var conn = Environment.GetEnvironmentVariable("DB_CONN");
             if (conn.IsNullOrWhiteSpace())
                 conn = "Data Source=./data/rc.db;";
-            var dbType = Configuration.GetValue<string>("DB_TYPE");
-            if (dbType.IsNullOrWhiteSpace())
-                dbType = Environment.GetEnvironmentVariable("DB_TYPE");
+            var dbType = Environment.GetEnvironmentVariable("DB_TYPE");
             if (dbType.IsNullOrWhiteSpace())
                 dbType = "sqlite";
 
@@ -62,7 +58,7 @@ namespace Shashlik.RC
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
+                options.CheckConsentNeeded = _ => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 

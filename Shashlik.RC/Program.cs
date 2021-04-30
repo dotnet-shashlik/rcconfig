@@ -18,7 +18,7 @@ namespace Shashlik.RC
                 .ConfigureAppConfiguration(r =>
                 {
                     var file = new FileInfo("./data/appsettings.yaml").FullName;
-                    r.AddYamlFile(file,true);
+                    r.AddYamlFile(file, true);
                 })
                 .ConfigureWebHostDefaults((webBuilder) =>
                 {
