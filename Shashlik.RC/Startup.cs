@@ -1,4 +1,5 @@
 ﻿using System;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -61,7 +62,6 @@ namespace Shashlik.RC
                 options.CheckConsentNeeded = _ => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-
             services
                 .AddAuthentication(r => { r.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme; })
                 .AddCookie(options =>
@@ -73,7 +73,6 @@ namespace Shashlik.RC
                     options.SlidingExpiration = true;
                     options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
                 });
-
             services.AddAuthorization();
             services.AddSession(options =>
             {
@@ -81,14 +80,11 @@ namespace Shashlik.RC
                 options.Cookie.IsEssential = true;
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
             });
-
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
-
             services.AddAntiforgery();
-
             services.AddSingleton<WebSocketContext>();
-
+            services.AddMediatR(GetType().Assembly);
             services.AddShashlik(Configuration);
         }
 

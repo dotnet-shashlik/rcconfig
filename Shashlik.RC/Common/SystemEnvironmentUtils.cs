@@ -11,14 +11,15 @@ namespace Shashlik.RC.Common
     {
         static SystemEnvironmentUtils()
         {
-            AccessTokenLifetime = Environment.GetEnvironmentVariable("ACCESS_TOKEN_LIFETIME")?.ParseTo<int>() ?? 60 * 60 * 2;
-            DbType = Environment.GetEnvironmentVariable("DB_TYPE") ?? Constants.Db.Sqlite;
-            DbConn = Environment.GetEnvironmentVariable("DB_CONN") ?? Constants.Db.SqliteDefaultConn;
-            AdminUser = Environment.GetEnvironmentVariable("ADMIN_USER");
-            AdminPassword = Environment.GetEnvironmentVariable("ADMIN_PASS");
-            Servers = Environment.GetEnvironmentVariable("SERVER");
-            PermissionReadPolicy = Environment.GetEnvironmentVariable("PERMISSION_READ_POLICY")?.ParseTo<PermissionReadPolicy>() ??
+            AccessTokenLifetime = Environment.GetEnvironmentVariable("RC_ACCESS_TOKEN_LIFETIME")?.ParseTo<int>() ?? 60 * 60 * 2;
+            DbType = Environment.GetEnvironmentVariable("RC_DB_TYPE") ?? Constants.Db.Sqlite;
+            DbConn = Environment.GetEnvironmentVariable("RC_DB_CONN") ?? Constants.Db.SqliteDefaultConn;
+            AdminUser = Environment.GetEnvironmentVariable("RC_ADMIN_USER");
+            AdminPassword = Environment.GetEnvironmentVariable("RC_ADMIN_PASS");
+            Servers = Environment.GetEnvironmentVariable("RC_SERVER");
+            PermissionReadPolicy = Environment.GetEnvironmentVariable("RC_PERMISSION_READ_POLICY")?.ParseTo<PermissionReadPolicy>() ??
                                    PermissionReadPolicy.Token;
+            ServerToken = Environment.GetEnvironmentVariable("RC_SERVER_TOKEN") ?? string.Empty;
         }
 
         public static int AccessTokenLifetime { get; }
@@ -28,5 +29,6 @@ namespace Shashlik.RC.Common
         public static string? AdminPassword { get; }
         public static string? Servers { get; }
         public static PermissionReadPolicy PermissionReadPolicy { get; }
+        public static string ServerToken { get; }
     }
 }
