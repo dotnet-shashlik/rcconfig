@@ -1,5 +1,5 @@
 ﻿using System;
-using Shashlik.RC.Permission;
+using Shashlik.RC.Services.Permission;
 using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Common

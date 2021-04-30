@@ -20,6 +20,8 @@
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.5" />
         <PackageReference Include="NetEscapades.Configuration.Yaml" Version="2.1.0" />
         <PackageReference Include="RestSharp" Version="106.11.7" />
+        <PackageReference Include="Shashlik.AspNetCore" Version="1.0.0" />
+        <PackageReference Include="Shashlik.AutoMapper" Version="1.0.0" />
         <PackageReference Include="Shashlik.Utils" Version="1.0.0" />
         <PackageReference Include="Shashlik.Kernel" Version="1.0.0" />
     </ItemGroup>
@@ -30,11 +32,6 @@
         <ProjectReference Include="..\Shashlik.RC.Data.Sqlite\Shashlik.RC.Data.Sqlite.csproj" />
         <ProjectReference Include="..\Shashlik.RC.Data.SqlServer\Shashlik.RC.Data.SqlServer.csproj" />
         <ProjectReference Include="..\Shashlik.RC.Data\Shashlik.RC.Data.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Services\Dtos" />
-        <Folder Include="Services\Inputs" />
     </ItemGroup>
 
 </Project>

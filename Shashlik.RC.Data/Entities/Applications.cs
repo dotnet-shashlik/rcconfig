@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Shashlik.RC.Data.Entities
 {
-    public class Applications : IEntity<int>
+    public class Applications : IEntity<int>, IResource
     {
         public int Id { get; set; }
 
@@ -24,17 +24,17 @@ namespace Shashlik.RC.Data.Entities
         /// </summary>
         public long CreateTime { get; set; }
 
-        /// <summary>
-        /// 是否已启用
-        /// </summary>
-        public bool Enabled { get; set; }
-
         public List<Environments> Environments { get; set; }
 
         /// <summary>
         /// 资源id
         /// </summary>
-        public string ResourceId => Name;
+        public string ResourceId => Id.ToString();
+
+        /// <summary>
+        /// 资源名称
+        /// </summary>
+        public string ResourceName => Name;
 
         public class Configs : IEntityTypeConfiguration<Applications>
         {

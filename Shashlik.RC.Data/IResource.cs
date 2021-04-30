@@ -9,5 +9,10 @@
         /// 资源id
         /// </summary>
         string ResourceId { get; }
+
+        /// <summary>
+        /// 资源名称
+        /// </summary>
+        public string ResourceName { get; }
     }
 }

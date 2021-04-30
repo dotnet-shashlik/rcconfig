@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Shashlik.RC.Permission
+namespace Shashlik.RC.Services.Permission
 {
     /// <summary>
     /// 权限读取策略

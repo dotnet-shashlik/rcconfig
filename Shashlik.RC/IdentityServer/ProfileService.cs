@@ -3,7 +3,7 @@ using IdentityServer4.AspNetIdentity;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using Shashlik.RC.Permission;
+using Shashlik.RC.Services.Permission;
 
 namespace Shashlik.RC.IdentityServer
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Shashlik.RC.Permission
+namespace Shashlik.RC.Services.Permission
 {
     [Flags]
     public enum PermissionAction

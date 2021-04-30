@@ -5,12 +5,12 @@ using Shashlik.EfCore;
 
 namespace Shashlik.RC.Data.Entities
 {
-    public class Environments : IEntity<string>, IResource
+    public class Environments : IEntity<int>, IResource
     {
         /// <summary>
         /// id
         /// </summary>
-        public string Id { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// 名称
@@ -32,6 +32,11 @@ namespace Shashlik.RC.Data.Entities
         /// </summary>
         public int ApplicationId { get; set; }
 
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public long CreateTime { get; set; }
+
         public Applications Application { get; set; }
 
         public List<ConfigurationFiles> Files { get; set; }
@@ -39,7 +44,9 @@ namespace Shashlik.RC.Data.Entities
         /// <summary>
         /// 资源id
         /// </summary>
-        public string ResourceId => $"{Application.Name}/{Name}";
+        public string ResourceId => $"{ApplicationId}/{Id}";
+
+        public string ResourceName => $"{Application.Name}/{Name}";
 
         public class Configs : IEntityTypeConfiguration<Environments>
         {

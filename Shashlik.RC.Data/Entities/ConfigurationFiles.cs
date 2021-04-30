@@ -4,12 +4,12 @@ using Shashlik.EfCore;
 
 namespace Shashlik.RC.Data.Entities
 {
-    public class ConfigurationFiles : IEntity<string>
+    public class ConfigurationFiles : IEntity<int>
     {
         /// <summary>
         /// 文件id
         /// </summary>
-        public string Id { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// 文件名
@@ -30,6 +30,11 @@ namespace Shashlik.RC.Data.Entities
         /// 文件内容
         /// </summary>
         public string Content { get; set; }
+
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public long CreateTime { get; set; }
 
         /// <summary>
         /// 环境id

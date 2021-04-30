@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Shashlik.Kernel.Dependency;
 using Shashlik.RC.Data;
-using Shashlik.RC.Services;
 using Shashlik.Utils.Extensions;
 
-namespace Shashlik.RC.Permission
+namespace Shashlik.RC.Services.Permission
 {
     [Scoped]
     public class PermissionService
