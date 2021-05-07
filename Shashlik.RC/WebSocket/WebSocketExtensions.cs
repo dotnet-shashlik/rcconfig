@@ -1,10 +1,14 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Shashlik.RC.Data;
 using Shashlik.RC.Data.Entities;
+using Shashlik.RC.Services.Application;
+using Shashlik.RC.Services.Environment;
 using Shashlik.Utils.Extensions;
 using Shashlik.Utils.Helpers;
 
@@ -27,12 +31,12 @@ namespace Shashlik.RC.WebSocket
                 {
                     if (context.WebSockets.IsWebSocketRequest)
                     {
-                        context.Request.Query.TryGetValue("appId", out var appId);
-                        context.Request.Query.TryGetValue("env", out var env);
+                        var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger("WebsocketServer");
+
+                        context.Request.Query.TryGetValue("secretId", out var secretId);
                         context.Request.Query.TryGetValue("sign", out var sign);
                         context.Request.Query.TryGetValue("timestamp", out var timestamp);
-                        if (appId.IsNullOrEmpty()
-                            || env.IsNullOrEmpty()
+                        if (secretId.IsNullOrEmpty()
                             || sign.IsNullOrEmpty()
                             || timestamp.ToString().IsNullOrEmpty())
                         {
@@ -40,29 +44,31 @@ namespace Shashlik.RC.WebSocket
                             return;
                         }
 
-                        var dbContext = context.RequestServices.GetRequiredService<RCDbContext>();
-                        var appIdStr = appId.ToString();
-                        var envStr = env.ToString();
+                        if (!timestamp.ToString().TryParse<long>(out var timestampLong)
+                            || Math.Abs(DateTime.Now.GetLongDate() - timestampLong) > 60 * 2
+                        )
+                        {
+                            logger.LogDebug($"invalid timestamp: {timestamp}");
+                            context.Response.StatusCode = 400;
+                            return;
+                        }
+
+                        var environmentService = context.RequestServices.GetRequiredService<EnvironmentService>();
+                        var secretIdStr = secretId.ToString();
                         var signStr = sign.ToString();
-                        var appEntity = dbContext.Set<Apps>().Include(r => r.Envs)
-                            .FirstOrDefault(r => r.Id == appIdStr);
-                        if (appEntity is null)
+                        var environment = await environmentService.GetBySecretId(secretIdStr);
+                        if (environment is null)
                         {
-                            context.Response.StatusCode = 404;
+                            logger.LogDebug($"invalid secretId: {secretIdStr}");
+                            context.Response.StatusCode = 400;
                             return;
                         }
 
-                        var envEntity = appEntity.Envs.FirstOrDefault(r => r.Name == envStr);
-                        if (!appEntity.Enabled || envEntity is null)
+                        var key = $"secretId={secretIdStr}&timestamp={timestamp}";
+                        if (HashHelper.HMACSHA256(key, environment.Secrets.First().SecretKey) != signStr)
                         {
-                            context.Response.StatusCode = 404;
-                            return;
-                        }
-
-                        var key = $"appid={appIdStr}&env={envStr}&timestamp={timestamp}";
-                        if (HashHelper.HMACSHA256(key, envEntity.Key) != signStr)
-                        {
-                            context.Response.StatusCode = 403;
+                            logger.LogDebug($"invalid signature");
+                            context.Response.StatusCode = 400;
                             return;
                         }
 
@@ -70,7 +76,7 @@ namespace Shashlik.RC.WebSocket
                         var socket = await context.WebSockets.AcceptWebSocketAsync();
                         //把所有的在线socket统一存放
                         await context.RequestServices.GetRequiredService<WebSocketContext>()
-                            .AddSocket(appIdStr, envStr, socket);
+                            .AddSocket(environment.Id, socket);
                     }
                     else
                     {

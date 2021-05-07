@@ -41,6 +41,8 @@ namespace Shashlik.RC.Data.Entities
 
         public List<ConfigurationFiles> Files { get; set; }
 
+        public List<Secrets> Secrets { get; set; }
+
         /// <summary>
         /// 资源id
         /// </summary>

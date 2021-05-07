@@ -1,4 +1,5 @@
 ﻿#nullable disable
+using System.Collections.Generic;
 using Shashlik.AutoMapper;
 using Shashlik.RC.Data;
 using Shashlik.RC.Data.Entities;
@@ -36,6 +37,8 @@ namespace Shashlik.RC.Services.Environment.Dtos
         /// 创建时间
         /// </summary>
         public long CreateTime { get; set; }
+
+        public List<SecretDto> Secrets { get; set; }
 
         /// <summary>
         /// 资源id

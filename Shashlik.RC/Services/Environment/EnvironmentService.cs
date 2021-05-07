@@ -67,12 +67,22 @@ namespace Shashlik.RC.Services.Environment
                 .ToListAsync();
         }
 
-        public async Task<EnvironmentDto> Get(int id)
+        public async Task<EnvironmentDto?> Get(int id)
         {
             return await DbContext.Set<Environments>()
                 .Where(r => r.Id == id)
                 .QueryTo<EnvironmentDto>()
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<EnvironmentDto?> GetBySecretId(string secretId)
+        {
+            var secret = await DbContext.Set<Secrets>()
+                .Include(r => r.Environment)
+                .Where(r => r.SecretId == secretId)
+                .FirstOrDefaultAsync();
+
+            return secret?.Environment.MapTo<EnvironmentDto>();
         }
     }
 }

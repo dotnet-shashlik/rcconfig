@@ -5,7 +5,9 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Shashlik.Utils.Extensions;
+using WS = System.Net.WebSockets.WebSocket;
 
 namespace Shashlik.RC.WebSocket
 {
@@ -14,24 +16,30 @@ namespace Shashlik.RC.WebSocket
     /// </summary>
     public class WebSocketContext : IDisposable
     {
+        public WebSocketContext(ILogger<WebSocketContext> logger)
+        {
+            Logger = logger;
+        }
+
+        private ILogger<WebSocketContext> Logger { get; }
+
         /// <summary>
         /// 当前在线连接
         /// </summary>
-        private static ConcurrentDictionary<string, List<System.Net.WebSockets.WebSocket>> OnLineSockets { get; } = new();
+        private static ConcurrentDictionary<int, List<WS>> OnLineSockets { get; } = new();
 
         /// <summary>
         /// 添加一个新的在线连接
         /// </summary>
-        /// <param name="env"></param>
+        /// <param name="environmentId"></param>
         /// <param name="socket"></param>
-        /// <param name="appId"></param>
-        internal async Task AddSocket(string appId, string env, System.Net.WebSockets.WebSocket socket)
+        internal async Task AddSocket(int environmentId, WS socket)
         {
-            var key = $"{env}_{appId}";
+            var key = environmentId;
             if (OnLineSockets.TryGetValue(key, out var list))
                 list.Add(socket);
             else
-                OnLineSockets.TryAdd(key, new List<System.Net.WebSockets.WebSocket> {socket});
+                OnLineSockets.TryAdd(key, new List<WS> {socket});
 
             try
             {
@@ -40,7 +48,6 @@ namespace Shashlik.RC.WebSocket
                 do
                 {
                     await Task.Delay(10);
-                    // 客户端必须保持间隔一定时间发送消息到服务端,告诉自己活着, 否则超时后直接取消,然后杀掉连接
                     // heart beat
                     result = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token);
                     if (result.MessageType == WebSocketMessageType.Text)
@@ -63,16 +70,13 @@ namespace Shashlik.RC.WebSocket
             {
                 try
                 {
-                    if (socket != null)
-                    {
-                        list?.Remove(socket);
-                        await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None);
-                        socket.Dispose();
-                    }
+                    list?.Remove(socket);
+                    await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None);
+                    socket.Dispose();
                 }
-                catch
+                catch (Exception e)
                 {
-                    // ignored
+                    Logger.LogDebug(e, $"dispose websocket instance occured error");
                 }
             }
         }
@@ -80,24 +84,21 @@ namespace Shashlik.RC.WebSocket
         /// <summary>
         /// 获取指定id的连接
         /// </summary>
-        /// <param name="appId"></param>
-        /// <param name="env"></param>
+        /// <param name="environmentId"></param>
         /// <returns></returns>
-        internal List<System.Net.WebSockets.WebSocket> GetSocket(string appId, string env)
+        internal List<WS>? GetSocket(int environmentId)
         {
-            var key = $"{env}_{appId}";
-            return !OnLineSockets.TryGetValue(key, out var list) ? null : list;
+            return OnLineSockets.TryGetValue(environmentId, out var list) ? null : list;
         }
 
         /// <summary>
         /// 发送消息
         /// </summary>
-        /// <param name="appId"></param>
-        /// <param name="env"></param>
+        /// <param name="environmentId"></param>
         /// <param name="command"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public async Task SendAsync(string appId, string env, string command, object data)
+        public async Task SendAsync(int environmentId, string command, object data)
         {
             //转换为统一格式之后再发
             var messageToSend = new
@@ -107,11 +108,11 @@ namespace Shashlik.RC.WebSocket
             }.ToJsonWithCamelCase();
 
             var byteArray = new ArraySegment<byte>(Encoding.UTF8.GetBytes(messageToSend));
-            var connections = GetSocket(appId, env);
+            var connections = GetSocket(environmentId);
             if (connections.IsNullOrEmpty())
                 return;
 
-            foreach (var socket in new List<System.Net.WebSockets.WebSocket>(connections))
+            foreach (var socket in new List<WS>(connections!))
             {
                 if (socket != null && socket.State == WebSocketState.Open)
                 {
@@ -119,9 +120,9 @@ namespace Shashlik.RC.WebSocket
                     {
                         await socket.SendAsync(byteArray, WebSocketMessageType.Text, true, CancellationToken.None);
                     }
-                    catch
+                    catch (Exception e)
                     {
-                        // ignored
+                        Logger.LogDebug(e, $"send websocket message to client occured error");
                     }
                 }
             }
@@ -143,9 +144,9 @@ namespace Shashlik.RC.WebSocket
                             socket.Dispose();
                         }
                     }
-                    catch
+                    catch (Exception e)
                     {
-                        // ignored
+                        Logger.LogDebug(e, $"dispose websocket instance occured error");
                     }
                 }
             }

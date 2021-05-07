@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Shashlik.RC.Data;
 using Shashlik.RC.Data.Entities;
@@ -16,12 +17,14 @@ namespace Shashlik.RC.IdentityServer
 {
     public class EfSignatureKeyStore : IValidationKeysStore
     {
-        public EfSignatureKeyStore(RCDbContext dbContext)
+        public EfSignatureKeyStore(RCDbContext dbContext, ILogger<EfSignatureKeyStore> logger)
         {
             DbContext = dbContext;
+            Logger = logger;
         }
 
         private RCDbContext DbContext { get; }
+        private ILogger<EfSignatureKeyStore> Logger { get; }
         private const string RsaKeyType = "rsa";
 
         public async Task<IEnumerable<SecurityKeyInfo>> GetValidationKeysAsync()
@@ -36,12 +39,22 @@ namespace Shashlik.RC.IdentityServer
                 {
                     PrivateKey = privateKey,
                     KeyType = RsaKeyType,
+                    CreateTime = DateTime.Now.GetLongDate(),
                     Enabled = true
                 };
 
                 await DbContext.SignatureKeys.AddAsync(key);
-                await DbContext.SaveChangesAsync();
-                keys.Add(key);
+                try
+                {
+                    await DbContext.SaveChangesAsync();
+                    keys.Add(key);
+                    Logger.LogInformation($"new rsa key completed");
+                }
+                //TODO: ...
+                catch (DbUpdateException)
+                {
+                    // ignore
+                }
             }
 
             var list = new List<SecurityKeyInfo>();
@@ -57,8 +70,6 @@ namespace Shashlik.RC.IdentityServer
                         SigningAlgorithm = SecurityAlgorithms.RsaSha256
                     });
                 }
-                else
-                    throw new NotSupportedException($"not support key type of {key.KeyType}");
             }
 
             return list;

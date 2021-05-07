@@ -16,6 +16,8 @@ namespace Shashlik.RC.Data.Entities
 
         public bool Enabled { get; set; }
 
+        public long CreateTime { get; set; }
+
         public class Configs : IEntityTypeConfiguration<SignatureKeys>
         {
             public void Configure(EntityTypeBuilder<SignatureKeys> builder)
@@ -23,8 +25,6 @@ namespace Shashlik.RC.Data.Entities
                 builder.Property(r => r.PrivateKey).HasMaxLength(2048).IsRequired();
                 builder.Property(r => r.PublicKey).HasMaxLength(2048);
                 builder.Property(r => r.KeyType).HasMaxLength(255).IsRequired();
-                // 每种密钥只能有条数据
-                builder.HasIndex(r => r.KeyType).IsUnique();
             }
         }
     }
