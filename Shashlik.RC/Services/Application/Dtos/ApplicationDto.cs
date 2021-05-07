@@ -27,11 +27,6 @@ namespace Shashlik.RC.Services.Application.Dtos
         /// <summary>
         /// 资源id
         /// </summary>
-        public string ResourceId => Id.ToString();
-
-        /// <summary>
-        /// 资源名称
-        /// </summary>
-        public string ResourceName => Name;
+        public string ResourceId => Name;
     }
 }

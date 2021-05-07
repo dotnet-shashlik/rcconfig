@@ -16,7 +16,7 @@ namespace Shashlik.RC.Common
             DbConn = Environment.GetEnvironmentVariable("RC_DB_CONN") ?? Constants.Db.SqliteDefaultConn;
             AdminUser = Environment.GetEnvironmentVariable("RC_ADMIN_USER");
             AdminPassword = Environment.GetEnvironmentVariable("RC_ADMIN_PASS");
-            Servers = Environment.GetEnvironmentVariable("RC_SERVER");
+            Servers = Environment.GetEnvironmentVariable("RC_SERVERS");
             PermissionReadPolicy = Environment.GetEnvironmentVariable("RC_PERMISSION_READ_POLICY")?.ParseTo<PermissionReadPolicy>() ??
                                    PermissionReadPolicy.Token;
             ServerToken = Environment.GetEnvironmentVariable("RC_SERVER_TOKEN") ?? string.Empty;

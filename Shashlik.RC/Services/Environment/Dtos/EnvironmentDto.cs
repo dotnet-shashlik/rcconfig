@@ -34,6 +34,11 @@ namespace Shashlik.RC.Services.Environment.Dtos
         public int ApplicationId { get; set; }
 
         /// <summary>
+        /// 应用name
+        /// </summary>
+        public string ApplicationName { get; set; }
+
+        /// <summary>
         /// 创建时间
         /// </summary>
         public long CreateTime { get; set; }
@@ -43,11 +48,6 @@ namespace Shashlik.RC.Services.Environment.Dtos
         /// <summary>
         /// 资源id
         /// </summary>
-        public string ResourceId => Id.ToString();
-
-        /// <summary>
-        /// 资源名称
-        /// </summary>
-        public string ResourceName => Name;
+        public string ResourceId => $"{ApplicationName}/{Name}";
     }
 }

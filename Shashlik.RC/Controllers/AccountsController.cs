@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -6,6 +7,7 @@ using Shashlik.RC.Common;
 using Shashlik.RC.Filters;
 using Shashlik.RC.Services.Identity;
 using Shashlik.RC.Services.Identity.Dtos;
+using Shashlik.RC.Services.Permission;
 using Shashlik.Response;
 
 namespace Shashlik.RC.Controllers
@@ -43,6 +45,12 @@ namespace Shashlik.RC.Controllers
             var res = await UserService.DeleteAsync(user);
             if (!res.Succeeded)
                 Logger.LogWarning($"delete user error: {res}");
+        }
+
+        [HttpDelete("{userId:int:min(1)}/resources"), Admin]
+        public async Task<List<Claim>> Resources(int userid, [FromServices] PermissionService permissionService)
+        {
+            return await permissionService.GetResourceList(userid);
         }
     }
 }

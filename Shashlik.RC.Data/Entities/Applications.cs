@@ -29,12 +29,8 @@ namespace Shashlik.RC.Data.Entities
         /// <summary>
         /// 资源id
         /// </summary>
-        public string ResourceId => Id.ToString();
+        public string ResourceId => Name;
 
-        /// <summary>
-        /// 资源名称
-        /// </summary>
-        public string ResourceName => Name;
 
         public class Configs : IEntityTypeConfiguration<Applications>
         {
@@ -42,6 +38,7 @@ namespace Shashlik.RC.Data.Entities
             {
                 builder.Property(r => r.Name).HasMaxLength(255).IsRequired();
                 builder.Property(r => r.Desc).HasMaxLength(255);
+                builder.HasIndex(r => r.Name).IsUnique();
             }
         }
     }
