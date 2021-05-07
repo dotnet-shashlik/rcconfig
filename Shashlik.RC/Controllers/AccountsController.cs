@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Shashlik.RC.Common;
 using Shashlik.RC.Filters;
 using Shashlik.RC.Services.Identity;
 using Shashlik.RC.Services.Identity.Dtos;
@@ -36,6 +37,9 @@ namespace Shashlik.RC.Controllers
             var user = await UserService.FindByIdAsync(userId.ToString());
             if (user is null)
                 throw ResponseException.NotFound();
+            if (await UserService.IsInRoleAsync(user, Constants.Roles.Admin))
+                throw ResponseException.Forbidden("管理员不可删除");
+
             var res = await UserService.DeleteAsync(user);
             if (!res.Succeeded)
                 Logger.LogWarning($"delete user error: {res}");
