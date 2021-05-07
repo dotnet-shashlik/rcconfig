@@ -35,13 +35,13 @@ namespace Shashlik.RC.Controllers
             await EnvironmentService.Create(app, input);
         }
 
-        [HttpPatch(Constants.ResourceRoute.Environment)]
+        [HttpPatch(Constants.ResourceRoute.ApplicationAndEnvironment)]
         public async Task Patch(string env, UpdateEnvironmentInput input)
         {
             await EnvironmentService.Update(env, input);
         }
 
-        [HttpDelete(Constants.ResourceRoute.Environment)]
+        [HttpDelete(Constants.ResourceRoute.ApplicationAndEnvironment)]
         public async Task Delete(string env)
         {
             await EnvironmentService.Delete(env);
