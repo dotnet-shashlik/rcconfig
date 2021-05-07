@@ -5,7 +5,7 @@ using Shashlik.RC.Data.Entities;
 
 namespace Shashlik.RC.Services.ConfigurationFile.Dtos
 {
-    public class ConfigurationFileDto : IMapFrom<ConfigurationFiles>
+    public class ConfigurationFileListDto : IMapFrom<ConfigurationFiles>
     {
         /// <summary>
         /// 文件id
@@ -26,11 +26,6 @@ namespace Shashlik.RC.Services.ConfigurationFile.Dtos
         /// 文件类型,yaml/json
         /// </summary>
         public string Type { get; set; }
-
-        /// <summary>
-        /// 文件内容
-        /// </summary>
-        public string Content { get; set; }
 
         /// <summary>
         /// 环境 name

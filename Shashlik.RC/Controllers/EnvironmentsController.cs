@@ -29,7 +29,7 @@ namespace Shashlik.RC.Controllers
             return (await PermissionService.DoFilter(LoginUserId!.Value, list)).ToList();
         }
 
-        [HttpPost(Constants.ResourceRoute.Application), Admin]
+        [HttpPost(Constants.ResourceRoute.Application)]
         public async Task Post(string app, CreateEnvironmentInput input)
         {
             await EnvironmentService.Create(app, input);
