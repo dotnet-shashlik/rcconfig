@@ -5,8 +5,8 @@ namespace Shashlik.RC.Services.Permission
     [Flags]
     public enum PermissionAction
     {
-        Read = 1,
-        Write = 2,
-        Delete = 4
+        Read = 0,
+        Write = 1,
+        Delete = 2
     }
 }

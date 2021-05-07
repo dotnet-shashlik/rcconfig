@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Shashlik.Kernel.Dependency;
 
-namespace Shashlik.RC.Services
+namespace Shashlik.RC.Services.Identity
 {
     [Scoped]
     public class RoleService : RoleManager<IdentityRole<int>>

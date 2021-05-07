@@ -16,5 +16,17 @@
             public const string Npgsql = "NPGSQL";
             public const string SqlServer = "SQLSERVER";
         }
+
+        public class Roles
+        {
+            public const string Admin = "admin";
+            public const string User = "user";
+        }
+
+        public class ResourceRoute
+        {
+            public const string ApplicationId = "appId";
+            public const string EnvironmentId = "envId";
+        }
     }
 }

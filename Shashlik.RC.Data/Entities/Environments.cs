@@ -48,7 +48,7 @@ namespace Shashlik.RC.Data.Entities
         /// </summary>
         public string ResourceId => $"{ApplicationId}/{Id}";
 
-        public string ResourceName => $"{Application.Name}/{Name}";
+        public string ResourceName => $"{Application?.Name}/{Name}";
 
         public class Configs : IEntityTypeConfiguration<Environments>
         {

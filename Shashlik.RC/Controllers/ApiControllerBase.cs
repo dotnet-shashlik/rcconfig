@@ -8,7 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shashlik.AspNetCore.Filters;
-using Shashlik.RC.Services;
+using Shashlik.RC.Filters;
+using Shashlik.RC.Services.Identity;
 using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Controllers
@@ -18,6 +19,7 @@ namespace Shashlik.RC.Controllers
     [Produces("application/json")]
     [ExceptionWrapper]
     [ResponseWrapper]
+    [ResourceFilter]
     public class ApiControllerBase : ControllerBase
     {
         protected ApiControllerBase()

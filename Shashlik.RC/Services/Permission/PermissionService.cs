@@ -4,7 +4,9 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Shashlik.Kernel.Dependency;
+using Shashlik.RC.Common;
 using Shashlik.RC.Data;
+using Shashlik.RC.Services.Identity;
 using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Services.Permission
@@ -50,14 +52,20 @@ namespace Shashlik.RC.Services.Permission
         public async Task<List<Claim>> GetResourceList(int userId)
         {
             var list = await (
-                from userRole in this.DbContext.UserRoles
-                join role in this.DbContext.Roles on userRole.RoleId equals role.Id
-                join roleClaim in this.DbContext.RoleClaims on role.Id equals roleClaim.RoleId
-                where userRole.UserId.Equals(userId)
-                select new Claim(roleClaim.ClaimType, roleClaim.ClaimValue)
-            ).ToListAsync();
+                    from userRole in DbContext.UserRoles
+                    join role in DbContext.Roles on userRole.RoleId equals role.Id
+                    join roleClaim in DbContext.RoleClaims on role.Id equals roleClaim.RoleId
+                    where userRole.UserId.Equals(userId)
+                    select new {roleClaim.ClaimType, roleClaim.ClaimValue}
+                )
+                .Distinct()
+                .ToListAsync();
 
-            return list.Where(r => r.Type.StartsWith(ResourceClaimTypePrefix)).Distinct().ToList();
+            return list
+                .Where(r => r.ClaimType.StartsWith(ResourceClaimTypePrefix))
+                .Select(r => new Claim(r.ClaimType, r.ClaimValue))
+                .CombineResource()
+                .ToList();
 
             // var claims = await UserService.GetClaimsAsync(new IdentityUser<int> {Id = userId});
             // return claims.Where(r => r.Type.StartsWith(ResourceClaimTypePrefix)).ToList();
@@ -73,6 +81,20 @@ namespace Shashlik.RC.Services.Permission
         public async Task<bool> HasPermission(int userId, string resourceId, PermissionAction action)
         {
             var resourceList = await GetResourceList(userId);
+            return resourceList
+                .Any(r => r.Type == ResourceClaimTypePrefix + resourceId && r.Value.ParseTo<PermissionAction>().HasFlag(action));
+        }
+
+        /// <summary>
+        /// 是否拥有操作权限
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="resourceId"></param>
+        /// <param name="action"></param>
+        /// <param name="resourceList"></param>
+        /// <returns></returns>
+        public bool HasPermission(int userId, string resourceId, PermissionAction action, IEnumerable<Claim> resourceList)
+        {
             return resourceList
                 .Any(r => r.Type == ResourceClaimTypePrefix + resourceId && r.Value.ParseTo<PermissionAction>().HasFlag(action));
         }

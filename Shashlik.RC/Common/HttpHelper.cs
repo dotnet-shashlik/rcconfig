@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using RestSharp;
+using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Common
 {
@@ -724,29 +725,5 @@ namespace Shashlik.RC.Common
         /// 上传的文件名
         /// </summary>
         public string FileName { get; set; }
-    }
-
-    internal static class StringExtensions
-    {
-        /// <summary>
-        /// 是否为null或者空字符串
-        /// </summary>
-        /// <param name="str"></param>
-        /// <returns></returns>
-        public static bool IsNullOrWhiteSpace(this string str)
-        {
-            return string.IsNullOrWhiteSpace(str);
-        }
-
-        /// <summary>
-        /// 判断集合是否为null或者空
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
-        /// <returns></returns>
-        public static bool IsNullOrEmpty<T>(this IEnumerable<T> list)
-        {
-            return list is null || !list.Any();
-        }
     }
 }
