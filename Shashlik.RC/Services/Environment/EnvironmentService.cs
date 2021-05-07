@@ -8,6 +8,7 @@ using Shashlik.AutoMapper;
 using Shashlik.Kernel.Dependency;
 using Shashlik.RC.Data;
 using Shashlik.RC.Data.Entities;
+using Shashlik.RC.Services.Application;
 using Shashlik.RC.Services.Environment.Dtos;
 using Shashlik.RC.Services.Environment.Inputs;
 using Shashlik.Response;
@@ -18,24 +19,30 @@ namespace Shashlik.RC.Services.Environment
     [Scoped]
     public class EnvironmentService
     {
-        public EnvironmentService(RCDbContext dbContext)
+        public EnvironmentService(RCDbContext dbContext, ApplicationService applicationService)
         {
             DbContext = dbContext;
+            ApplicationService = applicationService;
         }
 
         private RCDbContext DbContext { get; }
+        private ApplicationService ApplicationService { get; }
 
-        public async Task Create(int applicationId, CreateEnvironmentInput input)
+        public async Task Create(string applicationName, CreateEnvironmentInput input)
         {
-            var application = new Environments
+            var application = await ApplicationService.Get(applicationName);
+            if (application is null)
+                throw ResponseException.NotFound();
+
+            var environment = new Environments
             {
                 Name = input.Name,
                 Desc = input.Desc,
                 CreateTime = DateTime.Now.GetLongDate(),
                 IpWhites = input.IpWhites,
-                ApplicationId = applicationId
+                ApplicationId = application.Id
             };
-            await DbContext.AddAsync(application);
+            await DbContext.AddAsync(environment);
             try
             {
                 await DbContext.SaveChangesAsync();
@@ -46,9 +53,9 @@ namespace Shashlik.RC.Services.Environment
             }
         }
 
-        public async Task Update(int id, UpdateEnvironmentInput input)
+        public async Task Update(string name, UpdateEnvironmentInput input)
         {
-            var environment = await DbContext.FindAsync<Environments>(id);
+            var environment = await DbContext.Set<Environments>().FirstOrDefaultAsync(r => r.Name == name);
             if (environment is null)
                 throw ResponseException.NotFound();
             environment.Desc = input.Desc;
@@ -56,12 +63,11 @@ namespace Shashlik.RC.Services.Environment
             await DbContext.SaveChangesAsync();
         }
 
-        public async Task Delete(int id)
+        public async Task Delete(string name)
         {
-            var environment = await DbContext.FindAsync<Environments>(id);
+            var environment = await DbContext.Set<Environments>().FirstOrDefaultAsync(r => r.Name == name);
             if (environment is null)
                 throw ResponseException.NotFound();
-            DbContext.RemoveRange(DbContext.Files.Where(r => r.EnvironmentId == id));
             DbContext.Remove(environment);
             await DbContext.SaveChangesAsync();
         }
@@ -74,10 +80,10 @@ namespace Shashlik.RC.Services.Environment
                 .ToListAsync();
         }
 
-        public async Task<EnvironmentDto?> Get(int id)
+        public async Task<EnvironmentDto?> Get(string name)
         {
             return await DbContext.Set<Environments>()
-                .Where(r => r.Id == id)
+                .Where(r => r.Name == name)
                 .QueryTo<EnvironmentDto>()
                 .FirstOrDefaultAsync();
         }
