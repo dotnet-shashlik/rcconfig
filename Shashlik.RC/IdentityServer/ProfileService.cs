@@ -27,7 +27,7 @@ namespace Shashlik.RC.IdentityServer
         protected override async Task GetProfileDataAsync(ProfileDataRequestContext context, IdentityUser<int> user)
         {
             // 将角色的资源数据写入token
-            var claims = await PermissionService.GetResourceList(user.Id);
+            var claims = await PermissionService.GetDbResourceList(user.Id);
             context.AddRequestedClaims(claims);
             await base.GetProfileDataAsync(context, user);
         }

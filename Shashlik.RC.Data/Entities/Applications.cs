@@ -10,7 +10,7 @@ namespace Shashlik.RC.Data.Entities
         public int Id { get; set; }
 
         /// <summary>
-        /// app名称
+        /// app名称,不可修改
         /// </summary>
         public string Name { get; set; }
 

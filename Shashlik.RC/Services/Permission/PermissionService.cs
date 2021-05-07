@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Shashlik.Kernel.Dependency;
 using Shashlik.RC.Common;
@@ -14,14 +16,18 @@ namespace Shashlik.RC.Services.Permission
     [Scoped]
     public class PermissionService
     {
-        public PermissionService(RoleService roleService, RCDbContext dbContext)
+        public PermissionService(RoleService roleService, RCDbContext dbContext, IHttpContextAccessor httpContextAccessor)
         {
             RoleService = roleService;
             DbContext = dbContext;
+            HttpContextAccessor = httpContextAccessor;
         }
 
         private RCDbContext DbContext { get; }
         private RoleService RoleService { get; }
+        private IHttpContextAccessor HttpContextAccessor { get; }
+
+        private IEnumerable<Claim> RequestUserClaims => HttpContextAccessor.HttpContext?.User.Claims ?? new List<Claim>();
 
         private const string ResourceClaimTypePrefix = "RESOURCE:";
 
@@ -44,12 +50,22 @@ namespace Shashlik.RC.Services.Permission
                 );
         }
 
+        public async Task<IEnumerable<Claim>> GetResourceList(int userId)
+        {
+            return SystemEnvironmentUtils.PermissionReadPolicy switch
+            {
+                PermissionReadPolicy.Db => await GetDbResourceList(userId),
+                PermissionReadPolicy.Token => RequestUserClaims,
+                _ => throw new IndexOutOfRangeException()
+            };
+        }
+
         /// <summary>
         /// 获取资源列表
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<List<Claim>> GetResourceList(int userId)
+        public async Task<IEnumerable<Claim>> GetDbResourceList(int userId)
         {
             var list = await (
                     from userRole in DbContext.UserRoles
@@ -81,20 +97,6 @@ namespace Shashlik.RC.Services.Permission
         public async Task<bool> HasPermission(int userId, string resourceId, PermissionAction action)
         {
             var resourceList = await GetResourceList(userId);
-            return resourceList
-                .Any(r => r.Type == ResourceClaimTypePrefix + resourceId && r.Value.ParseTo<PermissionAction>().HasFlag(action));
-        }
-
-        /// <summary>
-        /// 是否拥有操作权限
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="resourceId"></param>
-        /// <param name="action"></param>
-        /// <param name="resourceList"></param>
-        /// <returns></returns>
-        public bool HasPermission(int userId, string resourceId, PermissionAction action, IEnumerable<Claim> resourceList)
-        {
             return resourceList
                 .Any(r => r.Type == ResourceClaimTypePrefix + resourceId && r.Value.ParseTo<PermissionAction>().HasFlag(action));
         }

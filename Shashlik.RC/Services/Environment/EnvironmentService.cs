@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -35,7 +36,14 @@ namespace Shashlik.RC.Services.Environment
                 ApplicationId = applicationId
             };
             await DbContext.AddAsync(application);
-            await DbContext.SaveChangesAsync();
+            try
+            {
+                await DbContext.SaveChangesAsync();
+            }
+            catch (DBConcurrencyException)
+            {
+                throw ResponseException.ArgError("应用名称已存在");
+            }
         }
 
         public async Task Update(int id, UpdateEnvironmentInput input)
@@ -44,7 +52,6 @@ namespace Shashlik.RC.Services.Environment
             if (environment is null)
                 throw ResponseException.NotFound();
             environment.Desc = input.Desc;
-            environment.Name = input.Name;
             environment.IpWhites = input.IpWhites;
             await DbContext.SaveChangesAsync();
         }

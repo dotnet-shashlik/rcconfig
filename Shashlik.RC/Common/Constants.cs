@@ -25,8 +25,11 @@
 
         public class ResourceRoute
         {
-            public const string ApplicationId = "appId";
-            public const string EnvironmentId = "envId";
+            public const string Application = "{app:minlength(1):maxlength(32)}";
+            public const string ApplicationKey = "{app:minlength(1):maxlength(32)}";
+            public const string Environment = "{env:minlength(1):maxlength(32)}";
+            public const string EnvironmentKey = "{env:minlength(1):maxlength(32)}";
+            public const string ApplicationAndEnvironment = "{app:minlength(1):maxlength(32)}/{env:minlength(1):maxlength(32)}";
         }
     }
 }

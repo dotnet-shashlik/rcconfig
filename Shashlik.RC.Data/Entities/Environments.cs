@@ -59,7 +59,9 @@ namespace Shashlik.RC.Data.Entities
 
                 builder.HasOne(r => r.Application)
                     .WithMany(r => r.Environments)
-                    .HasForeignKey(r => r.ApplicationId);
+                    .HasForeignKey(r => r.ApplicationId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    ;
             }
         }
     }

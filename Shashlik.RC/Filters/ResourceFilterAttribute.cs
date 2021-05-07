@@ -19,26 +19,26 @@ namespace Shashlik.RC.Filters
         {
             string resourceId = string.Empty;
 
-            if (context.RouteData.Values.TryGetValue(Constants.ResourceRoute.ApplicationId, out var applicationId))
+            if (context.RouteData.Values.TryGetValue(Constants.ResourceRoute.ApplicationKey, out var application))
             {
-                if (applicationId is null)
+                if (application is null)
                 {
                     context.HttpContext.Response.StatusCode = 400;
                     return;
                 }
 
-                resourceId += applicationId.ToString();
+                resourceId += application.ToString();
             }
 
-            if (context.RouteData.Values.TryGetValue(Constants.ResourceRoute.EnvironmentId, out var environmentId))
+            if (context.RouteData.Values.TryGetValue(Constants.ResourceRoute.EnvironmentKey, out var environment))
             {
-                if (environmentId is null)
+                if (environment is null)
                 {
                     context.HttpContext.Response.StatusCode = 400;
                     return;
                 }
 
-                resourceId += "/" + environmentId;
+                resourceId += "/" + environment;
             }
 
             if (!context.HttpContext.User.IsAuthenticated())
@@ -52,25 +52,12 @@ namespace Shashlik.RC.Filters
             if (!resourceId.IsNullOrWhiteSpace() && !context.HttpContext.User.IsInRole(Constants.Roles.Admin))
             {
                 var permissionService = context.HttpContext.RequestServices.GetRequiredService<PermissionService>();
-                bool hasPermission;
-                if (SystemEnvironmentUtils.PermissionReadPolicy == PermissionReadPolicy.Db)
-                {
-                    hasPermission = permissionService
-                        .HasPermission(userId, resourceId, HttpMethod2PermissionAction(context.HttpContext.Request.Method))
-                        .GetAwaiter().GetResult();
-                }
-                else if (SystemEnvironmentUtils.PermissionReadPolicy == PermissionReadPolicy.Token)
-                {
-                    hasPermission = permissionService.HasPermission(userId, resourceId,
-                        HttpMethod2PermissionAction(context.HttpContext.Request.Method), context.HttpContext.User.Claims);
-                }
-                else
-                    throw new IndexOutOfRangeException();
+                var hasPermission = permissionService
+                    .HasPermission(userId, resourceId, HttpMethod2PermissionAction(context.HttpContext.Request.Method))
+                    .GetAwaiter().GetResult();
 
                 if (!hasPermission)
-                {
                     context.HttpContext.Response.StatusCode = 403;
-                }
             }
         }
 
@@ -79,7 +66,9 @@ namespace Shashlik.RC.Filters
             if (method.EndsWithIgnoreCase("get"))
                 return PermissionAction.Read;
             if (method.EndsWithIgnoreCase("post")
-                || method.EndsWithIgnoreCase("put"))
+                || method.EndsWithIgnoreCase("put")
+                || method.EndsWithIgnoreCase("patch")
+            )
                 return PermissionAction.Write;
             if (method.EndsWithIgnoreCase("delete"))
                 return PermissionAction.Delete;

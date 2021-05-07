@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -33,26 +34,30 @@ namespace Shashlik.RC.Services.Application
                 CreateTime = DateTime.Now.GetLongDate()
             };
             await DbContext.AddAsync(application);
-            await DbContext.SaveChangesAsync();
+            try
+            {
+                await DbContext.SaveChangesAsync();
+            }
+            catch (DBConcurrencyException)
+            {
+                throw ResponseException.ArgError("应用名称已存在");
+            }
         }
 
-        public async Task Update(int id, UpdateApplicationInput input)
+        public async Task Update(string name, UpdateApplicationInput input)
         {
-            var application = await DbContext.FindAsync<Applications>(id);
+            var application = await DbContext.Set<Applications>().FirstOrDefaultAsync(r => r.Name == name);
             if (application is null)
                 throw ResponseException.NotFound();
-            application.Name = input.Name;
             application.Desc = input.Desc;
             await DbContext.SaveChangesAsync();
         }
 
-        public async Task Delete(int id)
+        public async Task Delete(string name)
         {
-            var application = await DbContext.FindAsync<Applications>(id);
+            var application = await DbContext.Set<Applications>().FirstOrDefaultAsync(r => r.Name == name);
             if (application is null)
                 throw ResponseException.NotFound();
-            DbContext.RemoveRange(DbContext.Files.Where(r => r.Environment.ApplicationId == id));
-            DbContext.RemoveRange(DbContext.Environments.Where(r => r.ApplicationId == id));
             DbContext.Remove(application);
             await DbContext.SaveChangesAsync();
         }
@@ -65,10 +70,10 @@ namespace Shashlik.RC.Services.Application
                 .ToListAsync();
         }
 
-        public async Task<ApplicationDto> Get(int id)
+        public async Task<ApplicationDto> Get(string name)
         {
             return await DbContext.Set<Applications>()
-                .Where(r => r.Id == id)
+                .Where(r => r.Name == name)
                 .QueryTo<ApplicationDto>()
                 .FirstOrDefaultAsync();
         }

@@ -47,10 +47,10 @@ namespace Shashlik.RC.Controllers
                 Logger.LogWarning($"delete user error: {res}");
         }
 
-        [HttpDelete("{userId:int:min(1)}/resources"), Admin]
-        public async Task<List<Claim>> Resources(int userid, [FromServices] PermissionService permissionService)
+        [HttpGet("{userId:int:min(1)}/resources"), Admin]
+        public async Task<IEnumerable<Claim>> Resources(int userid, [FromServices] PermissionService permissionService)
         {
-            return await permissionService.GetResourceList(userid);
+            return await permissionService.GetDbResourceList(userid);
         }
     }
 }
