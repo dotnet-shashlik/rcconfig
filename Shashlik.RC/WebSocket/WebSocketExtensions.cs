@@ -2,12 +2,8 @@
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Shashlik.RC.Data;
-using Shashlik.RC.Data.Entities;
-using Shashlik.RC.Services.Application;
 using Shashlik.RC.Services.Environment;
 using Shashlik.Utils.Extensions;
 using Shashlik.Utils.Helpers;
@@ -72,7 +68,6 @@ namespace Shashlik.RC.WebSocket
                             return;
                         }
 
-                        //接受新的ws请求，并生成新的guid
                         var socket = await context.WebSockets.AcceptWebSocketAsync();
                         //把所有的在线socket统一存放
                         await context.RequestServices.GetRequiredService<WebSocketContext>()
