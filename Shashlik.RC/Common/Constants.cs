@@ -34,6 +34,7 @@
         public class HeaderKeys
         {
             public const string ServerToken = "SERVER_TOKEN";
+            public const string EventType = "EVENT_TYPE";
         }
     }
 }

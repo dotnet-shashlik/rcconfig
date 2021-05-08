@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using IdentityServer4.Events;
 using Microsoft.Extensions.Logging;
 using Shashlik.Kernel.Dependency;
 using Shashlik.RC.Common;
 using Shashlik.RC.EventBus;
+using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Cluster
 {
@@ -20,38 +22,19 @@ namespace Shashlik.RC.Cluster
 
 
         /// <summary>
-        /// 是否为单机版
-        /// </summary>
-        /// <returns></returns>
-        public bool IsStandalone()
-        {
-            return string.IsNullOrWhiteSpace(SystemEnvironmentUtils.Servers);
-        }
-
-        /// <summary>
-        /// 获取集群所有的服务
-        /// </summary>
-        /// <returns></returns>
-        public string[]? GetServers()
-        {
-            var servers = SystemEnvironmentUtils.Servers?.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
-            return servers;
-        }
-
-        /// <summary>
         /// 事件通知集群
         /// </summary>
         /// <param name="event"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public void Notify<T>(T @event) where T : IClusterNotifyEvent
+        public void InnerNotify(object @event)
         {
-            var servers = GetServers();
+            var servers = SystemEnvironmentUtils.Servers;
             if (!servers.IsNullOrEmpty())
             {
                 Parallel.ForEach(servers!, async server =>
                 {
-                    string requestUrl = $"{server}/internal-server-events/{@event.RequestPath}";
+                    string requestUrl = $"{server}/InnerServer/event";
 
                     bool success = false;
                     for (int i = 0; i < 5; i++)
@@ -60,7 +43,8 @@ namespace Shashlik.RC.Cluster
                         {
                             var res = await HttpHelper.PostJson(requestUrl, @event, new Dictionary<string, string>
                             {
-                                {"TOKEN", SystemEnvironmentUtils.ServerToken}
+                                {Constants.HeaderKeys.ServerToken, SystemEnvironmentUtils.ServerToken},
+                                {Constants.HeaderKeys.EventType, @event.GetType().FullName!}
                             });
 
                             if (res.Contains("success", StringComparison.OrdinalIgnoreCase))
