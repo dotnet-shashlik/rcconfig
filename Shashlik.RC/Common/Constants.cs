@@ -26,9 +26,14 @@
         public class ResourceRoute
         {
             public const string Application = "{app:minlength(1):maxlength(32)}";
-            public const string ApplicationKey = "{app:minlength(1):maxlength(32)}";
-            public const string EnvironmentKey = "{env:minlength(1):maxlength(32)}";
+            public const string ApplicationKey = "app";
+            public const string EnvironmentKey = "env";
             public const string ApplicationAndEnvironment = "{app:minlength(1):maxlength(32)}/{env:minlength(1):maxlength(32)}";
+        }
+
+        public class HeaderKeys
+        {
+            public const string ServerToken = "SERVER_TOKEN";
         }
     }
 }

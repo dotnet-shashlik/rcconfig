@@ -17,30 +17,30 @@ namespace Shashlik.RC.Controllers
         private ConfigurationFileService ConfigurationFileService { get; }
 
         [HttpGet(Constants.ResourceRoute.ApplicationAndEnvironment)]
-        public async Task<PageModel<ConfigurationFileDto>> Get(string env, [FromQuery] PageInput input)
+        public async Task<PageModel<ConfigurationFileDto>> Get([FromQuery] PageInput input)
         {
-            return await ConfigurationFileService.List(env, input);
+            return await ConfigurationFileService.List(GetResourceId(), input);
         }
 
         [HttpPost(Constants.ResourceRoute.ApplicationAndEnvironment)]
-        public async Task Post(string env, CreateConfigurationFileInput input)
+        public async Task Post(CreateConfigurationFileInput input)
         {
             //TODO: event
-            await ConfigurationFileService.Create(env, input);
+            await ConfigurationFileService.Create(GetResourceId(), input);
         }
 
         [HttpPatch(Constants.ResourceRoute.ApplicationAndEnvironment + "/{fileId:int:min(1)}")]
-        public async Task Patch(string env, int fileId, UpdateConfigurationFileInput input)
+        public async Task Patch(int fileId, UpdateConfigurationFileInput input)
         {
             //TODO: event
-            await ConfigurationFileService.Update(env, fileId, input);
+            await ConfigurationFileService.Update(GetResourceId(), fileId, input);
         }
 
         [HttpDelete(Constants.ResourceRoute.ApplicationAndEnvironment + "/{fileId:int:min(1)}")]
-        public async Task Delete(string env, int fileId)
+        public async Task Delete(int fileId)
         {
             //TODO: event
-            await ConfigurationFileService.Delete(env, fileId);
+            await ConfigurationFileService.Delete(GetResourceId(), fileId);
         }
     }
 }

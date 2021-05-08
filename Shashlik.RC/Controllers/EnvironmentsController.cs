@@ -30,21 +30,21 @@ namespace Shashlik.RC.Controllers
         }
 
         [HttpPost(Constants.ResourceRoute.Application)]
-        public async Task Post(string app, CreateEnvironmentInput input)
+        public async Task Post(CreateEnvironmentInput input)
         {
-            await EnvironmentService.Create(app, input);
+            await EnvironmentService.Create(GetResourceId(), input);
         }
 
         [HttpPatch(Constants.ResourceRoute.ApplicationAndEnvironment)]
-        public async Task Patch(string env, UpdateEnvironmentInput input)
+        public async Task Patch(UpdateEnvironmentInput input)
         {
-            await EnvironmentService.Update(env, input);
+            await EnvironmentService.Update(GetResourceId(), input);
         }
 
         [HttpDelete(Constants.ResourceRoute.ApplicationAndEnvironment)]
-        public async Task Delete(string env)
+        public async Task Delete()
         {
-            await EnvironmentService.Delete(env);
+            await EnvironmentService.Delete(GetResourceId());
         }
     }
 }

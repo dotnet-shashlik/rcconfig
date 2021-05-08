@@ -48,6 +48,6 @@ namespace Shashlik.RC.Services.Environment.Dtos
         /// <summary>
         /// 资源id
         /// </summary>
-        public string ResourceId => $"{ApplicationName}/{Name}";
+        public string ResourceId { get; set; }
     }
 }

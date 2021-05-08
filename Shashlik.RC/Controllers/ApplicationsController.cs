@@ -37,15 +37,15 @@ namespace Shashlik.RC.Controllers
         }
 
         [HttpPatch(Constants.ResourceRoute.Application)]
-        public async Task Patch(string app, UpdateApplicationInput input)
+        public async Task Patch(UpdateApplicationInput input)
         {
-            await ApplicationService.Update(app, input);
+            await ApplicationService.Update(GetResourceId(), input);
         }
 
         [HttpDelete(Constants.ResourceRoute.Application)]
-        public async Task Delete(string app)
+        public async Task Delete()
         {
-            await ApplicationService.Delete(app);
+            await ApplicationService.Delete(GetResourceId());
         }
     }
 }

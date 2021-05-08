@@ -37,6 +37,7 @@ namespace Shashlik.RC.Services.Environment
             var environment = new Environments
             {
                 Name = input.Name,
+                ResourceId = $"{applicationName}/{input.Name}",
                 Desc = input.Desc,
                 CreateTime = DateTime.Now.GetLongDate(),
                 IpWhites = input.IpWhites,
@@ -49,13 +50,14 @@ namespace Shashlik.RC.Services.Environment
             }
             catch (DBConcurrencyException)
             {
-                throw ResponseException.ArgError("应用名称已存在");
+                throw ResponseException.ArgError("环境名称已存在");
             }
         }
 
-        public async Task Update(string name, UpdateEnvironmentInput input)
+        public async Task Update(string resourceId, UpdateEnvironmentInput input)
         {
-            var environment = await DbContext.Set<Environments>().FirstOrDefaultAsync(r => r.Name == name);
+            var environment = await DbContext.Set<Environments>()
+                .FirstOrDefaultAsync(r => r.ResourceId == resourceId);
             if (environment is null)
                 throw ResponseException.NotFound();
             environment.Desc = input.Desc;
@@ -63,9 +65,10 @@ namespace Shashlik.RC.Services.Environment
             await DbContext.SaveChangesAsync();
         }
 
-        public async Task Delete(string name)
+        public async Task Delete(string resourceId)
         {
-            var environment = await DbContext.Set<Environments>().FirstOrDefaultAsync(r => r.Name == name);
+            var environment = await DbContext.Set<Environments>()
+                .FirstOrDefaultAsync(r => r.ResourceId == resourceId);
             if (environment is null)
                 throw ResponseException.NotFound();
             DbContext.Remove(environment);
@@ -80,10 +83,10 @@ namespace Shashlik.RC.Services.Environment
                 .ToListAsync();
         }
 
-        public async Task<EnvironmentDto?> Get(string name)
+        public async Task<EnvironmentDto?> Get(string resourceId)
         {
             return await DbContext.Set<Environments>()
-                .Where(r => r.Name == name)
+                .Where(r => r.ResourceId == resourceId)
                 .QueryTo<EnvironmentDto>()
                 .FirstOrDefaultAsync();
         }

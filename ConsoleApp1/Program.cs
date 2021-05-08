@@ -11,7 +11,7 @@ namespace ConsoleApp1
         static void Main(string[] args)
         {
 
-
+           var type= typeof(Program).Assembly.GetType("ConsoleApp1.A");
         }
     }
 

@@ -46,13 +46,17 @@ namespace Shashlik.RC.Data.Entities
         /// </summary>
         public Environments Environment { get; set; }
 
+        public string EnvironmentResourceId { get; set; }
+
         public class Configs : IEntityTypeConfiguration<ConfigurationFiles>
         {
             public void Configure(EntityTypeBuilder<ConfigurationFiles> builder)
             {
                 builder.Property(r => r.Name).HasMaxLength(255).IsRequired();
+                builder.Property(r => r.EnvironmentResourceId).HasMaxLength(255).IsRequired();
                 builder.Property(r => r.Type).HasMaxLength(255).IsRequired();
                 builder.Property(r => r.Desc).HasMaxLength(255);
+                builder.HasIndex(r => new {r.EnvironmentResourceId, r.Name}).IsUnique();
 
                 builder.HasOne(r => r.Environment)
                     .WithMany(r => r.Files)

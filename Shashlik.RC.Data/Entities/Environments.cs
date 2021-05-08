@@ -46,14 +46,15 @@ namespace Shashlik.RC.Data.Entities
         /// <summary>
         /// 资源id
         /// </summary>
-        public string ResourceId => $"{Application.Name}/{Name}";
+        public string ResourceId { get; set; }
 
         public class Configs : IEntityTypeConfiguration<Environments>
         {
             public void Configure(EntityTypeBuilder<Environments> builder)
             {
                 builder.Property(r => r.Name).HasMaxLength(255).IsRequired();
-                builder.HasIndex(r => r.Name).IsUnique();
+                builder.Property(r => r.ResourceId).HasMaxLength(255).IsRequired();
+                builder.HasIndex(r => r.ResourceId).IsUnique();
                 builder.Property(r => r.IpWhites).HasMaxLength(255);
                 builder.Property(r => r.Desc).HasMaxLength(255);
 

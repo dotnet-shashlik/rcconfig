@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -28,9 +29,9 @@ namespace Shashlik.RC.Services.ConfigurationFile
         private RCDbContext DbContext { get; }
         private EnvironmentService EnvironmentService { get; }
 
-        public async Task Create(string environmentName, CreateConfigurationFileInput input)
+        public async Task Create(string environmentResourceId, CreateConfigurationFileInput input)
         {
-            var environment = await EnvironmentService.Get(environmentName);
+            var environment = await EnvironmentService.Get(environmentResourceId);
             if (environment is null)
                 throw ResponseException.NotFound();
 
@@ -40,18 +41,25 @@ namespace Shashlik.RC.Services.ConfigurationFile
                 Desc = input.Desc,
                 CreateTime = DateTime.Now.GetLongDate(),
                 EnvironmentId = environment.Id,
+                EnvironmentResourceId = environmentResourceId,
                 Content = input.Content,
                 Type = input.Type
             };
             await DbContext.AddAsync(application);
-            await DbContext.SaveChangesAsync();
+            try
+            {
+                await DbContext.SaveChangesAsync();
+            }
+            catch (DBConcurrencyException)
+            {
+                throw ResponseException.ArgError("文件名称重复");
+            }
         }
 
-        public async Task Update(string environmentName, int id, UpdateConfigurationFileInput input)
+        public async Task Update(string environmentResourceId, int id, UpdateConfigurationFileInput input)
         {
-            var environment = await EnvironmentService.Get(environmentName);
             var configurationFile = await DbContext.FindAsync<ConfigurationFiles>(id);
-            if (configurationFile is null || environment!.Id != configurationFile.EnvironmentId)
+            if (configurationFile is null || configurationFile.EnvironmentResourceId != environmentResourceId)
                 throw ResponseException.NotFound();
             configurationFile.Desc = input.Desc;
             configurationFile.Name = input.Name;
@@ -60,29 +68,28 @@ namespace Shashlik.RC.Services.ConfigurationFile
             await DbContext.SaveChangesAsync();
         }
 
-        public async Task Delete(string environmentName, int id)
+        public async Task Delete(string environmentResourceId, int id)
         {
-            var environment = await EnvironmentService.Get(environmentName);
             var configurationFile = await DbContext.FindAsync<ConfigurationFiles>(id);
-            if (configurationFile is null || environment!.Id != configurationFile.EnvironmentId)
+            if (configurationFile is null || configurationFile.EnvironmentResourceId != environmentResourceId)
                 throw ResponseException.NotFound();
             DbContext.Remove(configurationFile);
             await DbContext.SaveChangesAsync();
         }
 
-        public async Task<PageModel<ConfigurationFileDto>> List(string environmentName, PageInput pageInput)
+        public async Task<PageModel<ConfigurationFileDto>> List(string environmentResourceId, PageInput pageInput)
         {
             return await DbContext.Set<ConfigurationFiles>()
-                .Where(r => r.Environment.Name == environmentName)
+                .Where(r => r.EnvironmentResourceId == environmentResourceId)
                 .OrderBy(r => r.Id)
                 .QueryTo<ConfigurationFileDto>()
                 .PageQuery(pageInput);
         }
 
-        public async Task<ConfigurationFileDto> Get(string environmentName, int id)
+        public async Task<ConfigurationFileDto> Get(string environmentResourceId, int id)
         {
             return await DbContext.Set<ConfigurationFiles>()
-                .Where(r => r.Id == id && r.Environment.Name == environmentName)
+                .Where(r => r.Id == id && r.EnvironmentResourceId == environmentResourceId)
                 .QueryTo<ConfigurationFileDto>()
                 .FirstOrDefaultAsync();
         }

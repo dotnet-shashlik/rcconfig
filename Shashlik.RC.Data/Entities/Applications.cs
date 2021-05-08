@@ -29,16 +29,17 @@ namespace Shashlik.RC.Data.Entities
         /// <summary>
         /// 资源id
         /// </summary>
-        public string ResourceId => Name;
-
+        public string ResourceId { get; set; }
 
         public class Configs : IEntityTypeConfiguration<Applications>
         {
             public void Configure(EntityTypeBuilder<Applications> builder)
             {
                 builder.Property(r => r.Name).HasMaxLength(255).IsRequired();
+                builder.Property(r => r.ResourceId).HasMaxLength(255).IsRequired();
                 builder.Property(r => r.Desc).HasMaxLength(255);
                 builder.HasIndex(r => r.Name).IsUnique();
+                builder.HasIndex(r => r.ResourceId).IsUnique();
             }
         }
     }

@@ -11,6 +11,7 @@ using Shashlik.AspNetCore.Filters;
 using Shashlik.RC.Filters;
 using Shashlik.RC.Services.Identity;
 using Shashlik.Utils.Extensions;
+using Shashlik.RC.Common;
 
 namespace Shashlik.RC.Controllers
 {
@@ -50,5 +51,21 @@ namespace Shashlik.RC.Controllers
         /// 日志
         /// </summary>
         protected ILogger Logger => _logger.Value;
+
+        protected string GetResourceId()
+        {
+            string resourceId = string.Empty;
+
+            if (HttpContext.Request.RouteValues.TryGetValue(Constants.ResourceRoute.ApplicationKey, out var application))
+                resourceId += application?.ToString();
+
+            if (string.IsNullOrWhiteSpace(resourceId))
+                return resourceId;
+
+            if (HttpContext.Request.RouteValues.TryGetValue(Constants.ResourceRoute.EnvironmentKey, out var environment))
+                resourceId += "/" + environment;
+
+            return resourceId;
+        }
     }
 }

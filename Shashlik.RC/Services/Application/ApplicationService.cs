@@ -30,6 +30,7 @@ namespace Shashlik.RC.Services.Application
             var application = new Applications
             {
                 Name = input.Name,
+                ResourceId = input.Name,
                 Desc = input.Desc,
                 CreateTime = DateTime.Now.GetLongDate()
             };
