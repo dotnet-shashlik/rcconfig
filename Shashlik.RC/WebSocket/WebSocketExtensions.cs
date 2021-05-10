@@ -71,7 +71,7 @@ namespace Shashlik.RC.WebSocket
                         var socket = await context.WebSockets.AcceptWebSocketAsync();
                         //把所有的在线socket统一存放
                         await context.RequestServices.GetRequiredService<WebSocketContext>()
-                            .AddSocket(environment.Id, socket);
+                            .AddSocket(environment.ResourceId, socket);
                     }
                     else
                     {

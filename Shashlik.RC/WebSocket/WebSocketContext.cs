@@ -152,6 +152,8 @@ namespace Shashlik.RC.WebSocket
                     }
                 }
             }
+
+            OnLineSockets.Clear();
         }
     }
 }

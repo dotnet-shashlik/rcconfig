@@ -38,6 +38,7 @@ namespace Shashlik.RC.EventBus.Handlers
             {
                 File = configurationFile.Name
             }, cancellationToken);
+            Logger.LogDebug($"file[{notification.EnvironmentResourceId}/{notification.FileId}] refreshed event send notification to client done");
         }
     }
 }
