@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -81,6 +82,7 @@ namespace Shashlik.RC
             services.AddControllers();
             services.AddMediatR(GetType().Assembly);
             services.AddHttpContextAccessor();
+            services.AddSpaStaticFiles(r => { r.RootPath = "wwwroot/dist"; });
             services.AddIdentity<IdentityUser<int>, IdentityRole<int>>(options =>
                 {
                     options.Password.RequireDigit = false;
@@ -90,23 +92,15 @@ namespace Shashlik.RC
                     options.Password.RequireNonAlphanumeric = false;
                 })
                 .AddEntityFrameworkStores<RCDbContext>();
+            services.AddIds4();
             services.AddShashlik(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
-
             app.UseRouting();
-            app.UseStaticFiles();
+            app.UseSpaStaticFiles();
 
             app.ApplicationServices.UseShashlik()
                 .MigrationDb()

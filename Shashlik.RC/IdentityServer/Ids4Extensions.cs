@@ -13,7 +13,7 @@ namespace Shashlik.RC.IdentityServer
         public const string Api = "shashlik-rc-api";
         public const string PasswordGrantType = "password";
 
-        public static void UserIds4(this IServiceCollection services)
+        public static void AddIds4(this IServiceCollection services)
         {
             services.AddIdentityServer()
                 .AddInMemoryClients(new List<Client>
