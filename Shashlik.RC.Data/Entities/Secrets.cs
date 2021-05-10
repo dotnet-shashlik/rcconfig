@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Shashlik.EfCore;
 
 namespace Shashlik.RC.Data.Entities
 {
-    public class Secrets : IEntity<int>
+    public class Secrets 
     {
         public int Id { get; set; }
 

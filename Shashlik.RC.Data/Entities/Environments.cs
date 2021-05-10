@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Shashlik.EfCore;
 
 namespace Shashlik.RC.Data.Entities
 {
-    public class Environments : IEntity<int>, IResource
+    public class Environments :  IResource
     {
         /// <summary>
         /// id

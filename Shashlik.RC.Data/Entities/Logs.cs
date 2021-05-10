@@ -1,13 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Shashlik.EfCore;
 
 namespace Shashlik.RC.Data.Entities
 {
     /// <summary>
     /// 日志记录
     /// </summary>
-    public class Logs : IEntity<long>
+    public class Logs
     {
         public long Id { get; set; }
 

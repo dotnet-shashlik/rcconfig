@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using Shashlik.EfCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Shashlik.RC.Data.Entities
 {
-    public class Applications : IEntity<int>, IResource
+    public class Applications :  IResource
     {
         public int Id { get; set; }
 

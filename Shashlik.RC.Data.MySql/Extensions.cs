@@ -12,7 +12,7 @@ namespace Shashlik.RC.Data.MySql
             services.AddDbContext<RCDbContext>(r =>
             {
                 r.UseMySql(connString, ServerVersion.AutoDetect(connString),
-                    builder => builder.MigrationsAssembly(typeof(Extensions).Assembly.GetName().FullName));
+                    builder => builder.MigrationsAssembly("Shashlik.RC.Data.MySql"));
             });
         }
     }

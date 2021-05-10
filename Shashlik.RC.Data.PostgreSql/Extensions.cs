@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Shashlik.EfCore;
 
 // ReSharper disable InconsistentNaming
 

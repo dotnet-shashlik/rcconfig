@@ -12,7 +12,7 @@ namespace Shashlik.RC.Common
         static SystemEnvironmentUtils()
         {
             AccessTokenLifetime = Environment.GetEnvironmentVariable("RC_ACCESS_TOKEN_LIFETIME")?.ParseTo<int>() ?? 60 * 30;
-            DbType = Environment.GetEnvironmentVariable("RC_DB_TYPE") ?? Constants.Db.Sqlite;
+            DbType = Environment.GetEnvironmentVariable("RC_DB_TYPE")?.ToUpper() ?? Constants.Db.Sqlite;
             DbConn = Environment.GetEnvironmentVariable("RC_DB_CONN") ?? Constants.Db.SqliteDefaultConn;
             AdminUser = Environment.GetEnvironmentVariable("RC_ADMIN_USER") ?? "admin";
             AdminPassword = Environment.GetEnvironmentVariable("RC_ADMIN_PASS") ?? "Shashlik.RC.Server";
@@ -36,7 +36,7 @@ namespace Shashlik.RC.Common
         /// <summary>
         /// 数据库连接字符串
         /// </summary>
-        public static string? DbConn { get; }
+        public static string DbConn { get; }
 
         /// <summary>
         /// 管理员用户名

@@ -13,7 +13,7 @@
             public const string Sqlite = "SQLITE";
             public const string SqliteDefaultConn = "Data Source=./data/rc.db;";
             public const string MySql = "MYSQL";
-            public const string Npgsql = "NPGSQL";
+            public const string PostgreSql = "POSTGRESQL";
             public const string SqlServer = "SQLSERVER";
         }
 

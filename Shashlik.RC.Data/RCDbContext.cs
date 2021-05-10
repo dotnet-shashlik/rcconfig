@@ -1,14 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Shashlik.EfCore;
 using Shashlik.RC.Data.Entities;
 
 // ReSharper disable InconsistentNaming
 
 namespace Shashlik.RC.Data
 {
-    [AutoMigration]
     public class RCDbContext : IdentityDbContext<IdentityUser<int>, IdentityRole<int>, int>
     {
         public RCDbContext(DbContextOptions<RCDbContext> options) : base(options)

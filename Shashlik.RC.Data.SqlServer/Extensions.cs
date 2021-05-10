@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Shashlik.EfCore;
 
 // ReSharper disable InconsistentNaming
 
@@ -16,9 +15,6 @@ namespace Shashlik.RC.Data.SqlServer
                 r.UseSqlServer(connString,
                     builder => builder.MigrationsAssembly(typeof(Extensions).Assembly.GetName().FullName));
             });
-
-            if (autoMigration)
-                services.Migration<RCDbContext>();
         }
     }
 }

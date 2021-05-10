@@ -1,19 +1,13 @@
 ﻿using System;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Shashlik.AspNetCore;
-using Shashlik.EfCore;
 using Shashlik.Kernel;
 using Shashlik.RC.Common;
 using Shashlik.RC.Data;
@@ -24,15 +18,16 @@ using Shashlik.RC.Data.SqlServer;
 using Shashlik.RC.IdentityServer;
 using Shashlik.RC.Initialization;
 using Shashlik.RC.WebSocket;
-using Shashlik.Utils.Extensions;
 
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
-
 
 namespace Shashlik.RC
 {
     /**
-     * dotnet ef migrations add rc_0001 -c RCDbContext -o Migrations -p ./Shashlik.RC.Data.Sqlite/Shashlik.RC.Data.Sqlite.csproj -s ./Shashlik.RC/Shashlik.RC.csproj
+     * Sqlite: dotnet ef migrations add rc_0001 -c RCDbContext -o Migrations -p ./Shashlik.RC.Data.Sqlite/Shashlik.RC.Data.Sqlite.csproj -s ./Shashlik.RC/Shashlik.RC.csproj
+     * MySql: dotnet ef migrations add rc_0001 -c RCDbContext -o Migrations -p ./Shashlik.RC.Data.MySql/Shashlik.RC.Data.MySql.csproj -s ./Shashlik.RC/Shashlik.RC.csproj
+     * PostgreSql: dotnet ef migrations add rc_0001 -c RCDbContext -o Migrations -p ./Shashlik.RC.Data.PostgreSql/Shashlik.RC.Data.PostgreSql.csproj -s ./Shashlik.RC/Shashlik.RC.csproj
+     * SqlServer: dotnet ef migrations add rc_0001 -c RCDbContext -o Migrations -p ./Shashlik.RC.Data.SqlServer/Shashlik.RC.Data.SqlServer.csproj -s ./Shashlik.RC/Shashlik.RC.csproj
      */
     public class Startup
     {
@@ -46,25 +41,21 @@ namespace Shashlik.RC
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var conn = Environment.GetEnvironmentVariable("DB_CONN");
-            if (conn.IsNullOrWhiteSpace())
-                conn = "Data Source=./data/rc.db;";
-            var dbType = Environment.GetEnvironmentVariable("DB_TYPE");
-            if (dbType.IsNullOrWhiteSpace())
-                dbType = "sqlite";
+            var conn = SystemEnvironmentUtils.DbConn;
+            var dbType = SystemEnvironmentUtils.DbType;
 
             switch (dbType)
             {
-                case "sqlite":
+                case Constants.Db.Sqlite:
                     services.AddSqliteData(conn);
                     break;
-                case "mysql":
+                case Constants.Db.MySql:
                     services.AddMySqlData(conn);
                     break;
-                case "npgsql":
+                case Constants.Db.PostgreSql:
                     services.AddNpgsqlData(conn);
                     break;
-                case "sqlserver":
+                case Constants.Db.SqlServer:
                     services.AddSqlServerData(conn);
                     break;
                 default: throw new InvalidOperationException("invalid db type");
@@ -118,7 +109,7 @@ namespace Shashlik.RC
             app.UseStaticFiles();
 
             app.ApplicationServices.UseShashlik()
-                .DoAutoMigration()
+                .MigrationDb()
                 .InitRoleAndAdminUser()
                 .AutowireServiceProvider()
                 .AutowireAspNet(app);

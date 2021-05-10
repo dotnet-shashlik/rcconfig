@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Shashlik.EfCore;
 
 namespace Shashlik.RC.Data.Entities
 {
-    public class SignatureKeys : IEntity<int>
+    public class SignatureKeys
     {
         public int Id { get; set; }
 

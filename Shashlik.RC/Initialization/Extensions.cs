@@ -6,12 +6,21 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shashlik.Kernel;
 using Shashlik.RC.Common;
+using Shashlik.RC.Data;
 using Shashlik.RC.Services.Identity;
 
 namespace Shashlik.RC.Initialization
 {
     public static class Extensions
     {
+        public static IKernelServiceProvider MigrationDb(this IKernelServiceProvider serviceProvider)
+        {
+            using var scope = serviceProvider.CreateScope();
+            using var dbContext = scope.ServiceProvider.GetRequiredService<RCDbContext>();
+            dbContext.Database.Migrate();
+            return serviceProvider;
+        }
+
         private static void InitRole(RoleService roleService, string role, ILogger logger)
         {
             var adminRole = roleService.FindByNameAsync(role).GetAwaiter().GetResult();
