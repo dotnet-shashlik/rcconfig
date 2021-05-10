@@ -20,6 +20,7 @@ namespace Shashlik.RC.Common
             PermissionReadPolicy = Environment.GetEnvironmentVariable("RC_PERMISSION_READ_POLICY")?.ParseTo<PermissionReadPolicy>() ??
                                    PermissionReadPolicy.Token;
             ServerToken = Environment.GetEnvironmentVariable("RC_SERVER_TOKEN") ?? "Shashlik.RC.ServerToken";
+            Authority = Environment.GetEnvironmentVariable("RC_SERVER_AUTHORITY") ?? "http://localhost:5000";
         }
 
         /// <summary>
@@ -66,5 +67,10 @@ namespace Shashlik.RC.Common
         /// 集群环境,服务器内部安全认证token,集群环境请一定要设置
         /// </summary>
         public static string ServerToken { get; }
+
+        /// <summary>
+        /// 授权服务器地址,默认 http://localhost:5000
+        /// </summary>
+        public static string Authority { get; }
     }
 }

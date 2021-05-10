@@ -1,25 +1,38 @@
 ﻿using System;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Shashlik.AspNetCore;
+using Shashlik.EfCore;
 using Shashlik.Kernel;
+using Shashlik.RC.Common;
+using Shashlik.RC.Data;
 using Shashlik.RC.Data.MySql;
 using Shashlik.RC.Data.PostgreSql;
 using Shashlik.RC.Data.Sqlite;
 using Shashlik.RC.Data.SqlServer;
+using Shashlik.RC.IdentityServer;
 using Shashlik.RC.WebSocket;
 using Shashlik.Utils.Extensions;
 
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
 
+
 namespace Shashlik.RC
 {
+    /**
+     * dotnet ef migrations add rc_0001 -c RCDbContext -o Migrations -p ./Shashlik.RC.Data.Sqlite/Shashlik.RC.Data.Sqlite.csproj -s ./Shashlik.RC/Shashlik.RC.csproj
+     */
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -56,35 +69,28 @@ namespace Shashlik.RC
                 default: throw new InvalidOperationException("invalid db type");
             }
 
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = _ => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
-            services
-                .AddAuthentication(r => { r.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme; })
-                .AddCookie(options =>
+            // 增加认证服务
+            services.AddAuthentication(r =>
                 {
-                    options.LoginPath = "/account/login";
-                    options.AccessDeniedPath = "/account/login";
-                    options.Cookie.HttpOnly = true;
-                    options.Cookie.IsEssential = true;
-                    options.SlidingExpiration = true;
-                    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                    r.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                    r.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    r.DefaultForbidScheme = JwtBearerDefaults.AuthenticationScheme;
+                    r.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+                    r.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                // 增加jwt认证
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, r =>
+                {
+                    r.Audience = Ids4Extensions.Api;
+                    r.Authority = SystemEnvironmentUtils.Authority;
                 });
+
             services.AddAuthorization();
-            services.AddSession(options =>
-            {
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
-                options.IdleTimeout = TimeSpan.FromMinutes(30);
-            });
-            services.AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Latest);
-            services.AddAntiforgery();
-            services.AddSingleton<WebSocketContext>();
+            services.AddControllers();
             services.AddMediatR(GetType().Assembly);
+            services.AddHttpContextAccessor();
+            services.AddIdentity<IdentityUser<int>, IdentityRole<int>>()
+                .AddEntityFrameworkStores<RCDbContext>();
             services.AddShashlik(Configuration);
         }
 
@@ -101,10 +107,12 @@ namespace Shashlik.RC
             }
 
             app.UseRouting();
-
-            app.UseSession();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
+
+            // app.ApplicationServices.UseShashlik()
+            //     .DoAutoMigration()
+            //     .AutowireServiceProvider()
+            //     .AutowireAspNet(app);
 
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Shashlik.Kernel.Dependency;
 using Shashlik.Utils.Extensions;
 using WS = System.Net.WebSockets.WebSocket;
 
@@ -14,6 +15,7 @@ namespace Shashlik.RC.WebSocket
     /// <summary>
     /// ws聊天上下文，用于保存所有在线连接
     /// </summary>
+    [Singleton]
     public class WebSocketContext : IDisposable
     {
         public WebSocketContext(ILogger<WebSocketContext> logger)
