@@ -36,5 +36,23 @@
             public const string ServerToken = "SERVER_TOKEN";
             public const string EventType = "EVENT_TYPE";
         }
+
+        public class Command
+        {
+            /// <summary>
+            /// 文件刷新
+            /// </summary>
+            public const string Refresh = "REFRESH";
+
+            /// <summary>
+            /// 新增文件
+            /// </summary>
+            public const string Add = "ADD";
+
+            /// <summary>
+            /// 删除文件
+            /// </summary>
+            public const string Delete = "DELETE";
+        }
     }
 }

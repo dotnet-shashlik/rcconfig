@@ -26,14 +26,15 @@ namespace Shashlik.RC.WebSocket
         /// <summary>
         /// 当前在线连接
         /// </summary>
-        private static ConcurrentDictionary<int, List<WS>> OnLineSockets { get; } = new();
+        private static ConcurrentDictionary<string, List<WS>> OnLineSockets { get; } = new();
 
         /// <summary>
         /// 添加一个新的在线连接
         /// </summary>
         /// <param name="environmentId"></param>
         /// <param name="socket"></param>
-        internal async Task AddSocket(int environmentId, WS socket)
+        /// <param name="cancellationToken"></param>
+        internal async Task AddSocket(string environmentId, WS socket, CancellationToken cancellationToken = default)
         {
             var key = environmentId;
             if (OnLineSockets.TryGetValue(key, out var list))
@@ -56,7 +57,7 @@ namespace Shashlik.RC.WebSocket
                     }
                     else
                         break;
-                } while (!result.CloseStatus.HasValue);
+                } while (!result.CloseStatus.HasValue && !cancellationToken.IsCancellationRequested);
             }
             catch (OperationCanceledException)
             {
@@ -84,21 +85,22 @@ namespace Shashlik.RC.WebSocket
         /// <summary>
         /// 获取指定id的连接
         /// </summary>
-        /// <param name="environmentId"></param>
+        /// <param name="resourceId"></param>
         /// <returns></returns>
-        internal List<WS>? GetSocket(int environmentId)
+        internal List<WS>? GetSocket(string resourceId)
         {
-            return OnLineSockets.TryGetValue(environmentId, out var list) ? null : list;
+            return OnLineSockets.TryGetValue(resourceId, out var list) ? null : list;
         }
 
         /// <summary>
         /// 发送消息
         /// </summary>
-        /// <param name="environmentId"></param>
+        /// <param name="resourceId"></param>
         /// <param name="command"></param>
         /// <param name="data"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task SendAsync(int environmentId, string command, object data)
+        public async Task SendAsync(string resourceId, string command, object data, CancellationToken cancellationToken = default)
         {
             //转换为统一格式之后再发
             var messageToSend = new
@@ -108,7 +110,7 @@ namespace Shashlik.RC.WebSocket
             }.ToJsonWithCamelCase();
 
             var byteArray = new ArraySegment<byte>(Encoding.UTF8.GetBytes(messageToSend));
-            var connections = GetSocket(environmentId);
+            var connections = GetSocket(resourceId);
             if (connections.IsNullOrEmpty())
                 return;
 
@@ -118,7 +120,7 @@ namespace Shashlik.RC.WebSocket
                 {
                     try
                     {
-                        await socket.SendAsync(byteArray, WebSocketMessageType.Text, true, CancellationToken.None);
+                        await socket.SendAsync(byteArray, WebSocketMessageType.Text, true, cancellationToken);
                     }
                     catch (Exception e)
                     {

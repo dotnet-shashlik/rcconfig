@@ -7,4 +7,4 @@ namespace Shashlik.RC.EventBus
     {
         public object InnerServerEvent { get; set; }
     }
-}
+} 

@@ -86,7 +86,7 @@ namespace Shashlik.RC.Services.ConfigurationFile
                 .PageQuery(pageInput);
         }
 
-        public async Task<ConfigurationFileDto> Get(string environmentResourceId, int id)
+        public async Task<ConfigurationFileDto?> Get(string environmentResourceId, int id)
         {
             return await DbContext.Set<ConfigurationFiles>()
                 .Where(r => r.Id == id && r.EnvironmentResourceId == environmentResourceId)

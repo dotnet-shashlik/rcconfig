@@ -3,6 +3,7 @@ namespace Shashlik.RC.EventBus
 {
     public class ConfigurationFileModifyEvent : IInnerServerEvent
     {
-        public string Name { get; set; }
+        public string EnvironmentResourceId { get; set; }
+        public int FileId { get; set; }
     }
 }
