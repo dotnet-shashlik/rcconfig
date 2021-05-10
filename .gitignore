@@ -340,3 +340,5 @@ upload
 /src/YS.Api/settings/appsettings.Development.json
 /src/YS.Api/YS.Api.xml
 /Test.settings
+/Shashlik.RC/data/*.db-shm
+/Shashlik.RC/data/*.db-wal

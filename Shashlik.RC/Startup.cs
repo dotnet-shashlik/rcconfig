@@ -22,6 +22,7 @@ using Shashlik.RC.Data.PostgreSql;
 using Shashlik.RC.Data.Sqlite;
 using Shashlik.RC.Data.SqlServer;
 using Shashlik.RC.IdentityServer;
+using Shashlik.RC.Initialization;
 using Shashlik.RC.WebSocket;
 using Shashlik.Utils.Extensions;
 
@@ -89,7 +90,14 @@ namespace Shashlik.RC
             services.AddControllers();
             services.AddMediatR(GetType().Assembly);
             services.AddHttpContextAccessor();
-            services.AddIdentity<IdentityUser<int>, IdentityRole<int>>()
+            services.AddIdentity<IdentityUser<int>, IdentityRole<int>>(options =>
+                {
+                    options.Password.RequireDigit = false;
+                    options.Password.RequiredLength = 1;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                })
                 .AddEntityFrameworkStores<RCDbContext>();
             services.AddShashlik(Configuration);
         }
@@ -111,6 +119,7 @@ namespace Shashlik.RC
 
             app.ApplicationServices.UseShashlik()
                 .DoAutoMigration()
+                .InitRoleAndAdminUser()
                 .AutowireServiceProvider()
                 .AutowireAspNet(app);
 

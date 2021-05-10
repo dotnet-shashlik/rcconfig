@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +26,8 @@ namespace Shashlik.RC.Services.Application
 
         public async Task Create(CreateApplicationInput input)
         {
+            if (await DbContext.Set<Applications>().AnyAsync(r => r.Name == input.Name))
+                throw ResponseException.ArgError("应用名称重复");
             var application = new Applications
             {
                 Name = input.Name,
@@ -35,14 +36,7 @@ namespace Shashlik.RC.Services.Application
                 CreateTime = DateTime.Now.GetLongDate()
             };
             await DbContext.AddAsync(application);
-            try
-            {
-                await DbContext.SaveChangesAsync();
-            }
-            catch (DBConcurrencyException)
-            {
-                throw ResponseException.ArgError("应用名称已存在");
-            }
+            await DbContext.SaveChangesAsync();
         }
 
         public async Task Update(string name, UpdateApplicationInput input)

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,6 +30,9 @@ namespace Shashlik.RC.Services.ConfigurationFile
 
         public async Task Create(string environmentResourceId, CreateConfigurationFileInput input)
         {
+            if (await DbContext.Set<ConfigurationFiles>().AnyAsync(r => r.EnvironmentResourceId == environmentResourceId && r.Name == input.Name))
+                throw ResponseException.ArgError("文件名称重复");
+
             var environment = await EnvironmentService.Get(environmentResourceId);
             if (environment is null)
                 throw ResponseException.NotFound();

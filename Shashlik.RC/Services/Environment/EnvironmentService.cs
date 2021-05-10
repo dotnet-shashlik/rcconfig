@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +29,10 @@ namespace Shashlik.RC.Services.Environment
 
         public async Task Create(string applicationName, CreateEnvironmentInput input)
         {
+            var resourceId = $"{applicationName}/{input.Name}";
+            if (await DbContext.Set<Environments>().AnyAsync(r => r.ResourceId == resourceId))
+                throw ResponseException.ArgError("环境名称重复");
+
             var application = await ApplicationService.Get(applicationName);
             if (application is null)
                 throw ResponseException.NotFound();
@@ -37,21 +40,14 @@ namespace Shashlik.RC.Services.Environment
             var environment = new Environments
             {
                 Name = input.Name,
-                ResourceId = $"{applicationName}/{input.Name}",
+                ResourceId = resourceId,
                 Desc = input.Desc,
                 CreateTime = DateTime.Now.GetLongDate(),
                 IpWhites = input.IpWhites,
                 ApplicationId = application.Id
             };
             await DbContext.AddAsync(environment);
-            try
-            {
-                await DbContext.SaveChangesAsync();
-            }
-            catch (DBConcurrencyException)
-            {
-                throw ResponseException.ArgError("环境名称已存在");
-            }
+            await DbContext.SaveChangesAsync();
         }
 
         public async Task Update(string resourceId, UpdateEnvironmentInput input)
