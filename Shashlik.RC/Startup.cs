@@ -109,10 +109,10 @@ namespace Shashlik.RC
             app.UseRouting();
             app.UseStaticFiles();
 
-            // app.ApplicationServices.UseShashlik()
-            //     .DoAutoMigration()
-            //     .AutowireServiceProvider()
-            //     .AutowireAspNet(app);
+            app.ApplicationServices.UseShashlik()
+                .DoAutoMigration()
+                .AutowireServiceProvider()
+                .AutowireAspNet(app);
 
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {

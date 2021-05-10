@@ -27,7 +27,7 @@ namespace Shashlik.RC.Controllers
         protected ApiControllerBase()
         {
             _lazyUser = new Lazy<IdentityUser<int>?>(() => User.IsAuthenticated()
-                ? HttpContext.RequestServices.GetRequiredService<UserServices>().FindByIdAsync(User
+                ? HttpContext.RequestServices.GetRequiredService<UserService>().FindByIdAsync(User
                     .FindFirstValue(JwtClaimTypes.Subject)).GetAwaiter().GetResult()
                 : null);
             _lazyLoginUserId = new Lazy<int>(() => User.FindFirstValue(JwtClaimTypes.Subject).ParseTo<int>());

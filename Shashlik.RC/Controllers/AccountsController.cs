@@ -14,12 +14,12 @@ namespace Shashlik.RC.Controllers
 {
     public class AccountsController : ApiControllerBase
     {
-        public AccountsController(UserServices userService)
+        public AccountsController(UserService userService)
         {
             UserService = userService;
         }
 
-        private UserServices UserService { get; }
+        private UserService UserService { get; }
 
         [HttpGet("userInfo")]
         public async Task<UserDto> UserInfo()

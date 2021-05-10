@@ -4,13 +4,16 @@
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "DB_TYPE": "sqlite",
-        "DB_CONN": "Data Source=./data/rc.db;",
-        "DB_VERSION": "5.7",
-        "ADMIN_USER": "admin",
-        "ADMIN_PASS": "123123"
-      },
-      "applicationUrl": "http://localhost:5000"
+        "RC_DB_TYPE": "sqlite",
+        "RC_DB_CONN": "Data Source=./data/rc.db;",
+        "RC_ADMIN_USER": "admin",
+        "RC_ADMIN_PASS": "123123",
+        "RC_ACCESS_TOKEN_LIFETIME": "1800",
+        "RC_PERMISSION_READ_POLICY": "Token",
+        "RC_SERVER_TOKEN": "Shashlik.RC.ServerToken",
+        "RC_AUTHORITY": "http://localhost:5000",
+        "ASPNETCORE_URLS": "http://*:5000"
+      }
     }
   }
 }

@@ -15,18 +15,7 @@ namespace Shashlik.RC
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration(r =>
-                {
-                    var file = new FileInfo("./data/appsettings.yaml").FullName;
-                    r.AddYamlFile(file, true);
-                })
-                .ConfigureWebHostDefaults((webBuilder) =>
-                {
-#if DEBUG
-                    // 正式服使用环境变量 ASPNETCORE_URLS=http://*:5000 来灵活配置
-                    webBuilder.UseUrls("http://*:5000");
-#endif
-                    webBuilder.UseStartup<Startup>();
-                });
+                .ConfigureAppConfiguration(r => { r.AddYamlFile("./data/appsettings.yaml", true); })
+                .ConfigureWebHostDefaults((webBuilder) => { webBuilder.UseStartup<Startup>(); });
     }
 }
