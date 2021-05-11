@@ -1,3 +1,5 @@
+import Cookies from 'js-cookie';
+
 /* eslint no-useless-escape:0 import/prefer-default-export:0 */
 const reg = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
 
@@ -18,3 +20,24 @@ export const isAntDesignProOrDev = (): boolean => {
   }
   return isAntDesignPro();
 };
+
+/**
+ * 设置token
+ * @param token  token
+ * @param expires  过期时间
+ */
+export const setAccessToken = (token: string, expires: number) => {
+  Cookies.set('assess_token', token, { expires: expires / (24 * 60 * 60) });
+};
+
+/**
+ * 获取token
+ * @returns 获取token
+ */
+export const getAccessToken = () => Cookies.get('assess_token') || false;
+
+/**
+ * 获取baseUrl
+ * @returns baseUrl
+ */
+export const getBaseUrl = () => "http://localhost:5000";

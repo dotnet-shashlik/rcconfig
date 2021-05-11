@@ -62,6 +62,16 @@ namespace Shashlik.RC
                 default: throw new InvalidOperationException("invalid db type");
             }
 
+            services.AddCors(r =>
+            {
+                r.AddDefaultPolicy(builder =>
+                {
+                    builder.AllowAnyHeader()
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod();
+                });
+            });
+
             // 增加认证服务
             services.AddAuthentication(r =>
                 {
@@ -99,6 +109,7 @@ namespace Shashlik.RC
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostEnvironment env)
         {
+            app.UseCors();
             app.UseRouting();
             app.UseSpaStaticFiles();
 
@@ -113,6 +124,7 @@ namespace Shashlik.RC
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
 
+            app.UseIdentityServer();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseWebSocketPush();

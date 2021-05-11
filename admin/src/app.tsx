@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import type { ResponseError } from 'umi-request';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
 import { BookOutlined, LinkOutlined } from '@ant-design/icons';
+import { getAccessToken, getBaseUrl } from './utils/utils';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -72,6 +73,21 @@ export async function getInitialState(): Promise<{
  * @see https://beta-pro.ant.design/docs/request-cn
  */
 export const request: RequestConfig = {
+  requestInterceptors: [
+    (url: string, options: any) => {
+      const token = getAccessToken();
+      const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
+      const baseUrl = getBaseUrl();
+      return {
+        url: `${baseUrl}${url}`,
+        options: {
+          ...options,
+          interceptors: true,
+          headers: authHeader
+        }
+      }
+    }
+  ],
   errorHandler: (error: ResponseError) => {
     const { messages } = getIntl(getLocale());
     const { response } = error;
@@ -95,6 +111,15 @@ export const request: RequestConfig = {
     }
     throw error;
   },
+  errorConfig: {
+    adaptor: (resData: any, context: any) => {
+      return {
+        ...resData,
+        errorCode: resData.code,
+        errorMessage: resData.msg
+      };
+    }
+  }
 };
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
@@ -115,15 +140,15 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
     },
     links: isDev
       ? [
-          <Link to="/umi/plugin/openapi" target="_blank">
-            <LinkOutlined />
-            <span>openAPI 文档</span>
-          </Link>,
-          <Link to="/~docs">
-            <BookOutlined />
-            <span>业务组件文档</span>
-          </Link>,
-        ]
+        <Link to="/umi/plugin/openapi" target="_blank">
+          <LinkOutlined />
+          <span>openAPI 文档</span>
+        </Link>,
+        <Link to="/~docs">
+          <BookOutlined />
+          <span>业务组件文档</span>
+        </Link>,
+      ]
       : [],
     menuHeaderRender: undefined,
     // 自定义 403 页面

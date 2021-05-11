@@ -61,8 +61,13 @@ const Login: React.FC = () => {
     setSubmitting(true);
     try {
       // 登录
-      const msg = await login({ ...values, type });
-      if (msg.status === 'ok') {
+      const msg = await login({
+        ...values,
+        client_id: 'shashlik-rc-admin',
+        grant_type: 'password',
+        scope: 'shashlik-rc-api'
+      });
+      if (msg.access_token) {
         const defaultloginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
           defaultMessage: '登录成功！',

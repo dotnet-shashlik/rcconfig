@@ -15,7 +15,7 @@ using Shashlik.Utils.Helpers;
 
 namespace Shashlik.RC.IdentityServer
 {
-    public class EfSignatureKeyStore : IValidationKeysStore
+    public class EfSignatureKeyStore : IValidationKeysStore, ISigningCredentialStore
     {
         public EfSignatureKeyStore(RCDbContext dbContext, ILogger<EfSignatureKeyStore> logger)
         {
@@ -29,13 +29,13 @@ namespace Shashlik.RC.IdentityServer
 
         public async Task<IEnumerable<SecurityKeyInfo>> GetValidationKeysAsync()
         {
-            var keys = await DbContext.SignatureKeys.Where(r => r.Enabled).ToListAsync();
-            if (DbContext.SignatureKeys.IsNullOrEmpty())
+            var key = await DbContext.SignatureKeys.Where(r => r.Enabled).FirstOrDefaultAsync();
+            if (key is null)
             {
                 using var rsa = RSA.Create(2048);
-                var bytes = rsa.ExportRSAPrivateKey();
-                var privateKey = Convert.ToBase64String(bytes);
-                var key = new SignatureKeys
+                var privateKey = rsa.ToPem(true, true);
+
+                key = new SignatureKeys
                 {
                     PrivateKey = privateKey,
                     KeyType = RsaKeyType,
@@ -47,7 +47,6 @@ namespace Shashlik.RC.IdentityServer
                 try
                 {
                     await DbContext.SaveChangesAsync();
-                    keys.Add(key);
                     Logger.LogInformation($"new rsa key completed");
                 }
                 //TODO: ...
@@ -58,21 +57,49 @@ namespace Shashlik.RC.IdentityServer
             }
 
             var list = new List<SecurityKeyInfo>();
-            foreach (var key in keys)
+            if (key.KeyType.EqualsIgnoreCase(RsaKeyType))
             {
-                if (key.KeyType.EqualsIgnoreCase(RsaKeyType))
+                var rsa = RSAHelper.FromPem(key.PrivateKey);
+                var rsaSecurityKey = new RsaSecurityKey(rsa);
+                list.Add(new SecurityKeyInfo
                 {
-                    var rsa = RSAHelper.FromPem(key.PrivateKey);
-                    var rsaSecurityKey = new RsaSecurityKey(rsa);
-                    list.Add(new SecurityKeyInfo
-                    {
-                        Key = rsaSecurityKey,
-                        SigningAlgorithm = SecurityAlgorithms.RsaSha256
-                    });
-                }
+                    Key = rsaSecurityKey,
+                    SigningAlgorithm = SecurityAlgorithms.RsaSha256
+                });
             }
 
             return list;
+        }
+
+        public async Task<SigningCredentials> GetSigningCredentialsAsync()
+        {
+            var key = await DbContext.SignatureKeys.Where(r => r.Enabled).FirstOrDefaultAsync();
+            if (key is null)
+            {
+                using var rsa = RSA.Create(2048);
+                var privateKey = rsa.ToPem(true, true);
+                key = new SignatureKeys
+                {
+                    PrivateKey = privateKey,
+                    KeyType = RsaKeyType,
+                    CreateTime = DateTime.Now.GetLongDate(),
+                    Enabled = true
+                };
+
+                await DbContext.SignatureKeys.AddAsync(key);
+                try
+                {
+                    await DbContext.SaveChangesAsync();
+                    Logger.LogInformation($"new rsa key completed");
+                }
+                //TODO: ...
+                catch (DbUpdateException)
+                {
+                    // ignore
+                }
+            }
+
+            return new SigningCredentials(new RsaSecurityKey(RSAHelper.FromPem(key.PrivateKey)), "RS256");
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Shashlik.RC.IdentityServer
                     {
                         AccessTokenLifetime = SystemEnvironmentUtils.AccessTokenLifetime,
                         AccessTokenType = AccessTokenType.Jwt,
-                        AllowedGrantTypes = {PasswordGrantType},
+                        AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                         AllowedScopes = {Api},
                         ClientId = Client,
                         ClientName = Client,
@@ -44,6 +44,7 @@ namespace Shashlik.RC.IdentityServer
                 .AddProfileService<ProfileService>()
                 ;
 
+            services.AddTransient<ISigningCredentialStore, EfSignatureKeyStore>();
             services.AddTransient<IValidationKeysStore, EfSignatureKeyStore>();
         }
     }

@@ -25,8 +25,11 @@ declare namespace API {
 
   type LoginResult = {
     access_token?: string;
+    token_type?: string;
+    expires_in?: number;
     error?: string;
-    error_description?: string;    
+    status?: string;
+    type?: string;
   };
 
   type PageParams = {

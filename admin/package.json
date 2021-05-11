@@ -56,6 +56,7 @@
     "@umijs/route-utils": "^1.0.36",
     "antd": "^4.14.0",
     "classnames": "^2.2.6",
+    "js-cookie": "^2.2.1",
     "lodash": "^4.17.11",
     "moment": "^2.25.3",
     "omit.js": "^2.0.2",
@@ -104,5 +105,6 @@
   },
   "gitHooks": {
     "commit-msg": "node ./node_modules/@umijs/fabric/dist/verifyCommit.js"
-  }
+  },
+  "__npminstall_done": false
 }
