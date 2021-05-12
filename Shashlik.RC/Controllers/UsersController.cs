@@ -12,19 +12,19 @@ using Shashlik.Response;
 
 namespace Shashlik.RC.Controllers
 {
-    public class AccountsController : ApiControllerBase
+    public class UsersController : ApiControllerBase
     {
-        public AccountsController(UserService userService)
+        public UsersController(UserService userService)
         {
             UserService = userService;
         }
 
         private UserService UserService { get; }
 
-        [HttpGet("userInfo")]
-        public async Task<UserDto> UserInfo()
+        [HttpGet("current")]
+        public async Task<UserDetailDto> UserInfo()
         {
-            return await UserService.Get(LoginUserId!.Value);
+            return (await UserService.Get(1))!;
         }
 
         [HttpGet, Admin]

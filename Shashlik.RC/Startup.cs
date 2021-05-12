@@ -5,9 +5,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Logging;
 using Shashlik.AspNetCore;
 using Shashlik.Kernel;
 using Shashlik.RC.Common;
@@ -62,6 +65,8 @@ namespace Shashlik.RC
                 default: throw new InvalidOperationException("invalid db type");
             }
 
+            services.AddControllers()
+                .SetCompatibilityVersion(CompatibilityVersion.Latest);
             services.AddCors(r =>
             {
                 r.AddDefaultPolicy(builder =>
@@ -71,28 +76,6 @@ namespace Shashlik.RC
                         .AllowAnyMethod();
                 });
             });
-
-            // 增加认证服务
-            services.AddAuthentication(r =>
-                {
-                    r.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                    r.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                    r.DefaultForbidScheme = JwtBearerDefaults.AuthenticationScheme;
-                    r.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
-                    r.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                // 增加jwt认证
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, r =>
-                {
-                    r.Audience = Ids4Extensions.Api;
-                    r.Authority = SystemEnvironmentUtils.Authority;
-                });
-
-            services.AddAuthorization();
-            services.AddControllers();
-            services.AddMediatR(GetType().Assembly);
-            services.AddHttpContextAccessor();
-            services.AddSpaStaticFiles(r => { r.RootPath = "wwwroot/dist"; });
             services.AddIdentity<IdentityUser<int>, IdentityRole<int>>(options =>
                 {
                     options.Password.RequireDigit = false;
@@ -101,14 +84,40 @@ namespace Shashlik.RC
                     options.Password.RequireUppercase = false;
                     options.Password.RequireNonAlphanumeric = false;
                 })
-                .AddEntityFrameworkStores<RCDbContext>();
+                .AddEntityFrameworkStores<RCDbContext>()
+                ;
             services.AddIds4();
+
+            // jwt认证
+            services.AddAuthentication(r =>
+                {
+                    r.DefaultScheme = "JwtBearer";
+                    r.DefaultChallengeScheme = "JwtBearer";
+                    r.DefaultForbidScheme = "JwtBearer";
+                    r.DefaultSignInScheme = "JwtBearer";
+                    r.DefaultAuthenticateScheme = "JwtBearer";
+                })
+                .AddCookie()
+                .AddJwtBearer("JwtBearer", r =>
+                {
+                    r.Authority = SystemEnvironmentUtils.Authority;
+                    r.RequireHttpsMetadata = false;
+                    r.TokenValidationParameters.RequireAudience = false;
+                    r.TokenValidationParameters.ValidateAudience = false;
+                })
+                ;
+
+            services.AddAuthorization();
+            services.AddMediatR(GetType().Assembly);
+            services.AddSpaStaticFiles(r => { r.RootPath = "wwwroot/dist"; });
             services.AddShashlik(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostEnvironment env)
         {
+            IdentityModelEventSource.ShowPII = true;
+
             app.UseCors();
             app.UseRouting();
             app.UseSpaStaticFiles();

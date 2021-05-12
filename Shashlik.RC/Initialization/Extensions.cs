@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -65,6 +67,10 @@ namespace Shashlik.RC.Initialization
                     var res = userService.CreateAsync(user, SystemEnvironmentUtils.AdminPassword).GetAwaiter().GetResult();
                     if (!res.Succeeded && res.Errors.All(r => r.Code != "DuplicateUserName"))
                         throw new InvalidOperationException($"create admin user failed, detail: {res}");
+                    userService.AddClaimsAsync(user, new List<Claim>()
+                    {
+                        new Claim(Constants.UserClaimTypes.NickName, "超级管理员")
+                    }).GetAwaiter().GetResult();
                     userService.AddToRoleAsync(user, Constants.Roles.Admin).GetAwaiter().GetResult();
                 }
                 catch (DbUpdateException e)

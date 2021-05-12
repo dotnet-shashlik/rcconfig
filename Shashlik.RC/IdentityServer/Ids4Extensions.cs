@@ -10,7 +10,7 @@ namespace Shashlik.RC.IdentityServer
     public static class Ids4Extensions
     {
         public const string Client = "shashlik-rc-admin";
-        public const string Api = "shashlik-rc-api";
+        public const string Api = "shashlik-rc-api:all";
         public const string PasswordGrantType = "password";
 
         public static void AddIds4(this IServiceCollection services)
@@ -28,6 +28,7 @@ namespace Shashlik.RC.IdentityServer
                         ClientName = Client,
                         Enabled = true,
                         RequireClientSecret = false,
+                        AllowOfflineAccess = false,
                     }
                 })
                 .AddInMemoryApiScopes(new List<ApiScope>

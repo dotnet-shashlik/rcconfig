@@ -41,7 +41,7 @@ namespace Shashlik.RC.Filters
                 resourceId += "/" + environment;
             }
 
-            if (!context.HttpContext.User.IsAuthenticated())
+            if (!string.IsNullOrWhiteSpace(resourceId) && !context.HttpContext.User.IsAuthenticated())
             {
                 context.HttpContext.Response.StatusCode = 403;
                 return;

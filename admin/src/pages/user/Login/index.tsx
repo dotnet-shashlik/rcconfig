@@ -13,6 +13,7 @@ import { useIntl, Link, history, FormattedMessage, SelectLang, useModel } from '
 import Footer from '@/components/Footer';
 import { login } from '@/services/ant-design-pro/api';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
+import { setAccessToken } from '@/utils/utils';
 
 import styles from './index.less';
 
@@ -65,13 +66,15 @@ const Login: React.FC = () => {
         ...values,
         client_id: 'shashlik-rc-admin',
         grant_type: 'password',
-        scope: 'shashlik-rc-api'
+        scope: 'shashlik-rc-api:all'
       });
       if (msg.access_token) {
         const defaultloginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
           defaultMessage: '登录成功！',
         });
+
+        setAccessToken(msg.access_token, msg.expires_in);
         message.success(defaultloginSuccessMessage);
         await fetchUserInfo();
         goto();
@@ -111,6 +114,8 @@ const Login: React.FC = () => {
           <ProForm
             initialValues={{
               autoLogin: true,
+              username: 'admin',
+              password: 'Shashlik.RC.Server'
             }}
             submitter={{
               searchConfig: {

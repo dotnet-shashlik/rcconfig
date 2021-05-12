@@ -54,5 +54,11 @@
             /// </summary>
             public const string Delete = "DELETE";
         }
+
+        public class UserClaimTypes
+        {
+            public const string NickName = "nickName";
+            public const string Remark = "remark";
+        }
     }
 }

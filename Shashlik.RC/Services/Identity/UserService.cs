@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -23,9 +24,20 @@ namespace Shashlik.RC.Services.Identity
         {
         }
 
-        public async Task<UserDto> Get(int userId)
+        public async Task<UserDetailDto?> Get(int userId)
         {
-            return await Users.Where(r => r.Id == userId).QueryTo<UserDto>().FirstOrDefaultAsync();
+            var user = await FindByIdAsync(userId.ToString());
+            if (user is null)
+                return null;
+            var claims = await GetClaimsAsync(user);
+            var roles = await GetRolesAsync(user);
+            return new UserDetailDto
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Claims = claims ?? new List<Claim>(),
+                Roles = roles ?? new string[0]
+            };
         }
 
         public async Task<List<UserDto>> Get()
