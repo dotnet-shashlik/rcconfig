@@ -2,6 +2,15 @@
 /* eslint-disable */
 
 declare namespace API {
+  // 通用接口响应数据模型
+  type Response<TData> = {
+    code: number;
+    msg?: string;
+    data?: TData;
+    success:boolean;
+    debug?:string;
+  };
+
   type CurrentUser = {
     nickName?: string;
     avatar?: string;

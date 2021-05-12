@@ -1,13 +1,20 @@
 // @ts-ignore
 /* eslint-disable */
 import { request } from 'umi';
+import { message } from 'antd';
 
 /** 获取当前的用户 GET /api/currentUser */
 export async function currentUser(options?: { [key: string]: any }) {
-  return request<API.CurrentUser>('/users/current', {
+  let res = await request<API.Response<API.CurrentUser>>('/users/current', {
     method: 'GET',
     ...(options || {}),
   });
+
+  if (res.success)
+    res.data!.avatar = 'https://img.youxi369.com/article/contents/2021/02/10/small_20210210112721737.jpeg';
+  else
+    message.error(`用户信息加载失败: ${res.msg}`);
+  return res.data;
 }
 
 /** 退出登录接口 POST /api/login/outLogin */
