@@ -76,6 +76,13 @@
     redirect: '/welcome',
   },
   {
+    name: 'password',
+    icon: 'table',
+    path: '/password',
+    hideInMenu: true,
+    component: './TableList',
+  },
+  {
     component: './404',
   },
 ];

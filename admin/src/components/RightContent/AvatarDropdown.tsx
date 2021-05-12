@@ -45,7 +45,11 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
         loginOut();
         return;
       }
-      history.push(`/account/${key}`);
+      // if (key === 'password' && initialState) {
+      //   // 弹窗修改密码
+      //   return;
+      // }
+      history.push(`/${key}`);
     },
     [initialState, setInitialState],
   );
@@ -75,15 +79,9 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
   const menuHeaderDropdown = (
     <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
       {menu && (
-        <Menu.Item key="center">
+        <Menu.Item key="password">
           <UserOutlined />
-          个人中心
-        </Menu.Item>
-      )}
-      {menu && (
-        <Menu.Item key="settings">
-          <SettingOutlined />
-          个人设置
+          修改密码
         </Menu.Item>
       )}
       {menu && <Menu.Divider />}

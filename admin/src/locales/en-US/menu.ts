@@ -55,4 +55,5 @@ export default {
   'menu.apps': 'Applications',
   'menu.envs': 'Environments',
   'menu.files': 'Files',
+  'menu.password': 'Change Password'
 };

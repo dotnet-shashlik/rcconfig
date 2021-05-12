@@ -55,4 +55,5 @@ export default {
   'menu.apps': '应用管理',
   'menu.envs': '环境管理',
   'menu.files': '文件管理',
+  'menu.password': '修改密码',
 };
