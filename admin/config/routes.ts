@@ -25,7 +25,6 @@
     path: '/admin',
     name: 'admin',
     icon: 'crown',
-    access: 'canAdmin',
     component: './Admin',
     routes: [
       {
@@ -41,6 +40,36 @@
     icon: 'table',
     path: '/list',
     component: './TableList',
+  },
+  {
+    name: 'users',
+    icon: 'table',
+    path: '/users',
+    component: './TableList'
+  },
+  {
+    name: 'roles',
+    icon: 'table',
+    path: '/roles',
+    component: './TableList'
+  },
+  {
+    name: 'apps',
+    icon: 'table',
+    path: '/apps',
+    component: './TableList'
+  },
+  {
+    name: 'envs',
+    icon: 'table',
+    path: '/envs',
+    component: './TableList'
+  },
+  {
+    name: 'files',
+    icon: 'table',
+    path: '/files',
+    component: './TableList'
   },
   {
     path: '/',
