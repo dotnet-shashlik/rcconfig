@@ -7,6 +7,7 @@ using Shashlik.RC.Common;
 using Shashlik.RC.Filters;
 using Shashlik.RC.Services.Identity;
 using Shashlik.RC.Services.Identity.Dtos;
+using Shashlik.RC.Services.Identity.Inputs;
 using Shashlik.RC.Services.Permission;
 using Shashlik.Response;
 
@@ -24,7 +25,16 @@ namespace Shashlik.RC.Controllers
         [HttpGet("current")]
         public async Task<UserDetailDto> UserInfo()
         {
-            return (await UserService.Get(1))!;
+            return (await UserService.Get(LoginUserId!.Value))!;
+        }
+
+        [HttpPatch("password")]
+        public async Task ChangePassword(ChangePasswordInput input)
+        {
+            var user = await UserService.FindByIdAsync(LoginUserId.ToString());
+            var res = await UserService.ChangePasswordAsync(user, input.OldPassword, input.NewPassword);
+            if (!res.Succeeded)
+                throw ResponseException.ArgError(res.ToString());
         }
 
         [HttpGet, Admin]

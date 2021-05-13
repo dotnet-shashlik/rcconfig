@@ -36,40 +36,34 @@
     ],
   },
   {
-    name: 'list.table-list',
-    icon: 'table',
-    path: '/list',
-    component: './TableList',
-  },
-  {
     name: 'users',
     icon: 'table',
     path: '/users',
-    component: './TableList'
+    component: './user/password',
   },
   {
     name: 'roles',
     icon: 'table',
     path: '/roles',
-    component: './TableList'
+    component: './user/password',
   },
   {
     name: 'apps',
     icon: 'table',
     path: '/apps',
-    component: './TableList'
+    component: './user/password',
   },
   {
     name: 'envs',
     icon: 'table',
     path: '/envs',
-    component: './TableList'
+    component: './user/password',
   },
   {
     name: 'files',
     icon: 'table',
     path: '/files',
-    component: './TableList'
+    component: './user/password',
   },
   {
     path: '/',
@@ -80,7 +74,7 @@
     icon: 'table',
     path: '/password',
     hideInMenu: true,
-    component: './TableList',
+    component: './user/password',
   },
   {
     component: './404',

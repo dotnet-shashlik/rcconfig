@@ -52,4 +52,9 @@ export default {
   'app.settings.notification.todo-description': '待办任务将以站内信的形式通知',
   'app.settings.open': '开',
   'app.settings.close': '关',
+
+  'app.settings.oldPassword': '旧密码',
+  'app.settings.newPassword': '新密码',
+  'app.settings.confirmPassword': '确认密码',
+  'app.settings.submit': '提交',
 };
