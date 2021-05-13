@@ -38,7 +38,15 @@ namespace Shashlik.RC.IdentityServer
                         DisplayName = Api,
                         Enabled = true,
                         Name = Api,
-                        Required = true
+                        Required = true,
+                        UserClaims = new List<string>
+                        {
+                            "name",
+                            "userName",
+                            "nickName",
+                            "role",
+                            "profile"
+                        }
                     }
                 })
                 .AddAspNetIdentity<IdentityUser<int>>()

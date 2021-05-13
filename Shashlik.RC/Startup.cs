@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IdentityModel.Tokens.Jwt;
+using IdentityModel;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -88,6 +90,8 @@ namespace Shashlik.RC
                 ;
             services.AddIds4();
 
+            // 清除claimType转换
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             // jwt认证
             services.AddAuthentication(r =>
                 {
@@ -104,6 +108,8 @@ namespace Shashlik.RC
                     r.RequireHttpsMetadata = false;
                     r.TokenValidationParameters.RequireAudience = false;
                     r.TokenValidationParameters.ValidateAudience = false;
+                    r.TokenValidationParameters.NameClaimType = JwtClaimTypes.Name;
+                    r.TokenValidationParameters.RoleClaimType = JwtClaimTypes.Role;
                 })
                 ;
 

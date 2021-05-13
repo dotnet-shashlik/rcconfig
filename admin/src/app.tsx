@@ -79,7 +79,7 @@ export const request: RequestConfig = {
       const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
       const baseUrl = getBaseUrl();
       return {
-        url: `${baseUrl}${url}`,
+        url: url.toLowerCase().startsWith('http://') || url.toLowerCase().startsWith('https://') ? url : `${baseUrl}${url}`,
         options: {
           ...options,
           interceptors: true,
