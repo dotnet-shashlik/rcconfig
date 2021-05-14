@@ -32,7 +32,8 @@ namespace Shashlik.RC.Controllers
         [HttpGet("{userId:int:min(1)}"), Admin]
         public async Task<UserDetailDto> Get(int userId)
         {
-            return (await UserService.Get(userId))!;
+            var user = await UserService.Get(userId);
+            return user ?? throw ResponseException.NotFound();
         }
 
         [HttpPost]
