@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import styles from './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Form, Input, Button, Checkbox } from 'antd';
-import { FormattedMessage, getIntl, useIntl } from 'umi';
-import { changePassword } from '@/services/api/account';
+import { Form, Input, Button, message } from 'antd';
+import { FormattedMessage, useIntl, useRequest } from 'umi';
+import { changePassword } from '@/services/api/user';
+import { clearAccessToken } from "@/utils/utils";
 
 const layout = {
   labelCol: { span: 8 },
@@ -14,21 +13,17 @@ const tailLayout = {
 };
 
 
-interface FormModel {
-  oldPassword?: string;
-  newPassword?: string;
-  confirmPassword?: string;
-};
-
 export default () => {
 
-  const onFinish = async (model: FormModel) => {
-    let res = await changePassword(model);
-    console.log(res);
-  };
+  const changePasswordRequest = useRequest(changePassword, {
+    manual: true, onSuccess: () => {
+      message.success('success');
+      clearAccessToken();
+      window.location.href = '/user/login';
+    }
+  });
 
   const [form] = Form.useForm();
-
 
   return (
     <PageContainer>
@@ -37,7 +32,7 @@ export default () => {
         {...layout}
         name="basic"
         initialValues={{ remember: true }}
-        onFinish={onFinish}
+        onFinish={changePasswordRequest.run}
       >
         <Form.Item
           label={useIntl().formatMessage({ id: 'app.settings.oldPassword' })}
@@ -57,7 +52,17 @@ export default () => {
         <Form.Item
           label={useIntl().formatMessage({ id: 'app.settings.confirmPassword' })}
           name="confirmPassword"
-          rules={[{ required: true, message: 'Please inout Confirm Password!' }]}
+          rules={[{ required: true, message: 'Please inout Confirm Password!' },
+          ({ getFieldValue }) => ({
+            validator(_, value) {
+              if (!value || getFieldValue('newPassword') === value) {
+                return Promise.resolve();
+              }
+              return Promise.reject(new Error('The two passwords that you entered do not match!'));
+            },
+          })
+
+          ]}
         >
           <Input.Password />
         </Form.Item>

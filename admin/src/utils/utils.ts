@@ -31,6 +31,13 @@ export const setAccessToken = (token: string, expires: number) => {
 };
 
 /**
+ * 清除token
+ */
+export const clearAccessToken = () => {
+  Cookies.set('assess_token', '', { expires: 0 });
+};
+
+/**
  * 获取token
  * @returns 获取token
  */

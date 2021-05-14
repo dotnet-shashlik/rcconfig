@@ -39,7 +39,7 @@
     name: 'users',
     icon: 'table',
     path: '/users',
-    component: './user/password',
+    component: './user/list',
   },
   {
     name: 'roles',

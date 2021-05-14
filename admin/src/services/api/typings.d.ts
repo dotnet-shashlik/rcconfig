@@ -7,8 +7,8 @@ declare namespace API {
     code: number;
     msg?: string;
     data?: TData;
-    success:boolean;
-    debug?:string;
+    success: boolean;
+    debug?: string;
   };
 
   type CurrentUser = {
@@ -27,6 +27,7 @@ declare namespace API {
     error?: string;
     status?: string;
     type?: string;
+    error_description?: string;
   };
 
   type PageParams = {

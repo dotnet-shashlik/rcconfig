@@ -6,9 +6,9 @@ import { getIntl, getLocale, history, Link } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import type { ResponseError } from 'umi-request';
-import { currentUser as queryCurrentUser } from './services/api/account';
+import { currentUser as queryCurrentUser } from './services/api/user';
 import { BookOutlined, LinkOutlined } from '@ant-design/icons';
-import { getAccessToken, getBaseUrl } from './utils/utils';
+import { getAccessToken, getBaseUrl, clearAccessToken } from './utils/utils';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -73,6 +73,7 @@ export async function getInitialState(): Promise<{
  * @see https://beta-pro.ant.design/docs/request-cn
  */
 export const request: RequestConfig = {
+  // header/baseUrl
   requestInterceptors: [
     (url: string, options: any) => {
       const token = getAccessToken();
@@ -88,11 +89,10 @@ export const request: RequestConfig = {
       }
     }
   ],
-  errorHandler: (error: ResponseError) => {
-    const { messages } = getIntl(getLocale());
-    const { response } = error;
-
-    if (response && response.status) {
+  responseInterceptors: [(response: Response) => {
+    // 统一网络错误处理
+    if (response && response.status >= 400) {
+      const { messages } = getIntl(getLocale());
       const { status, statusText, url } = response;
       const requestErrorMessage = messages['app.request.error'];
       const errorMessage = `${requestErrorMessage} ${status}: ${url}`;
@@ -101,22 +101,22 @@ export const request: RequestConfig = {
         message: errorMessage,
         description: errorDescription,
       });
+
+      if (response.status === 401) {
+        clearAccessToken();
+        window.location.href = '/user/login';
+      }
     }
 
-    if (!response) {
-      notification.error({
-        description: '您的网络发生异常，无法连接服务器',
-        message: '网络异常',
-      });
-    }
-    throw error;
-  },
+    return response;
+  }],
   errorConfig: {
-    adaptor: (resData: any, context: any) => {
+    adaptor: (resData: any) => {
       return {
         ...resData,
         errorCode: resData.code,
-        errorMessage: resData.msg
+        errorMessage: resData.msg,
+        showType: 2
       };
     }
   }
