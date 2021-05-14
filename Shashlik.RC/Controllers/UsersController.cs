@@ -29,6 +29,18 @@ namespace Shashlik.RC.Controllers
             return (await UserService.Get(LoginUserId!.Value))!;
         }
 
+        [HttpGet("{userId:int:min(1)}"), Admin]
+        public async Task<UserDetailDto> Get(int userId)
+        {
+            return (await UserService.Get(userId))!;
+        }
+
+        [HttpPost]
+        public async Task Create(CreateUserInput input)
+        {
+            await UserService.CreateUser(input);
+        }
+
         [HttpPatch("password")]
         public async Task ChangePassword(ChangePasswordInput input)
         {

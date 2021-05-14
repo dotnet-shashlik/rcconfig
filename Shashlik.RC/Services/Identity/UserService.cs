@@ -9,7 +9,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shashlik.AutoMapper;
 using Shashlik.Kernel.Dependency;
+using Shashlik.RC.Data;
 using Shashlik.RC.Services.Identity.Dtos;
+using Shashlik.RC.Services.Identity.Inputs;
+using Shashlik.Response;
 
 namespace Shashlik.RC.Services.Identity
 {
@@ -19,10 +22,14 @@ namespace Shashlik.RC.Services.Identity
         public UserService(IUserStore<IdentityUser<int>> store, IOptions<IdentityOptions> optionsAccessor,
             IPasswordHasher<IdentityUser<int>> passwordHasher, IEnumerable<IUserValidator<IdentityUser<int>>> userValidators,
             IEnumerable<IPasswordValidator<IdentityUser<int>>> passwordValidators, ILookupNormalizer keyNormalizer, IdentityErrorDescriber errors,
-            IServiceProvider services, ILogger<UserManager<IdentityUser<int>>> logger) : base(store, optionsAccessor, passwordHasher, userValidators,
+            IServiceProvider services, ILogger<UserManager<IdentityUser<int>>> logger, RCDbContext dbContext) : base(store, optionsAccessor,
+            passwordHasher, userValidators,
             passwordValidators, keyNormalizer, errors, services, logger)
         {
+            DbContext = dbContext;
         }
+
+        private RCDbContext DbContext { get; }
 
         public async Task<UserDetailDto?> Get(int userId)
         {
@@ -43,6 +50,30 @@ namespace Shashlik.RC.Services.Identity
         public async Task<List<UserDto>> Get()
         {
             return await Users.QueryTo<UserDto>().ToListAsync();
+        }
+
+        public async Task CreateUser(CreateUserInput input)
+        {
+            await using var transaction = await DbContext.Database.BeginTransactionAsync();
+            var user = new IdentityUser<int>
+            {
+                UserName = input.UserName
+            };
+            var res = await CreateAsync(user, input.Password);
+            if (!res.Succeeded)
+            {
+                await transaction.RollbackAsync();
+                throw ResponseException.ArgError(res.ToString());
+            }
+
+            res = await AddToRolesAsync(user, input.Roles);
+            if (!res.Succeeded)
+            {
+                await transaction.RollbackAsync();
+                throw ResponseException.ArgError(res.ToString());
+            }
+
+            await transaction.CommitAsync();
         }
     }
 }
