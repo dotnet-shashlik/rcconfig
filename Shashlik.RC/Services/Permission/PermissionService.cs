@@ -29,7 +29,7 @@ namespace Shashlik.RC.Services.Permission
 
         private IEnumerable<Claim> RequestUserClaims => HttpContextAccessor.HttpContext?.User.Claims ?? new List<Claim>();
 
-        private const string ResourceClaimTypePrefix = "RESOURCE:";
+        public const string ResourceClaimTypePrefix = "RESOURCE:";
 
         /// <summary>
         /// 过滤没有读取权限的数据

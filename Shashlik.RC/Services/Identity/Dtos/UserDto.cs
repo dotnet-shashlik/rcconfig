@@ -1,6 +1,8 @@
 ﻿#nullable disable
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using Shashlik.AutoMapper;
+using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Services.Identity.Dtos
 {
@@ -9,5 +11,9 @@ namespace Shashlik.RC.Services.Identity.Dtos
         public int Id { get; set; }
 
         public string UserName { get; set; }
+
+        public List<string> Roles { get; set; }
+
+        public string RolesStr => Roles.Join(",");
     }
 }

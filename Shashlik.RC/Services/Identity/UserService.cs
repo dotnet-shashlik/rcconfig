@@ -49,7 +49,25 @@ namespace Shashlik.RC.Services.Identity
 
         public async Task<List<UserDto>> Get()
         {
-            return await Users.QueryTo<UserDto>().ToListAsync();
+            var list = await (from user in DbContext.Users
+                    join userRole in DbContext.UserRoles on user.Id equals userRole.UserId
+                    join role in DbContext.Roles on userRole.RoleId equals role.Id
+                    select new
+                    {
+                        user.Id, user.UserName,
+                        RoleName = role.Name
+                    }
+                )
+                .ToListAsync();
+
+            return list.GroupBy(r => new {r.Id, r.UserName})
+                .Select(r => new UserDto
+                {
+                    Id = r.Key.Id,
+                    UserName = r.Key.UserName,
+                    Roles = r.Select(i => i.RoleName).ToList()
+                })
+                .ToList();
         }
 
         public async Task CreateUser(CreateUserInput input)
