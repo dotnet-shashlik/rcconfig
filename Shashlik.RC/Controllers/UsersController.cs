@@ -36,7 +36,7 @@ namespace Shashlik.RC.Controllers
             return user ?? throw ResponseException.NotFound();
         }
 
-        [HttpPost]
+        [HttpPost, Admin]
         public async Task Create(CreateUserInput input)
         {
             await UserService.CreateUser(input);
