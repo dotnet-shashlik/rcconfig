@@ -53,11 +53,10 @@ export async function getUserById(userId: number, options?: { [key: string]: any
   });
 }
 
-/** 创建用户 POST /users */
-export async function userList(body: any, options?: { [key: string]: any }) {
+/** 用户列表 POST /users */
+export async function userList(options?: { [key: string]: any }) {
   return await request<API.Response<any>>('/users', {
-    method: 'POST',
-    data: body,
+    method: 'GET',
     ...(options || {})
   });
 }
