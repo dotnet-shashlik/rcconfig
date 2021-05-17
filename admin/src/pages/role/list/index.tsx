@@ -14,21 +14,21 @@ const formLayout = {
 export default () => {
 
   const [showCreate, setShowCreate] = useState(false);
-  const userListRequest = useRequest(userList);
+  const userListRequest = useRequest(roleList);
   const reload = () => {
     userListRequest.run();
     setShowCreate(false);
     message.success('success');
   };
-  const createUserRequest = useRequest(createUser, {
+  const createUserRequest = useRequest(createRole, {
     manual: true, onSuccess: reload
   });
   const roleListRequest = useRequest(roleList);
-  const deleteUserList = useRequest(deleteUser, {
+  const deleteUserList = useRequest(deleteRole, {
     manual: true, fetchKey: (id: any) => id, onSuccess: reload
   });
 
-  const onDelete = (userId: number) => {
+  const onDelete = (userId: string) => {
     Modal.confirm({
       title: 'Confirm delete this user?',
       onOk: async () => {
@@ -46,13 +46,12 @@ export default () => {
       </div>
       <Table dataSource={userListRequest.data} loading={userListRequest.loading}>
         <Column title="ID" dataIndex="id" />
-        <Column title="UserName" dataIndex="userName" />
-        <Column title="Roles" dataIndex="rolesStr" />
+        <Column title="Name" dataIndex="name" />
         <Column title="Action" key="action"
           render={(text: any, user: any) => (
             <span>
               <Button type="link" loading={deleteUserList.fetches[user.id]?.loading} onClick={() => { onDelete(user.id) }}>Delete</Button>
-              <Link to={`/users/detail/${user.id}`}>Detail</Link>
+              <Link to={`/roles/detail/${user.id}`}>Detail</Link>
             </span>
           )} />
       </Table>

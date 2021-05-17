@@ -22,10 +22,10 @@ namespace Shashlik.RC.Controllers
         private EnvironmentService EnvironmentService { get; }
         private PermissionService PermissionService { get; }
 
-        [HttpGet]
+        [HttpGet(Constants.ResourceRoute.Application)]
         public async Task<List<EnvironmentDto>> Get()
         {
-            var list = await EnvironmentService.List();
+            var list = await EnvironmentService.List(GetResourceId());
             return (await PermissionService.DoFilter(LoginUserId!.Value, list)).ToList();
         }
 

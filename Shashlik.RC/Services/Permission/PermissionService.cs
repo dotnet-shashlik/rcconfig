@@ -4,11 +4,13 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Shashlik.Kernel.Dependency;
 using Shashlik.RC.Common;
 using Shashlik.RC.Data;
 using Shashlik.RC.Services.Identity;
+using Shashlik.Response;
 
 namespace Shashlik.RC.Services.Permission
 {
@@ -106,18 +108,35 @@ namespace Shashlik.RC.Services.Permission
         /// <summary>
         /// 绑定角色与资源
         /// </summary>
-        /// <param name="role"></param>
         /// <param name="resourceId"></param>
+        /// <param name="role"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public async Task BindRoleResource(string role, string resourceId, int action)
+        public async Task BindRoleResource(string resourceId, string role, PermissionAction action)
         {
+            await using var transaction = await DbContext.Database.BeginTransactionAsync();
             var identityRole = await RoleService.FindByNameAsync(role);
             var claims = await RoleService.GetClaimsAsync(identityRole);
             var claim = claims.FirstOrDefault(r => r.Type == ResourceClaimTypePrefix + resourceId);
+            IdentityResult res;
             if (claim is not null)
-                await RoleService.RemoveClaimAsync(identityRole, claim);
-            await RoleService.AddClaimAsync(identityRole, new Claim(ResourceClaimTypePrefix + resourceId, action.ToString()));
+            {
+                res = await RoleService.RemoveClaimAsync(identityRole, claim);
+                if (!res.Succeeded)
+                {
+                    await transaction.RollbackAsync();
+                    throw ResponseException.ArgError(res.ToString());
+                }
+            }
+
+            res = await RoleService.AddClaimAsync(identityRole, new Claim(ResourceClaimTypePrefix + resourceId, ((int) action).ToString()));
+            if (!res.Succeeded)
+            {
+                await transaction.RollbackAsync();
+                throw ResponseException.ArgError(res.ToString());
+            }
+
+            await transaction.CommitAsync();
         }
     }
 }

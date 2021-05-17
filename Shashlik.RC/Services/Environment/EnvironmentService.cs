@@ -71,10 +71,11 @@ namespace Shashlik.RC.Services.Environment
             await DbContext.SaveChangesAsync();
         }
 
-        public async Task<List<EnvironmentDto>> List()
+        public async Task<List<EnvironmentDto>> List(string? applicationName)
         {
             return await DbContext.Set<Environments>()
                 .OrderBy(r => r.Id)
+                .WhereIf(!applicationName.IsNullOrWhiteSpace(), r => r.Application.Name == applicationName)
                 .QueryTo<EnvironmentDto>()
                 .ToListAsync();
         }

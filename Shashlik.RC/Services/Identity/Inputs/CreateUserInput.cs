@@ -12,7 +12,8 @@ namespace Shashlik.RC.Services.Identity.Inputs
 
         [Required, StringLength(32)] public string Password { get; set; }
 
-        [Required, StringLength(32)] public string ConfirmPassword { get; set; }
+        [Required, StringLength(32), Compare("Password")]
+        public string ConfirmPassword { get; set; }
 
         [Required, MinLength(1)] public List<string> Roles { get; set; }
 

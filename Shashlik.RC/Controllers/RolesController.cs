@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Shashlik.RC.Common;
 using Shashlik.RC.Filters;
 using Shashlik.RC.Services.Identity;
+using Shashlik.RC.Services.Identity.Dtos;
 using Shashlik.RC.Services.Identity.Inputs;
 using Shashlik.RC.Services.Permission;
 using Shashlik.Response;
@@ -34,9 +35,9 @@ namespace Shashlik.RC.Controllers
         }
 
         [HttpGet, Admin]
-        public async Task<List<string>> Get()
+        public async Task<List<RoleDto>> Get()
         {
-            return await RoleService.Roles.Select(r => r.Name).ToListAsync();
+            return await RoleService.List();
         }
 
         [HttpDelete("{roleName}"), Admin]
