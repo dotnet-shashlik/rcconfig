@@ -9,7 +9,6 @@ using Shashlik.Kernel.Dependency;
 using Shashlik.RC.Common;
 using Shashlik.RC.Data;
 using Shashlik.RC.Services.Identity;
-using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Services.Permission
 {
@@ -43,19 +42,15 @@ namespace Shashlik.RC.Services.Permission
         {
             var resourceList = await GetResourceList(userId);
             return source
-                .Where(s => resourceList.Any(
-                    r =>
-                        ResourceClaimTypePrefix + s.ResourceId == r.Type
-                        && r.Value.ParseTo<PermissionAction>().HasFlag(PermissionAction.Read))
-                );
+                .Where(s => resourceList.Any(r => s.ResourceId == r.Id && r.Action.HasFlag(PermissionAction.Read)));
         }
 
-        public async Task<IEnumerable<Claim>> GetResourceList(int userId)
+        public async Task<IEnumerable<ResourceModel>> GetResourceList(int userId)
         {
             return SystemEnvironmentUtils.PermissionReadPolicy switch
             {
                 PermissionReadPolicy.Db => await GetDbResourceList(userId),
-                PermissionReadPolicy.Token => RequestUserClaims,
+                PermissionReadPolicy.Token => RequestUserClaims.ToResources(),
                 _ => throw new IndexOutOfRangeException()
             };
         }
@@ -65,7 +60,17 @@ namespace Shashlik.RC.Services.Permission
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<Claim>> GetDbResourceList(int userId)
+        public async Task<IEnumerable<ResourceModel>> GetDbResourceList(int userId)
+        {
+            return (await GetDbResourceClaims(userId)).ToResources();
+        }
+
+        /// <summary>
+        /// 获取资源列表
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<Claim>> GetDbResourceClaims(int userId)
         {
             var list = await (
                     from userRole in DbContext.UserRoles
@@ -82,9 +87,6 @@ namespace Shashlik.RC.Services.Permission
                 .Select(r => new Claim(r.ClaimType, r.ClaimValue))
                 .CombineResource()
                 .ToList();
-
-            // var claims = await UserService.GetClaimsAsync(new IdentityUser<int> {Id = userId});
-            // return claims.Where(r => r.Type.StartsWith(ResourceClaimTypePrefix)).ToList();
         }
 
         /// <summary>
@@ -98,7 +100,7 @@ namespace Shashlik.RC.Services.Permission
         {
             var resourceList = await GetResourceList(userId);
             return resourceList
-                .Any(r => r.Type == ResourceClaimTypePrefix + resourceId && r.Value.ParseTo<PermissionAction>().HasFlag(action));
+                .Any(r => r.Id == resourceId && r.Action.HasFlag(action));
         }
 
         /// <summary>

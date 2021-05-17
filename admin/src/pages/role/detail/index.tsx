@@ -32,8 +32,9 @@ export default (props: any) => {
         <span>{data?.roles}</span>
       </Form.Item>
       <Form.Item label="Resources">
+
         {
-          userResourceListRequest?.data?.map((item: any) => (<div>{item.id} : {item.actionStr}</div>))
+          userResourceListRequest?.data?.map((item: any) => (<div>{item.type} : {item.value}</div>))
         }
       </Form.Item>
     </Form>

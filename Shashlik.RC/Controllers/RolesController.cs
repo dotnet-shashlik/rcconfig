@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shashlik.RC.Common;
 using Shashlik.RC.Filters;
 using Shashlik.RC.Services.Identity;
 using Shashlik.RC.Services.Identity.Inputs;
@@ -51,13 +52,15 @@ namespace Shashlik.RC.Controllers
         }
 
         [HttpGet("{roleName}/resources"), Admin]
-        public async Task<IEnumerable<Claim>> Resources(string roleName)
+        public async Task<IEnumerable<ResourceModel>> Resources(string roleName)
         {
             var role = await RoleService.FindByNameAsync(roleName);
             if (role is null)
                 throw ResponseException.NotFound();
 
-            return (await RoleService.GetClaimsAsync(role)).Where(r => r.Type.StartsWith(PermissionService.ResourceClaimTypePrefix)).ToList();
+            return (await RoleService.GetClaimsAsync(role))
+                .Where(r => r.Type.StartsWith(PermissionService.ResourceClaimTypePrefix))
+                .ToResources();
         }
     }
 }

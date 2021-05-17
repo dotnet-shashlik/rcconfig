@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -14,6 +15,7 @@ using Shashlik.RC.Data;
 using Shashlik.RC.Services.Identity.Dtos;
 using Shashlik.RC.Services.Identity.Inputs;
 using Shashlik.Response;
+using Z.EntityFramework.Plus;
 
 namespace Shashlik.RC.Services.Identity
 {
@@ -104,6 +106,75 @@ namespace Shashlik.RC.Services.Identity
             }
 
             await transaction.CommitAsync();
+        }
+
+        public async Task Update(int userId, UpdateUserInput input)
+        {
+            await using var transaction = await DbContext.Database.BeginTransactionAsync();
+            var user = await FindByIdAsync(userId.ToString());
+            if (user is null)
+            {
+                await transaction.RollbackAsync();
+                throw ResponseException.NotFound();
+            }
+
+            user.UserName = input.UserName;
+
+            #region claim
+
+            var res = await AddOrUpdateClaim(user, new Claim(Constants.UserClaimTypes.NickName, input.NickName));
+            if (!res.Succeeded)
+            {
+                await transaction.RollbackAsync();
+                throw ResponseException.ArgError(res.ToString());
+            }
+
+            res = await AddOrUpdateClaim(user, new Claim(Constants.UserClaimTypes.Remark, input.Remark));
+            if (!res.Succeeded)
+            {
+                await transaction.RollbackAsync();
+                throw ResponseException.ArgError(res.ToString());
+            }
+
+            #endregion
+
+            #region roles
+
+            var roles = await GetRolesAsync(user);
+            if (!roles.IsNullOrEmpty())
+            {
+                res = await RemoveFromRolesAsync(user, roles);
+                if (!res.Succeeded)
+                {
+                    await transaction.RollbackAsync();
+                    throw ResponseException.ArgError(res.ToString());
+                }
+            }
+
+            if (!input.Roles.IsNullOrEmpty())
+            {
+                res = await AddToRolesAsync(user, input.Roles);
+                if (!res.Succeeded)
+                {
+                    await transaction.RollbackAsync();
+                    throw ResponseException.ArgError(res.ToString());
+                }
+            }
+
+            #endregion
+
+            await transaction.CommitAsync();
+        }
+
+        public async Task<IdentityResult> AddOrUpdateClaim(IdentityUser<int> user, Claim claim)
+        {
+            var rows = await DbContext.UserClaims
+                .Where(r => r.UserId == user.Id && r.ClaimType == claim.Type)
+                .UpdateAsync(r => new IdentityUserClaim<int> {ClaimValue = claim.Value});
+            if (rows == 0)
+                return await AddClaimAsync(user, claim);
+
+            return IdentityResult.Success;
         }
     }
 }

@@ -32,5 +32,15 @@ namespace Shashlik.RC.Common
                 Rows = list
             };
         }
+
+        public static ResourceModel ToResource(this Claim claim)
+        {
+            return new(claim);
+        }
+
+        public static IEnumerable<ResourceModel> ToResources(this IEnumerable<Claim> claim)
+        {
+            return ResourceModel.FromClaims(claim);
+        }
     }
 }

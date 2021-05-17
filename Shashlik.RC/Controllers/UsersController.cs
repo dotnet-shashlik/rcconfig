@@ -42,6 +42,12 @@ namespace Shashlik.RC.Controllers
             await UserService.CreateUser(input);
         }
 
+        [HttpPatch("{userId:int:min(1)}"), Admin]
+        public async Task Update(int userId, UpdateUserInput input)
+        {
+            await UserService.Update(userId, input);
+        }
+
         [HttpPatch("password")]
         public async Task ChangePassword(ChangePasswordInput input)
         {
@@ -72,7 +78,7 @@ namespace Shashlik.RC.Controllers
         }
 
         [HttpGet("{userId:int:min(1)}/resources"), Admin]
-        public async Task<IEnumerable<Claim>> Resources(int userid, [FromServices] PermissionService permissionService)
+        public async Task<IEnumerable<ResourceModel>> Resources(int userid, [FromServices] PermissionService permissionService)
         {
             return await permissionService.GetDbResourceList(userid);
         }
