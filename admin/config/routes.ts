@@ -42,6 +42,13 @@
     component: './user/list',
   },
   {
+    name: 'userDetail',
+    icon: 'table',
+    path: '/users/detail/:id',
+    hideInMenu: true,
+    component: './user/detail',
+  },
+  {
     name: 'roles',
     icon: 'table',
     path: '/roles',

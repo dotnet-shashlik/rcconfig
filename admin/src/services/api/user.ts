@@ -46,7 +46,7 @@ export async function createUser(body: any, options?: { [key: string]: any }) {
 }
 
 /** 获取指定用户信息 GET /users/{userId} */
-export async function getUserById(userId: number, options?: { [key: string]: any }) {
+export async function getUserById(userId: any, options?: { [key: string]: any }) {
   return await request<API.Response<any>>(`/users/${userId}`, {
     method: 'GET',
     ...(options || {})
@@ -70,7 +70,7 @@ export async function deleteUser(userId: number, options?: { [key: string]: any 
 }
 
 /** 获取用户资源列表 GET /users/{userId}/resources */
-export async function resourceList(userId: number, options?: { [key: string]: any }) {
+export async function userResourceList(userId: number, options?: { [key: string]: any }) {
   return await request<API.Response<any>>(`/users/${userId}/resources`, {
     method: 'GET',
     ...(options || {})

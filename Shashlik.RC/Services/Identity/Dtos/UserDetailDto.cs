@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using Newtonsoft.Json;
 using Shashlik.RC.Common;
+using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Services.Identity.Dtos
 {
@@ -21,5 +22,7 @@ namespace Shashlik.RC.Services.Identity.Dtos
         public IEnumerable<Claim> Claims { get; set; }
 
         public IEnumerable<string> Roles { get; set; }
+
+        public string RolesStr => Roles.Join(",");
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shashlik.AutoMapper;
 using Shashlik.Kernel.Dependency;
+using Shashlik.RC.Common;
 using Shashlik.RC.Data;
 using Shashlik.RC.Services.Identity.Dtos;
 using Shashlik.RC.Services.Identity.Inputs;
@@ -78,6 +79,17 @@ namespace Shashlik.RC.Services.Identity
                 UserName = input.UserName
             };
             var res = await CreateAsync(user, input.Password);
+            if (!res.Succeeded)
+            {
+                await transaction.RollbackAsync();
+                throw ResponseException.ArgError(res.ToString());
+            }
+
+            res = await AddClaimsAsync(user, new List<Claim>()
+            {
+                new Claim(Constants.UserClaimTypes.NickName, input.NickName),
+                new Claim(Constants.UserClaimTypes.Remark, input.Remark)
+            });
             if (!res.Succeeded)
             {
                 await transaction.RollbackAsync();

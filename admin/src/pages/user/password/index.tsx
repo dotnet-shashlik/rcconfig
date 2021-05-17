@@ -37,7 +37,7 @@ export default () => {
         <Form.Item
           label={useIntl().formatMessage({ id: 'app.settings.oldPassword' })}
           name="oldPassword"
-          rules={[{ required: true, message: 'Please inout Old Password!' }]}
+          rules={[{ required: true }, { max: 32 }]}
         >
           <Input.Password />
         </Form.Item>
@@ -45,23 +45,24 @@ export default () => {
         <Form.Item
           label={useIntl().formatMessage({ id: 'app.settings.newPassword' })}
           name="newPassword"
-          rules={[{ required: true, message: 'Please inout New Password!' }]}
+          rules={[{ required: true }, { max: 32 }]}
         >
           <Input.Password />
         </Form.Item>
         <Form.Item
           label={useIntl().formatMessage({ id: 'app.settings.confirmPassword' })}
           name="confirmPassword"
-          rules={[{ required: true, message: 'Please inout Confirm Password!' },
-          ({ getFieldValue }) => ({
-            validator(_, value) {
-              if (!value || getFieldValue('newPassword') === value) {
-                return Promise.resolve();
-              }
-              return Promise.reject(new Error('The two passwords that you entered do not match!'));
-            },
-          })
-
+          rules={[
+            { required: true },
+            { max: 32 },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue('newPassword') === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error('The two passwords that you entered do not match!'));
+              },
+            })
           ]}
         >
           <Input.Password />

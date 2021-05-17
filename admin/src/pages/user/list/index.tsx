@@ -54,7 +54,7 @@ export default () => {
           render={(text: any, user: any) => (
             <span>
               <Button type="link" loading={deleteUserList.fetches[user.id]?.loading} onClick={() => { onDelete(user.id) }}>Delete</Button>
-              <Link to={`/user/detail/${user.id}`}>Detail</Link>
+              <Link to={`/users/detail/${user.id}`}>Detail</Link>
             </span>
           )} />
       </Table>
@@ -64,28 +64,45 @@ export default () => {
           <Form.Item
             label="UserName"
             name="userName"
-            rules={[{ required: true, message: 'Please input your username!' }]}
+            rules={[{ required: true }, { max: 32 }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="NickName"
+            name="nickName"
+            rules={[{ required: true }, { max: 32 }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             label="Password"
             name="password"
-            rules={[{ required: true, message: 'Please input your username!' }]}
+            rules={[{ required: true }, { max: 32 }]}
           >
             <Input.Password />
           </Form.Item>
           <Form.Item
             label="ConfirmPassword"
             name="confirmPassword"
-            rules={[{ required: true, message: 'Please input your username!' }]}
+            rules={[
+              { required: true },
+              { max: 32 },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue('password') === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error('The two passwords that you entered do not match!'));
+                },
+              })]}
           >
             <Input.Password />
           </Form.Item>
           <Form.Item
             label="Roles"
             name="roles"
-            rules={[{ required: true, message: 'Please input your username!' }]}
+            rules={[{ required: true }]}
           >
             <Select
               mode="multiple"
@@ -97,6 +114,13 @@ export default () => {
                 return (<Select.Option key={`ROLE_${role}`} value={role}>{role}</Select.Option>);
               })}
             </Select>
+          </Form.Item>
+          <Form.Item
+            label="Remark"
+            name="remark"
+            rules={[{ max: 255 }]}
+          >
+            <Input.TextArea />
           </Form.Item>
         </Form>
       </Modal>

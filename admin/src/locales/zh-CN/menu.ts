@@ -51,6 +51,7 @@ export default {
   'menu.editor.koni': '拓扑编辑器',
 
   'menu.users': '用户管理',
+  'menu.users.detail': '用户详情',
   'menu.roles': '角色管理',
   'menu.apps': '应用管理',
   'menu.envs': '环境管理',

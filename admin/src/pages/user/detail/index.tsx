@@ -1,40 +1,42 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import { Button, Table, Space, Modal } from 'antd';
-import { Link, useRequest } from 'umi';
-import { userList, deleteUser } from '@/services/api/user';
+import { Button, Table, Space, Modal, Form } from 'antd';
+import { useRequest } from 'umi';
+import { getUserById, userResourceList } from '@/services/api/user';
 
 const { Column } = Table;
+const formLayout = {
+  labelCol: { span: 3 },
+  wrapperCol: { span: 21 },
+};
 
-export default () => {
+export default (props: any) => {
+  const { id } = props.match?.params as any;
+  const { data, loading } = useRequest(getUserById, { defaultParams: [id] });
+  const userResourceListRequest = useRequest(userResourceList, { defaultParams: id });
 
-  const userListRequest = useRequest(userList);
-  const deleteUserList = useRequest(deleteUser, {
-    manual: true, fetchKey: (obj: any) => {
-      return obj.id;
-    }
-  });
+  return (<PageContainer loading={loading || userResourceListRequest.loading}>
+    <Form {...formLayout}>
+      <Form.Item label="ID">
+        <span>{data?.id}</span>
+      </Form.Item>
+      <Form.Item label="User Name">
+        <span>{data?.userName}</span>
+      </Form.Item>
+      <Form.Item label="Nick Name">
+        <span>{data?.nickName}</span>
+      </Form.Item>
+      <Form.Item label="Remark">
+        <span>{data?.remark}</span>
+      </Form.Item>
+      <Form.Item label="Roles">
+        <span>{data?.roles}</span>
+      </Form.Item>
+      <Form.Item label="Resources">
 
-  const onDelete = async (userId: number) => {
-    Modal.confirm({
-      title: 'Are you sure delete this user?',
-      onOk: async () => {
-        deleteUserList.run(userId);
-      }
-    });
-  };
-
-  return (
-    <PageContainer>
-      <Table dataSource={userListRequest.data} loading={userListRequest.loading}>
-        <Column title="ID" dataIndex="id" />
-        <Column title="UserName" dataIndex="userName" />
-        <Column title="Action" key="action"
-          render={(text: any, user: any) => (
-            <Space size="middle">
-              <Button type="link" loading={deleteUserList.fetches[user.id]?.loading} onClick={() => { onDelete(user.id) }}>Delete</Button>
-              <Link to={`/user/detail/${user.id}`} >Detail</Link>
-            </Space>
-          )} />
-      </Table>
-    </PageContainer>);
+        {
+          userResourceListRequest?.data?.map((item: any) => (<div>{item.type} : {item.value}</div>))
+        }
+      </Form.Item>
+    </Form>
+  </PageContainer>);
 };
