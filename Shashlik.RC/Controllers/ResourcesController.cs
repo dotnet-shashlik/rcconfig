@@ -7,6 +7,7 @@ using Shashlik.RC.Filters;
 using Shashlik.RC.Services.Application;
 using Shashlik.RC.Services.Environment;
 using Shashlik.RC.Services.Permission;
+using Shashlik.RC.Services.Permission.Inputs;
 
 namespace Shashlik.RC.Controllers
 {
@@ -37,6 +38,12 @@ namespace Shashlik.RC.Controllers
         public async Task Bind(BindRoleResourceInput input)
         {
             await PermissionService.BindRoleResource(GetResourceId(), input.Role, input.Action);
+        }
+
+        [HttpDelete(Constants.ResourceRoute.ApplicationAndEnvironment + "/bind"), Admin]
+        public async Task Unbind(UnbindRoleResourceInput input)
+        {
+            await PermissionService.UnbindRoleResource(GetResourceId(), input.Role);
         }
     }
 }

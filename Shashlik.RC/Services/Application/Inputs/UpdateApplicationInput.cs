@@ -5,6 +5,7 @@ namespace Shashlik.RC.Services.Application.Inputs
 {
     public class UpdateApplicationInput
     {
-        [StringLength(255)] public string Desc { get; set; }
+        [StringLength(255)]
+        public string Desc { get; set; }
     }
 }

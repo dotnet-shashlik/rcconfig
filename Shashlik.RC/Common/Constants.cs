@@ -60,5 +60,10 @@
             public const string NickName = "nickName";
             public const string Remark = "remark";
         }
+
+        public class Regexs
+        {
+            public const string Name = "^[0-9a-zA-Z_]{1,32}$";
+        }
     }
 }

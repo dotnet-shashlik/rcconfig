@@ -138,5 +138,28 @@ namespace Shashlik.RC.Services.Permission
 
             await transaction.CommitAsync();
         }
+
+        /// <summary>
+        /// 解绑角色与资源
+        /// </summary>
+        /// <param name="resourceId"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        public async Task UnbindRoleResource(string resourceId, string role)
+        {
+            var identityRole = await RoleService.FindByNameAsync(role);
+            var claims = await RoleService.GetClaimsAsync(identityRole);
+            var claim = claims.FirstOrDefault(r => r.Type == ResourceClaimTypePrefix + resourceId);
+            if (claim is not null)
+            {
+                var res = await RoleService.RemoveClaimAsync(identityRole, claim);
+                if (!res.Succeeded)
+                {
+                    throw ResponseException.ArgError(res.ToString());
+                }
+            }
+
+            throw ResponseException.NotFound();
+        }
     }
 }
