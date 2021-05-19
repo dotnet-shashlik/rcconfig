@@ -22,12 +22,12 @@ namespace Shashlik.RC.Controllers
 
         private ApplicationService ApplicationService { get; }
         private PermissionService PermissionService { get; }
-
+                     
         [HttpGet]
         public async Task<List<ApplicationDto>> Get()
         {
             var list = await ApplicationService.List();
-            return (await PermissionService.DoFilter(LoginUserId!.Value, list)).ToList();
+            return (await PermissionService.DoFilterFromContext(LoginUserId!.Value, list)).ToList();
         }
 
         [HttpPost, Admin]

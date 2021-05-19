@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Shashlik.RC.Data.Entities
 {
-    public class Secrets 
+    public class Secrets
     {
         public int Id { get; set; }
 
@@ -13,10 +13,7 @@ namespace Shashlik.RC.Data.Entities
 
         public long CreateTime { get; set; }
 
-        public int EnvironmentId { get; set; }
-
-        public Environments Environment { get; set; }
-
+        public string UserId { get; set; }
 
         public class Configs : IEntityTypeConfiguration<Secrets>
         {
@@ -25,11 +22,7 @@ namespace Shashlik.RC.Data.Entities
                 builder.Property(r => r.SecretId).HasMaxLength(255).IsRequired();
                 builder.Property(r => r.SecretKey).HasMaxLength(255).IsRequired();
                 builder.HasIndex(r => r.SecretId).IsUnique();
-
-                builder.HasOne(r => r.Environment)
-                    .WithMany(r => r.Secrets)
-                    .HasForeignKey(r => r.EnvironmentId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                builder.Property(r => r.UserId).HasMaxLength(32).IsRequired();
             }
         }
     }

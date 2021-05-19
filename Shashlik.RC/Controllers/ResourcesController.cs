@@ -31,7 +31,8 @@ namespace Shashlik.RC.Controllers
             var environments = await EnvironmentService.List(null);
             return applications
                 .Select(r => r.ResourceId)
-                .Concat(environments.Select(r => r.ResourceId));
+                .Concat(environments.Select(r => r.ResourceId))
+                .OrderBy(r => r);
         }
 
         [HttpPost(Constants.ResourceRoute.ApplicationAndEnvironment + "/bind"), Admin]

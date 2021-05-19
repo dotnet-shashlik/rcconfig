@@ -57,4 +57,5 @@ export default {
   'menu.envs': '环境管理',
   'menu.files': '文件管理',
   'menu.password': '修改密码',
+  'menu.resources': '资源授权',
 };

@@ -18,7 +18,7 @@ namespace Shashlik.RC.Common
             AdminPassword = Environment.GetEnvironmentVariable("RC_ADMIN_PASS") ?? "Shashlik.RC.Server";
             Servers = Environment.GetEnvironmentVariable("RC_SERVERS");
             PermissionReadPolicy = Environment.GetEnvironmentVariable("RC_PERMISSION_READ_POLICY")?.ParseTo<PermissionReadPolicy>() ??
-                                   PermissionReadPolicy.Token;
+                                   PermissionReadPolicy.Db;
             ServerToken = Environment.GetEnvironmentVariable("RC_SERVER_TOKEN") ?? "Shashlik.RC.ServerToken";
             Authority = Environment.GetEnvironmentVariable("RC_AUTHORITY") ?? "http://localhost:5000";
         }

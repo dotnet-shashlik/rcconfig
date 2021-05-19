@@ -5,4 +5,6 @@ export default {
 
   'component.changePassword': 'Change Password',
   'component.logOut': 'Log Out',
+  'component.secrets': 'Secret Management',
+
 };

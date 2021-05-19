@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Shashlik.RC.Common;
-using Shashlik.RC.Filters;
 using Shashlik.RC.Services.Environment;
 using Shashlik.RC.Services.Environment.Dtos;
 using Shashlik.RC.Services.Environment.Inputs;
@@ -26,7 +25,7 @@ namespace Shashlik.RC.Controllers
         public async Task<List<EnvironmentDto>> Get()
         {
             var list = await EnvironmentService.List(GetResourceId());
-            return (await PermissionService.DoFilter(LoginUserId!.Value, list)).ToList();
+            return (await PermissionService.DoFilterFromContext(LoginUserId!.Value, list)).ToList();
         }
 
         [HttpPost(Constants.ResourceRoute.Application)]

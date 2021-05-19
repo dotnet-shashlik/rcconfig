@@ -33,12 +33,12 @@ namespace Shashlik.RC.WebSocket
         /// <summary>
         /// 添加一个新的在线连接
         /// </summary>
-        /// <param name="environmentId"></param>
+        /// <param name="resourceId"></param>
         /// <param name="socket"></param>
         /// <param name="cancellationToken"></param>
-        internal async Task AddSocket(string environmentId, WS socket, CancellationToken cancellationToken = default)
+        internal async Task AddSocket(string resourceId, WS socket, CancellationToken cancellationToken = default)
         {
-            var key = environmentId;
+            var key = resourceId;
             if (OnLineSockets.TryGetValue(key, out var list))
                 list.Add(socket);
             else
@@ -50,7 +50,7 @@ namespace Shashlik.RC.WebSocket
                 WebSocketReceiveResult result;
                 do
                 {
-                    await Task.Delay(10);
+                    await Task.Delay(10, cancellationToken);
                     // heart beat
                     result = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token);
                     if (result.MessageType == WebSocketMessageType.Text)

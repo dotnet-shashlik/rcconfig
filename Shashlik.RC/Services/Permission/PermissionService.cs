@@ -17,15 +17,17 @@ namespace Shashlik.RC.Services.Permission
     [Scoped]
     public class PermissionService
     {
-        public PermissionService(RoleService roleService, RCDbContext dbContext, IHttpContextAccessor httpContextAccessor)
+        public PermissionService(RoleService roleService, RCDbContext dbContext, IHttpContextAccessor httpContextAccessor, UserService userService)
         {
             RoleService = roleService;
             DbContext = dbContext;
             HttpContextAccessor = httpContextAccessor;
+            UserService = userService;
         }
 
         private RCDbContext DbContext { get; }
         private RoleService RoleService { get; }
+        private UserService UserService { get; }
         private IHttpContextAccessor HttpContextAccessor { get; }
 
         private IEnumerable<Claim> RequestUserClaims => HttpContextAccessor.HttpContext?.User.Claims ?? new List<Claim>();
@@ -36,15 +38,49 @@ namespace Shashlik.RC.Services.Permission
         /// 过滤没有读取权限的数据
         /// </summary>
         /// <param name="userId"></param>
+        /// <param name="isAdmin"></param>
         /// <param name="source"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public async Task<IEnumerable<T>> DoFilter<T>(int userId, IEnumerable<T> source)
+        public async Task<IEnumerable<T>> DoFilter<T>(int userId, bool isAdmin, IEnumerable<T> source)
             where T : IResource
         {
+            if (isAdmin)
+                return source;
             var resourceList = await GetResourceList(userId);
             return source
                 .Where(s => resourceList.Any(r => s.ResourceId == r.Id && r.Action.HasFlag(PermissionAction.Read)));
+        }
+
+        /// <summary>
+        /// 过滤没有读取权限的数据
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="source"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public async Task<IEnumerable<T>> DoFilterFromContext<T>(int userId, IEnumerable<T> source)
+            where T : IResource
+        {
+            return await DoFilter(userId, HttpContextAccessor.HttpContext!.User.IsInRole(Constants.Roles.Admin), source);
+        }
+
+        /// <summary>
+        /// 过滤没有读取权限的数据
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="source"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public async Task<IEnumerable<T>> DoFilterFromDb<T>(int userId, IEnumerable<T> source)
+            where T : IResource
+        {
+            var user = new IdentityUser<int>()
+            {
+                Id = userId
+            };
+
+            return await DoFilter(userId, await UserService.IsInRoleAsync(user, Constants.Roles.Admin), source);
         }
 
         public async Task<IEnumerable<ResourceModel>> GetResourceList(int userId)

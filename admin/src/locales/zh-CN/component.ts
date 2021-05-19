@@ -5,5 +5,5 @@ export default {
 
   'component.changePassword': '修改密码',
   'component.logOut': '退出登录',
-
+  'component.secrets': '密钥管理',
 };

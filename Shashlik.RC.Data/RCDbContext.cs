@@ -15,6 +15,7 @@ namespace Shashlik.RC.Data
 
         public DbSet<Applications> Applications { get; set; }
         public DbSet<Environments> Environments { get; set; }
+        public DbSet<Secrets> Secrets { get; set; }
         public DbSet<ConfigurationFiles> Files { get; set; }
         public DbSet<Logs> Logs { get; set; }
         public DbSet<SignatureKeys> SignatureKeys { get; set; }
@@ -24,6 +25,7 @@ namespace Shashlik.RC.Data
             base.OnModelCreating(builder);
             builder.ApplyConfiguration(new Applications.Configs());
             builder.ApplyConfiguration(new Environments.Configs());
+            builder.ApplyConfiguration(new Secrets.Configs());
             builder.ApplyConfiguration(new ConfigurationFiles.Configs());
             builder.ApplyConfiguration(new Logs.Configs());
             builder.ApplyConfiguration(new SignatureKeys.Configs());

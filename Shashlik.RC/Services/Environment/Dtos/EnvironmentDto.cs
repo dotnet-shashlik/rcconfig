@@ -43,8 +43,6 @@ namespace Shashlik.RC.Services.Environment.Dtos
         /// </summary>
         public long CreateTime { get; set; }
 
-        public List<SecretDto> Secrets { get; set; }
-
         /// <summary>
         /// 资源id
         /// </summary>

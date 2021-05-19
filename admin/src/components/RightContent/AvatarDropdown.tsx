@@ -84,6 +84,12 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
           <FormattedMessage id="component.changePassword" />
         </Menu.Item>
       )}
+      {menu && (
+        <Menu.Item key="secrets">
+          <UserOutlined />
+          <FormattedMessage id="component.secrets" />
+        </Menu.Item>
+      )}
       {menu && <Menu.Divider />}
 
       <Menu.Item key="logout">

@@ -8,7 +8,7 @@
         "RC_DB_CONN": "Data Source=./data/rc.db;",
         "RC_ADMIN_PASS": "Shashlik.RC.Server",
         "RC_ACCESS_TOKEN_LIFETIME": "1800",
-        "RC_PERMISSION_READ_POLICY": "Token",
+        "RC_PERMISSION_READ_POLICY": "Db",
         "RC_SERVER_TOKEN": "Shashlik.RC.ServerToken",
         "RC_AUTHORITY": "http://localhost:5000",
         "ASPNETCORE_URLS": "http://*:5000"
