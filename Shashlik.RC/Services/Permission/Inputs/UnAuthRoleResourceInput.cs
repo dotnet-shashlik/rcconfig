@@ -3,10 +3,8 @@
 #nullable disable
 namespace Shashlik.RC.Services.Permission.Inputs
 {
-    public class BindRoleResourceInput
+    public class UnAuthRoleResourceInput
     {
         [Required, MaxLength(32)] public string Role { get; set; }
-
-        public PermissionAction Action { get; set; }
     }
 }

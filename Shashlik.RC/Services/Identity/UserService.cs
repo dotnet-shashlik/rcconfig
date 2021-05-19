@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Shashlik.AutoMapper;
 using Shashlik.Kernel.Dependency;
 using Shashlik.RC.Common;
 using Shashlik.RC.Data;

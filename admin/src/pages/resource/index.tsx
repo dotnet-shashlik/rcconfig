@@ -1,8 +1,9 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import { Button, Table, Modal, Form, Input, message } from 'antd';
+import { Button, Table, Modal, Form, Input, message, Row, Col } from 'antd';
 import { Link, useRequest } from 'umi';
 import { useState } from 'react';
-import { roleList, createRole, deleteRole, resourceList } from '@/services/api/role';
+import { roleList } from '@/services/api/role';
+import { resourceAuthList, resourceList, authRoleResource, unAuthRoleResource } from '@/services/api/resource';
 
 const { Column } = Table;
 
@@ -11,33 +12,39 @@ const formLayout = {
   wrapperCol: { span: 13 },
 };
 
-export default () => {
+interface ResourceModel {
+  id?: string;
+  resourceType?: string;
+  cctionStr?: string;
+  action?: number;
+  role?: string;
+}
 
+export default (props: any) => {
+  const { id } = props.location.query;
   const [showCreate, setShowCreate] = useState(false);
-  const [showResources, setShowResources] = useState(false);
-  const roleListRequest = useRequest(roleList);
+  const resourceAuthListRequest = useRequest(roleList);
+  const resourceListRequest = useRequest(roleList);
   const reload = () => {
-    roleListRequest.run();
+    resourceAuthListRequest.run();
     setShowCreate(false);
     message.success('success');
   };
-  const createUserRequest = useRequest(createRole, {
+
+  const authRoleResourceRequest = useRequest(authRoleResource, {
     manual: true, onSuccess: reload
   });
-  const deleteUserList = useRequest(deleteRole, {
-    manual: true, fetchKey: (id: any) => id, onSuccess: reload
-  });
-  const resourceListRequest = useRequest(resourceList, {
-    manual: true, onSuccess: () => {
-      setShowResources(true);
-    }
+  const unAuthRoleResourceRequest = useRequest(unAuthRoleResource, {
+    manual: true, onSuccess: reload
   });
 
-  const onDelete = (role: string) => {
+  const onDelete = (item: ResourceModel) => {
     Modal.confirm({
       title: 'Are you sure delete this role?',
       onOk: async () => {
-        deleteUserList.run(role);
+        unAuthRoleResourceRequest.run(item.id!, {
+          role: item.role
+        });
       }
     });
   };
@@ -45,10 +52,15 @@ export default () => {
 
   return (
     <PageContainer>
-      <div style={{ marginBottom: "5px", textAlign: "right" }}>
-        <Button type="primary" onClick={() => setShowCreate(true)}>创建新角色</Button>
-        <Button type="default" onClick={roleListRequest.run}>刷新</Button>
-      </div>
+      <Row style={{ marginBottom: "5px" }}>
+        <Col span={12}>
+          <h3>Application: {app}</h3>
+        </Col>
+        <Col span={12} style={{ textAlign: "right" }}>
+          <Button type="primary" onClick={() => setShowCreate(true)}>创建环境</Button>
+          <Button type="default" onClick={() => envListRequest.run(app)}>刷新</Button>
+        </Col>
+      </Row>
       <Table dataSource={roleListRequest.data} loading={roleListRequest.loading}>
         <Column title="ID" dataIndex="id" />
         <Column title="Name" dataIndex="name" />

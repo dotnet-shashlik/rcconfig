@@ -10,16 +10,16 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-
-           var type= typeof(Program).Assembly.GetType("ConsoleApp1.A");
+           var r= Per.R | Per.R | Per.W|Per.W|Per.RW;
+           Console.WriteLine(r);
         }
     }
 
-    public interface IA
+    [Flags]
+    public enum Per
     {
-    }
-
-    public class A : IA
-    {
+        R = 1,
+        W = 2,
+        RW = 4
     }
 }

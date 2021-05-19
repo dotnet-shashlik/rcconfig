@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable InconsistentNaming
@@ -13,6 +14,9 @@ namespace Shashlik.RC.Data.Sqlite
             {
                 r.UseSqlite(connString,
                     builder => builder.MigrationsAssembly(typeof(Extensions).Assembly.GetName().FullName));
+#if DEBUG
+                r.LogTo(Console.WriteLine);
+#endif
             });
         }
     }

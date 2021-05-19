@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shashlik.RC.Common;
 using Shashlik.RC.Filters;
@@ -25,26 +26,40 @@ namespace Shashlik.RC.Controllers
         private PermissionService PermissionService { get; }
 
         [HttpGet]
-        public async Task<IEnumerable<string>> List()
+        public async Task<IEnumerable<ResourceModel>> List()
         {
             var applications = await ApplicationService.List();
             var environments = await EnvironmentService.List(null);
             return applications
-                .Select(r => r.ResourceId)
-                .Concat(environments.Select(r => r.ResourceId))
-                .OrderBy(r => r);
+                    .Select(r => new ResourceModel
+                    {
+                        Id = r.ResourceId
+                    })
+                    .Concat(environments.Select(r => new ResourceModel
+                    {
+                        Id = r.ResourceId
+                    }))
+                    .OrderBy(r => r.Id)
+                ;
         }
 
-        [HttpPost(Constants.ResourceRoute.ApplicationAndEnvironment + "/bind"), Admin]
-        public async Task Bind(BindRoleResourceInput input)
+        [HttpGet("authorizations")]
+        [AllowAnonymous]
+        public async Task<PageModel<ResourceModel>> Authorizations([FromQuery] SearchAuthorizationInput input)
         {
-            await PermissionService.BindRoleResource(GetResourceId(), input.Role, input.Action);
+            return await PermissionService.SearchAuthorization(input);
         }
 
-        [HttpDelete(Constants.ResourceRoute.ApplicationAndEnvironment + "/bind"), Admin]
-        public async Task Unbind(UnbindRoleResourceInput input)
+        [HttpPost(Constants.ResourceRoute.ApplicationAndEnvironment + "/auth"), Admin]
+        public async Task Auth(AuthRoleResourceInput input)
         {
-            await PermissionService.UnbindRoleResource(GetResourceId(), input.Role);
+            await PermissionService.AuthorizeRoleResource(GetResourceId(), input.Role, input.Action);
+        }
+
+        [HttpDelete(Constants.ResourceRoute.ApplicationAndEnvironment + "/auth"), Admin]
+        public async Task UnAuth(UnAuthRoleResourceInput input)
+        {
+            await PermissionService.UnAuthorizeRoleResource(GetResourceId(), input.Role);
         }
     }
 }

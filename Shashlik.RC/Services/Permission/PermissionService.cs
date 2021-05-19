@@ -10,7 +10,9 @@ using Shashlik.Kernel.Dependency;
 using Shashlik.RC.Common;
 using Shashlik.RC.Data;
 using Shashlik.RC.Services.Identity;
+using Shashlik.RC.Services.Permission.Inputs;
 using Shashlik.Response;
+using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Services.Permission
 {
@@ -148,7 +150,7 @@ namespace Shashlik.RC.Services.Permission
         /// <param name="role"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public async Task BindRoleResource(string resourceId, string role, PermissionAction action)
+        public async Task AuthorizeRoleResource(string resourceId, string role, PermissionAction action)
         {
             await using var transaction = await DbContext.Database.BeginTransactionAsync();
             var identityRole = await RoleService.FindByNameAsync(role);
@@ -181,21 +183,72 @@ namespace Shashlik.RC.Services.Permission
         /// <param name="resourceId"></param>
         /// <param name="role"></param>
         /// <returns></returns>
-        public async Task UnbindRoleResource(string resourceId, string role)
+        public async Task UnAuthorizeRoleResource(string resourceId, string role)
         {
+            await using var transaction = await DbContext.Database.BeginTransactionAsync();
+
             var identityRole = await RoleService.FindByNameAsync(role);
             var claims = await RoleService.GetClaimsAsync(identityRole);
-            var claim = claims.FirstOrDefault(r => r.Type == ResourceClaimTypePrefix + resourceId);
-            if (claim is not null)
+            var delClaims = claims.Where(r => r.Type == ResourceClaimTypePrefix + resourceId).ToList();
+            if (delClaims.IsNullOrEmpty())
+                throw ResponseException.NotFound();
+
+            foreach (var item in delClaims)
             {
-                var res = await RoleService.RemoveClaimAsync(identityRole, claim);
+                var res = await RoleService.RemoveClaimAsync(identityRole, item);
                 if (!res.Succeeded)
                 {
+                    await transaction.RollbackAsync();
                     throw ResponseException.ArgError(res.ToString());
                 }
             }
 
-            throw ResponseException.NotFound();
+            await transaction.CommitAsync();
+        }
+
+        /// <summary>
+        /// 所有已授权数据
+        /// </summary>
+        /// <returns></returns>
+        public async Task<PageModel<ResourceModel>> SearchAuthorization(SearchAuthorizationInput input)
+        {
+            var id = input.Id.IsNullOrWhiteSpace() ? null : ResourceClaimTypePrefix + input.Id;
+            var roles = await DbContext
+                .Set<IdentityRole<int>>()
+                .WhereIf(!input.Role.IsNullOrWhiteSpace(), r => r.Name == input.Role)
+                .ToListAsync();
+
+            int? roleId = null;
+            if (!input.Role.IsNullOrWhiteSpace())
+            {
+                roleId = roles.SingleOrDefault(r => r.Name == input.Role)?.Id;
+                if (!roleId.HasValue)
+                    throw ResponseException.ArgError("角色参数错误");
+            }
+
+            var claims = await DbContext
+                .Set<IdentityRoleClaim<int>>()
+                .WhereIf(roleId.HasValue, r => r.RoleId == roleId)
+                .WhereIf(!id.IsNullOrWhiteSpace(), r => r.ClaimType == id)
+                .ToListAsync();
+            var total = claims.Count;
+
+            var list = (
+                    from claim in claims
+                    join role in roles on claim.RoleId equals role.Id
+                    orderby claim.ClaimType
+                    select new ResourceModel
+                    {
+                        Id = claim.ClaimType.TrimStart(ResourceClaimTypePrefix.ToCharArray()),
+                        Action = claim.ClaimValue.ParseTo<PermissionAction>(),
+                        Role = role.Name
+                    }
+                )
+                .Skip((input.PageIndex - 1) * input.PageSize)
+                .Take(input.PageSize)
+                .ToList();
+
+            return new PageModel<ResourceModel>(total, list);
         }
     }
 }
