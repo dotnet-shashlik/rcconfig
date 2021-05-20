@@ -11,9 +11,10 @@ export async function resourceList(options?: { [key: string]: any }) {
 }
 
 /** 获取已授权资源列表 GET /resources */
-export async function resourceAuthList(options?: { [key: string]: any }) {
+export async function resourceAuthList(searchModel: any, options?: { [key: string]: any }) {
   return await request<API.Response<any>>(`/resources/authorizations`, {
     method: 'GET',
+    params: searchModel,
     ...(options || {})
   });
 }

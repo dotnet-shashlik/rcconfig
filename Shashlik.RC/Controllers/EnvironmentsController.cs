@@ -7,25 +7,26 @@ using Shashlik.RC.Services.Environment;
 using Shashlik.RC.Services.Environment.Dtos;
 using Shashlik.RC.Services.Environment.Inputs;
 using Shashlik.RC.Services.Permission;
+using Shashlik.RC.Services.Resource;
 
 namespace Shashlik.RC.Controllers
 {
     public class EnvironmentsController : ApiControllerBase
     {
-        public EnvironmentsController(EnvironmentService environmentService, PermissionService permissionService)
+        public EnvironmentsController(EnvironmentService environmentService, ResourceService permissionService)
         {
             EnvironmentService = environmentService;
             PermissionService = permissionService;
         }
 
         private EnvironmentService EnvironmentService { get; }
-        private PermissionService PermissionService { get; }
+        private ResourceService PermissionService { get; }
 
         [HttpGet(Constants.ResourceRoute.Application)]
         public async Task<List<EnvironmentDto>> Get()
         {
             var list = await EnvironmentService.List(GetResourceId());
-            return (await PermissionService.DoFilterFromContext(LoginUserId!.Value, list)).ToList();
+            return (await PermissionService.DoFilterIsAdminFromContext(LoginUserId!.Value, list)).ToList();
         }
 
         [HttpPost(Constants.ResourceRoute.Application)]

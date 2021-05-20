@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shashlik.RC.Services.Environment;
 using Shashlik.RC.Services.Permission;
+using Shashlik.RC.Services.Resource;
 using Shashlik.RC.Services.Secret;
 using Shashlik.Utils.Extensions;
 using Shashlik.Utils.Helpers;
@@ -53,7 +54,7 @@ namespace Shashlik.RC.WebSocket
                         }
 
                         var environmentService = context.RequestServices.GetRequiredService<EnvironmentService>();
-                        var permissionService = context.RequestServices.GetRequiredService<PermissionService>();
+                        var permissionService = context.RequestServices.GetRequiredService<ResourceService>();
                         var secretService = context.RequestServices.GetRequiredService<SecretService>();
                         var secretDto = await secretService.GetBySecretId(secretId);
                         if (secretDto is null)

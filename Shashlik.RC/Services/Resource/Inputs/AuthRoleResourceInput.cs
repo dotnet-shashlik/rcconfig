@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Shashlik.RC.Services.Resource;
 
 #nullable disable
 namespace Shashlik.RC.Services.Permission.Inputs

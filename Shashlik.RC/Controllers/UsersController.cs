@@ -10,6 +10,8 @@ using Shashlik.RC.Services.Identity;
 using Shashlik.RC.Services.Identity.Dtos;
 using Shashlik.RC.Services.Identity.Inputs;
 using Shashlik.RC.Services.Permission;
+using Shashlik.RC.Services.Resource;
+using Shashlik.RC.Services.Resource.Dtos;
 using Shashlik.Response;
 
 namespace Shashlik.RC.Controllers
@@ -78,9 +80,9 @@ namespace Shashlik.RC.Controllers
         }
 
         [HttpGet("{userId:int:min(1)}/resources"), Admin]
-        public async Task<IEnumerable<ResourceModel>> Resources(int userid, [FromServices] PermissionService permissionService)
+        public async Task<IEnumerable<ResourceDto>> Resources(int userid, [FromServices] ResourceService permissionService)
         {
-            return await permissionService.GetDbResourceList(userid);
+            return await permissionService.GetResourceActionsByUserId(userid);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿#nullable disable
+﻿using Shashlik.RC.Services.Resource;
+
+#nullable disable
 namespace Shashlik.RC.Services.Permission.Dtos
 {
     public class PermissionDto

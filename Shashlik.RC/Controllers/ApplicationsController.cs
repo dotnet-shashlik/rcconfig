@@ -8,12 +8,13 @@ using Shashlik.RC.Services.Application;
 using Shashlik.RC.Services.Application.Dtos;
 using Shashlik.RC.Services.Application.Inputs;
 using Shashlik.RC.Services.Permission;
+using Shashlik.RC.Services.Resource;
 
 namespace Shashlik.RC.Controllers
 {
     public class ApplicationsController : ApiControllerBase
     {
-        public ApplicationsController(ApplicationService applicationService, PermissionService permissionService)
+        public ApplicationsController(ApplicationService applicationService, ResourceService permissionService)
         {
             ApplicationService = applicationService;
             PermissionService = permissionService;
@@ -21,13 +22,13 @@ namespace Shashlik.RC.Controllers
 
 
         private ApplicationService ApplicationService { get; }
-        private PermissionService PermissionService { get; }
+        private ResourceService PermissionService { get; }
                      
         [HttpGet]
         public async Task<List<ApplicationDto>> Get()
         {
             var list = await ApplicationService.List();
-            return (await PermissionService.DoFilterFromContext(LoginUserId!.Value, list)).ToList();
+            return (await PermissionService.DoFilterIsAdminFromContext(LoginUserId!.Value, list)).ToList();
         }
 
         [HttpPost, Admin]

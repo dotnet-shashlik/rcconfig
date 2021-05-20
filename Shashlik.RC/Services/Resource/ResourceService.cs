@@ -11,15 +11,16 @@ using Shashlik.RC.Common;
 using Shashlik.RC.Data;
 using Shashlik.RC.Services.Identity;
 using Shashlik.RC.Services.Permission.Inputs;
+using Shashlik.RC.Services.Resource.Dtos;
 using Shashlik.Response;
 using Shashlik.Utils.Extensions;
 
-namespace Shashlik.RC.Services.Permission
+namespace Shashlik.RC.Services.Resource
 {
     [Scoped]
-    public class PermissionService
+    public class ResourceService
     {
-        public PermissionService(RoleService roleService, RCDbContext dbContext, IHttpContextAccessor httpContextAccessor, UserService userService)
+        public ResourceService(RoleService roleService, RCDbContext dbContext, IHttpContextAccessor httpContextAccessor, UserService userService)
         {
             RoleService = roleService;
             DbContext = dbContext;
@@ -35,6 +36,30 @@ namespace Shashlik.RC.Services.Permission
         private IEnumerable<Claim> RequestUserClaims => HttpContextAccessor.HttpContext?.User.Claims ?? new List<Claim>();
 
         public const string ResourceClaimTypePrefix = "RESOURCE:";
+
+        public static string GetResourceIdFromClaimType(string claimType)
+        {
+            return claimType.TrimStart(ResourceClaimTypePrefix.ToCharArray());
+        }
+
+        public static string GetResourceIdFromClaimType(Claim claim)
+        {
+            return claim.Type.TrimStart(ResourceClaimTypePrefix.ToCharArray());
+        }
+
+        public static ResourceActionDto GetResourceActionByClaim(Claim claim)
+        {
+            return new()
+            {
+                Id = GetResourceIdFromClaimType(claim),
+                Action = claim.Value.ParseTo<PermissionAction>()
+            };
+        }
+
+        public static string GetClaimTypeFromResourceId(string resourceId)
+        {
+            return ResourceClaimTypePrefix + resourceId;
+        }
 
         /// <summary>
         /// 过滤没有读取权限的数据
@@ -61,7 +86,7 @@ namespace Shashlik.RC.Services.Permission
         /// <param name="source"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public async Task<IEnumerable<T>> DoFilterFromContext<T>(int userId, IEnumerable<T> source)
+        public async Task<IEnumerable<T>> DoFilterIsAdminFromContext<T>(int userId, IEnumerable<T> source)
             where T : IResource
         {
             return await DoFilter(userId, HttpContextAccessor.HttpContext!.User.IsInRole(Constants.Roles.Admin), source);
@@ -74,7 +99,7 @@ namespace Shashlik.RC.Services.Permission
         /// <param name="source"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public async Task<IEnumerable<T>> DoFilterFromDb<T>(int userId, IEnumerable<T> source)
+        public async Task<IEnumerable<T>> DoFilterIsAdminFromDb<T>(int userId, IEnumerable<T> source)
             where T : IResource
         {
             var user = new IdentityUser<int>()
@@ -85,12 +110,12 @@ namespace Shashlik.RC.Services.Permission
             return await DoFilter(userId, await UserService.IsInRoleAsync(user, Constants.Roles.Admin), source);
         }
 
-        public async Task<IEnumerable<ResourceModel>> GetResourceList(int userId)
+        public async Task<IEnumerable<ResourceActionDto>> GetResourceList(int userId)
         {
             return SystemEnvironmentUtils.PermissionReadPolicy switch
             {
-                PermissionReadPolicy.Db => await GetDbResourceList(userId),
-                PermissionReadPolicy.Token => RequestUserClaims.ToResources(),
+                PermissionReadPolicy.Db => await GetResourceActionsByUserId(userId),
+                PermissionReadPolicy.Token => RequestUserClaims.Select(GetResourceActionByClaim),
                 _ => throw new IndexOutOfRangeException()
             };
         }
@@ -100,17 +125,7 @@ namespace Shashlik.RC.Services.Permission
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<ResourceModel>> GetDbResourceList(int userId)
-        {
-            return (await GetDbResourceClaims(userId)).ToResources();
-        }
-
-        /// <summary>
-        /// 获取资源列表
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        public async Task<IEnumerable<Claim>> GetDbResourceClaims(int userId)
+        public async Task<IEnumerable<ResourceActionDto>> GetResourceActionsByUserId(int userId)
         {
             var list = await (
                     from userRole in DbContext.UserRoles
@@ -123,11 +138,36 @@ namespace Shashlik.RC.Services.Permission
                 .ToListAsync();
 
             return list
-                .Where(r => r.ClaimType.StartsWith(ResourceClaimTypePrefix))
-                .Select(r => new Claim(r.ClaimType, r.ClaimValue))
-                .CombineResource()
-                .ToList();
+                    .Where(r => r.ClaimType.StartsWith(ResourceClaimTypePrefix))
+                    .Select(r => new ResourceActionDto
+                    {
+                        Id = r.ClaimType,
+                        Action = r.ClaimValue.ParseTo<PermissionAction>()
+                    })
+                    .CombineResourceAction()
+                ;
         }
+
+        /// <summary>
+        /// 获取资源列表
+        /// </summary>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<ResourceActionDto>> GetResourceActionsByRole(string role)
+        {
+            var roleEntity = await RoleService.FindByNameAsync(role);
+            if (roleEntity is null)
+                throw ResponseException.NotFound();
+
+            return (await RoleService.GetClaimsAsync(roleEntity))
+                .Where(r => r.Type.StartsWith(ResourceService.ResourceClaimTypePrefix))
+                .Select(r => new ResourceActionDto
+                {
+                    Id = r.Type,
+                    Action = r.Value.ParseTo<PermissionAction>()
+                });
+        }
+
 
         /// <summary>
         /// 是否拥有操作权限
@@ -155,7 +195,7 @@ namespace Shashlik.RC.Services.Permission
             await using var transaction = await DbContext.Database.BeginTransactionAsync();
             var identityRole = await RoleService.FindByNameAsync(role);
             var claims = await RoleService.GetClaimsAsync(identityRole);
-            var claim = claims.FirstOrDefault(r => r.Type == ResourceClaimTypePrefix + resourceId);
+            var claim = claims.FirstOrDefault(r => r.Type == GetClaimTypeFromResourceId(resourceId));
             IdentityResult res;
             if (claim is not null)
             {
@@ -167,7 +207,7 @@ namespace Shashlik.RC.Services.Permission
                 }
             }
 
-            res = await RoleService.AddClaimAsync(identityRole, new Claim(ResourceClaimTypePrefix + resourceId, ((int) action).ToString()));
+            res = await RoleService.AddClaimAsync(identityRole, new Claim(GetClaimTypeFromResourceId(resourceId), action.ToPermissionActionString()));
             if (!res.Succeeded)
             {
                 await transaction.RollbackAsync();
@@ -189,7 +229,7 @@ namespace Shashlik.RC.Services.Permission
 
             var identityRole = await RoleService.FindByNameAsync(role);
             var claims = await RoleService.GetClaimsAsync(identityRole);
-            var delClaims = claims.Where(r => r.Type == ResourceClaimTypePrefix + resourceId).ToList();
+            var delClaims = claims.Where(r => r.Type == GetClaimTypeFromResourceId(resourceId)).ToList();
             if (delClaims.IsNullOrEmpty())
                 throw ResponseException.NotFound();
 
@@ -210,9 +250,9 @@ namespace Shashlik.RC.Services.Permission
         /// 所有已授权数据
         /// </summary>
         /// <returns></returns>
-        public async Task<PageModel<ResourceModel>> SearchAuthorization(SearchAuthorizationInput input)
+        public async Task<PageModel<ResourceAuthorizationDto>> SearchAuthorization(SearchAuthorizationInput input)
         {
-            var id = input.Id.IsNullOrWhiteSpace() ? null : ResourceClaimTypePrefix + input.Id;
+            var id = input.Id.IsNullOrWhiteSpace() ? null : GetClaimTypeFromResourceId(input.Id);
             var roles = await DbContext
                 .Set<IdentityRole<int>>()
                 .WhereIf(!input.Role.IsNullOrWhiteSpace(), r => r.Name == input.Role)
@@ -237,7 +277,7 @@ namespace Shashlik.RC.Services.Permission
                     from claim in claims
                     join role in roles on claim.RoleId equals role.Id
                     orderby claim.ClaimType
-                    select new ResourceModel
+                    select new ResourceAuthorizationDto
                     {
                         Id = claim.ClaimType.TrimStart(ResourceClaimTypePrefix.ToCharArray()),
                         Action = claim.ClaimValue.ParseTo<PermissionAction>(),
@@ -248,7 +288,7 @@ namespace Shashlik.RC.Services.Permission
                 .Take(input.PageSize)
                 .ToList();
 
-            return new PageModel<ResourceModel>(total, list);
+            return new PageModel<ResourceAuthorizationDto>(total, list);
         }
     }
 }

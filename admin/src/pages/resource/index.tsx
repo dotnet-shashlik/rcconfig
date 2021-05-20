@@ -20,13 +20,23 @@ interface ResourceModel {
   role?: string;
 }
 
+interface SearchModel {
+  pageIndex: number;
+  pageSize: number;
+  role?: string;
+  id?: string;
+}
+
 export default (props: any) => {
   const { id } = props.location.query;
+  const [searchModel, setSearchModel] = useState<SearchModel>({ pageIndex: 1, pageSize: 2 });
   const [showCreate, setShowCreate] = useState(false);
-  const resourceAuthListRequest = useRequest(roleList);
-  const resourceListRequest = useRequest(roleList);
-  const reload = () => {
-    resourceAuthListRequest.run();
+  const resourceAuthListRequest = useRequest(resourceAuthList, { defaultParams: [searchModel] });
+  const resourceListRequest = useRequest(resourceList);
+  const roleListRequest = useRequest(roleList);
+  const reload = (newSearchModel: SearchModel) => {
+    setSearchModel(newSearchModel);
+    resourceAuthListRequest.run(searchModel);
     setShowCreate(false);
     message.success('success');
   };
@@ -50,15 +60,40 @@ export default (props: any) => {
   };
   const [form] = Form.useForm();
 
+  const getRoleOptions = () => {
+    return roleListRequest.data?.map((role: string) => {
+      return (<Select.Option key={`ROLE_${role}`} value={role}>{role}</Select.Option>);
+    }
+  };
+
   return (
     <PageContainer>
       <Row style={{ marginBottom: "5px" }}>
         <Col span={12}>
-          <h3>Application: {app}</h3>
+          <Form form={form} style={{ top: 20 }} {...formLayout}
+          >
+            <Form.Item
+              label="资源Id"
+              name="name"
+              rules={[{ required: true }, { max: 32 }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label="角色"
+              name="name"
+              rules={[{ required: true }, { max: 32 }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit" value="查询" />
+            </Form.Item>
+          </Form>
         </Col>
         <Col span={12} style={{ textAlign: "right" }}>
-          <Button type="primary" onClick={() => setShowCreate(true)}>创建环境</Button>
-          <Button type="default" onClick={() => envListRequest.run(app)}>刷新</Button>
+          <Button type="primary" onClick={() => setShowCreate(true)}>资源授权</Button>
+          <Button type="default" onClick={() => reload(searchModel)}>刷新</Button>
         </Col>
       </Row>
       <Table dataSource={roleListRequest.data} loading={roleListRequest.loading}>

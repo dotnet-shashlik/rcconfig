@@ -12,18 +12,22 @@ using Shashlik.RC.Services.Identity;
 using Shashlik.RC.Services.Identity.Dtos;
 using Shashlik.RC.Services.Identity.Inputs;
 using Shashlik.RC.Services.Permission;
+using Shashlik.RC.Services.Resource;
+using Shashlik.RC.Services.Resource.Dtos;
 using Shashlik.Response;
 
 namespace Shashlik.RC.Controllers
 {
     public class RolesController : ApiControllerBase
     {
-        public RolesController(RoleService roleService)
+        public RolesController(RoleService roleService, ResourceService resourceService)
         {
             RoleService = roleService;
+            ResourceService = resourceService;
         }
 
         private RoleService RoleService { get; }
+        ResourceService ResourceService { get; }
 
         [HttpPost, Admin]
         public async Task Create(CreateRoleInput input)
@@ -53,15 +57,9 @@ namespace Shashlik.RC.Controllers
         }
 
         [HttpGet("{roleName}/resources"), Admin]
-        public async Task<IEnumerable<ResourceModel>> Resources(string roleName)
+        public async Task<IEnumerable<ResourceActionDto>> Resources(string roleName)
         {
-            var role = await RoleService.FindByNameAsync(roleName);
-            if (role is null)
-                throw ResponseException.NotFound();
-
-            return (await RoleService.GetClaimsAsync(role))
-                .Where(r => r.Type.StartsWith(PermissionService.ResourceClaimTypePrefix))
-                .ToResources();
+            return await ResourceService.GetResourceActionsByRole(roleName);
         }
     }
 }

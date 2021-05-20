@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Shashlik.RC.Common;
 using Shashlik.RC.Services.Permission;
+using Shashlik.RC.Services.Resource;
 using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Filters
@@ -51,7 +52,7 @@ namespace Shashlik.RC.Filters
 
             if (!resourceId.IsNullOrWhiteSpace() && !context.HttpContext.User.IsInRole(Constants.Roles.Admin))
             {
-                var permissionService = context.HttpContext.RequestServices.GetRequiredService<PermissionService>();
+                var permissionService = context.HttpContext.RequestServices.GetRequiredService<ResourceService>();
                 var hasPermission = permissionService
                     .HasPermission(userId, resourceId, HttpMethod2PermissionAction(context.HttpContext.Request.Method))
                     .GetAwaiter().GetResult();

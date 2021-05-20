@@ -4,19 +4,24 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Shashlik.RC.Services.Permission;
+using Shashlik.RC.Services.Resource;
+using Shashlik.RC.Services.Resource.Dtos;
 using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Common
 {
     public static class Extensions
     {
-        public static IEnumerable<Claim> CombineResource(this IEnumerable<Claim> claims)
+        public static IEnumerable<ResourceActionDto> CombineResourceAction(this IEnumerable<ResourceActionDto> claims)
         {
             return claims
-                .GroupBy(r => r.Type)
+                .GroupBy(r => r.Id)
                 .Select(r =>
-                    new Claim(r.Key,
-                        r.Select(v => v.ParseTo<PermissionAction>()).Aggregate((a, b) => a | b).ToString())
+                    new ResourceActionDto
+                    {
+                        Id = r.Key,
+                        Action = r.Select(v => v.ParseTo<PermissionAction>()).Aggregate((a, b) => a | b)
+                    }
                 );
         }
 
@@ -33,14 +38,9 @@ namespace Shashlik.RC.Common
             };
         }
 
-        public static ResourceModel ToResource(this Claim claim)
+        public static string ToPermissionActionString(this PermissionAction permissionAction)
         {
-            return new(claim);
-        }
-
-        public static IEnumerable<ResourceModel> ToResources(this IEnumerable<Claim> claim)
-        {
-            return ResourceModel.FromClaims(claim);
+            return ((int) permissionAction).ToString();
         }
     }
 }
