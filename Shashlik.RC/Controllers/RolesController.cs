@@ -15,6 +15,7 @@ using Shashlik.RC.Services.Permission;
 using Shashlik.RC.Services.Resource;
 using Shashlik.RC.Services.Resource.Dtos;
 using Shashlik.Response;
+using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Controllers
 {
@@ -39,9 +40,10 @@ namespace Shashlik.RC.Controllers
         }
 
         [HttpGet, Admin]
-        public async Task<List<RoleDto>> Get()
+        public async Task<IEnumerable<RoleDto>> Get()
         {
-            return await RoleService.List();
+            return (await RoleService.List())
+                .Where( r => r.Name != Constants.Roles.Admin);
         }
 
         [HttpDelete("{roleName}"), Admin]

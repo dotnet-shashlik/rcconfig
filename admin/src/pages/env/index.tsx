@@ -39,7 +39,7 @@ export default (props: any) => {
     manual: true, onSuccess: reload
   });
   const deleteEnvRequest = useRequest(deleteEnv, {
-    manual: true, fetchKey: (id: any) => id, onSuccess: reload
+    manual: true, fetchKey: (appP: string, envP: string) => `${appP}/${envP}`, onSuccess: reload
   });
 
   const onDelete = (env: string) => {
@@ -54,9 +54,23 @@ export default (props: any) => {
   const [form] = Form.useForm();
   const [editForm] = Form.useForm();
 
-  const onEdit = (envModel: EnvModel) => {
+  const onShowEdit = (envModel: EnvModel) => {
     editForm.setFieldsValue(envModel);
     setShowEdit(true);
+  };
+
+  const onEditSubmit = () => {
+    editForm.validateFields()
+      .then((model: EnvModel) => {
+        updateEnvRequest.run(app, model.name!, model);
+      });
+
+  };
+  const onCreateSubmit = () => {
+    form.validateFields()
+      .then((model: EnvModel) => {
+        createEnvRequest.run(app, model);
+      });
   };
 
   return (
@@ -78,19 +92,20 @@ export default (props: any) => {
         <Column title="CreateTime" dataIndex="createTime" render={(text: any, item: EnvModel) => <span>{toTime(item.createTime!)}</span>} />
         <Column title="Action" key="action"
           render={(_: any, item: any) => (
-            <span>
-              <Button type="link" loading={deleteEnvRequest.fetches[item.name]?.loading} onClick={() => { onDelete(item.name) }}>Delete</Button>
-              <Button type="link" onClick={() => { onEdit(item) }}>Edit</Button>
-              <Link to={`/resources?id=${item.name}`}>Authorization</Link>
-            </span>
+            <>
+              <Button type="link" loading={deleteEnvRequest.fetches[item.resourceId]?.loading} onClick={() => { onDelete(item.name) }}>Delete</Button>
+              <Button type="link" onClick={() => { onShowEdit(item) }}>Edit</Button>
+              <Link to={`/resources?selectId=${item.resourceId}`}>Authorization</Link>
+            </>
           )} />
       </Table>
 
       <Modal
         title="Create Environment"
         visible={showCreate}
-        onOk={() => createEnvRequest.run(app, form.getFieldsValue())}
+        onOk={onCreateSubmit}
         onCancel={() => setShowCreate(false)}
+        confirmLoading={updateEnvRequest.loading}
       >
         <Form form={form} style={{ top: 20 }} {...formLayout}>
           <Form.Item
@@ -120,8 +135,9 @@ export default (props: any) => {
       <Modal
         title="Edit Environment"
         visible={showEdit}
-        onOk={() => updateEnvRequest.run(app, form.getFieldValue('name'), form.getFieldsValue())}
+        onOk={onEditSubmit}
         onCancel={() => setShowCreate(false)}
+        confirmLoading={createEnvRequest.loading}
       >
         <Form form={editForm} style={{ top: 20 }} {...formLayout}>
           <Form.Item

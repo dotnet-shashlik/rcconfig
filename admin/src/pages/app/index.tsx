@@ -27,6 +27,7 @@ export default () => {
   const reload = () => {
     appListRequest.run();
     setShowCreate(false);
+    setShowEdit(false);
     message.success('success');
   };
   const createAppRequest = useRequest(createApp, {
@@ -36,7 +37,7 @@ export default () => {
     manual: true, onSuccess: reload
   });
   const deleteAppRequest = useRequest(deleteApp, {
-    manual: true, fetchKey: (id: any) => id, onSuccess: reload
+    manual: true, fetchKey: (app: string) => app, onSuccess: reload
   });
 
   const onDelete = (app: string) => {
@@ -48,12 +49,26 @@ export default () => {
     });
   };
 
-  const [form] = Form.useForm();
-  const [editForm] = Form.useForm();
+  const [form] = Form.useForm<AppModel>();
+  const [editForm] = Form.useForm<AppModel>();
 
-  const onEdit = (appModel: AppModel) => {
+  const onShowEdit = (appModel: AppModel) => {
     editForm.setFieldsValue(appModel);
     setShowEdit(true);
+  };
+
+  const onEditSubmit = () => {
+    editForm.validateFields()
+      .then((model: AppModel) => {
+        updateAppRequest.run(model.name!, model);
+      });
+
+  };
+  const onCreateSubmit = () => {
+    form.validateFields()
+      .then((model: AppModel) => {
+        createAppRequest.run(model);
+      });
   };
 
   return (
@@ -71,8 +86,8 @@ export default () => {
           render={(_: any, item: any) => (
             <span>
               <Button type="link" loading={deleteAppRequest.fetches[item.name]?.loading} onClick={() => { onDelete(item.name) }}>Delete</Button>
-              <Button type="link" onClick={() => { onEdit(item) }}>Edit</Button>
-              <Link to={`/resources?id=${item.name}`}>Authorization</Link>
+              <Button type="link" onClick={() => { onShowEdit(item) }}>Edit</Button>
+              <Link to={`/resources?selectId=${item.resourceId}`}>Authorization</Link>
             </span>
           )} />
       </Table>
@@ -80,8 +95,9 @@ export default () => {
       <Modal
         title="Create Application"
         visible={showCreate}
-        onOk={() => createAppRequest.run(form.getFieldsValue())}
+        onOk={onCreateSubmit}
         onCancel={() => setShowCreate(false)}
+        confirmLoading={createAppRequest.loading}
       >
         <Form form={form} style={{ top: 20 }} {...formLayout}>
           <Form.Item
@@ -104,10 +120,12 @@ export default () => {
       <Modal
         title="Edit Application"
         visible={showEdit}
-        onOk={() => updateAppRequest.run(form.getFieldValue('name'), form.getFieldsValue())}
-        onCancel={() => setShowCreate(false)}
+        onOk={onEditSubmit}
+        onCancel={() => setShowEdit(false)}
+        confirmLoading={updateAppRequest.loading}
       >
-        <Form form={editForm} style={{ top: 20 }} {...formLayout}>
+        <Form form={editForm} style={{ top: 20 }} {...formLayout}
+        >
           <Form.Item
             label="Application Name"
             name="name"
@@ -121,6 +139,10 @@ export default () => {
             rules={[{ required: true, max: 255 }]}
           >
             <Input />
+          </Form.Item>
+          <Form.Item
+          >
+            <Button type="primary" htmlType="submit" />
           </Form.Item>
         </Form>
       </Modal>

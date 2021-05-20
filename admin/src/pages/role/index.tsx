@@ -14,34 +14,35 @@ const formLayout = {
 export default () => {
 
   const [showCreate, setShowCreate] = useState(false);
-  const [showResources, setShowResources] = useState(false);
   const roleListRequest = useRequest(roleList);
   const reload = () => {
     roleListRequest.run();
     setShowCreate(false);
     message.success('success');
   };
-  const createUserRequest = useRequest(createRole, {
+  const createRoleRequest = useRequest(createRole, {
     manual: true, onSuccess: reload
   });
-  const deleteUserList = useRequest(deleteRole, {
-    manual: true, fetchKey: (id: any) => id, onSuccess: reload
-  });
-  const resourceListRequest = useRequest(resourceList, {
-    manual: true, onSuccess: () => {
-      setShowResources(true);
-    }
+  const deleteRoleList = useRequest(deleteRole, {
+    manual: true, fetchKey: (role: string) => role, onSuccess: reload
   });
 
   const onDelete = (role: string) => {
     Modal.confirm({
       title: 'Are you sure delete this role?',
       onOk: async () => {
-        deleteUserList.run(role);
+        deleteRoleList.run(role);
       }
     });
   };
   const [form] = Form.useForm();
+
+  const onSubmit = () => {
+    form.validateFields()
+      .then(formValues => {
+        createRoleRequest.run(formValues);
+      })
+  }
 
   return (
     <PageContainer>
@@ -53,15 +54,16 @@ export default () => {
         <Column title="ID" dataIndex="id" />
         <Column title="Name" dataIndex="name" />
         <Column title="Action" key="action"
-          render={(text: any, item: any) => (
+          render={(_: any, item: any) => (
             <span>
-              <Button type="link" loading={deleteUserList.fetches[item.name]?.loading} onClick={() => { onDelete(item.name) }}>Delete</Button>
-              <Button type="link" loading={deleteUserList.fetches[item.name]?.loading} onClick={() => { resourceListRequest.run(item.name) }}>Resources</Button>
+              <Button type="link" loading={deleteRoleList.fetches[item.name]?.loading} onClick={() => { onDelete(item.name) }}>Delete</Button>
+              <Link to={`/resources?selectRole=${item.name}`}>Resources</Link>
             </span>
           )} />
       </Table>
 
-      <Modal title="Create Role" visible={showCreate} onOk={() => createUserRequest.run(form.getFieldsValue())} onCancel={() => setShowCreate(false)}>
+      <Modal title="Create Role" visible={showCreate} onOk={onSubmit} onCancel={() => setShowCreate(false)}
+        confirmLoading={createRoleRequest.loading}>
         <Form form={form} style={{ top: 20 }} {...formLayout}>
           <Form.Item
             label="Role Name"
@@ -71,16 +73,6 @@ export default () => {
             <Input />
           </Form.Item>
         </Form>
-      </Modal>
-      <Modal title="Resources" visible={showResources} onCancel={() => setShowResources(false)}>
-        <ul>
-          <li>
-            <Link to="/resources">+ Bind Resource</Link>
-          </li>
-          {
-            resourceListRequest?.data?.map((item: any) => <li>{item.id}:{item.actionStr}</li>)
-          }
-        </ul>
       </Modal>
     </PageContainer>);
 };

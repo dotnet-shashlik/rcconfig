@@ -11,6 +11,7 @@ using Shashlik.RC.Services.Permission;
 using Shashlik.RC.Services.Permission.Inputs;
 using Shashlik.RC.Services.Resource;
 using Shashlik.RC.Services.Resource.Dtos;
+using Shashlik.RC.Services.Resource.Inputs;
 
 namespace Shashlik.RC.Controllers
 {
@@ -27,7 +28,7 @@ namespace Shashlik.RC.Controllers
         private EnvironmentService EnvironmentService { get; }
         private ResourceService PermissionService { get; }
 
-        [HttpGet]
+        [HttpGet, Admin]
         public async Task<IEnumerable<ResourceDto>> List()
         {
             var applications = await ApplicationService.List();
@@ -45,23 +46,22 @@ namespace Shashlik.RC.Controllers
                 ;
         }
 
-        [HttpGet("authorizations")]
-        [AllowAnonymous]
+        [HttpGet("authorizations"), Admin]
         public async Task<PageModel<ResourceAuthorizationDto>> Authorizations([FromQuery] SearchAuthorizationInput input)
         {
             return await PermissionService.SearchAuthorization(input);
         }
 
-        [HttpPost(Constants.ResourceRoute.ApplicationAndEnvironment + "/auth"), Admin]
+        [HttpPost("auth"), Admin]
         public async Task Auth(AuthRoleResourceInput input)
         {
-            await PermissionService.AuthorizeRoleResource(GetResourceId(), input.Role, input.Action);
+            await PermissionService.AuthorizeRoleResource(input.ResourceId, input.Role, input.Action);
         }
 
-        [HttpDelete(Constants.ResourceRoute.ApplicationAndEnvironment + "/auth"), Admin]
+        [HttpDelete("auth"), Admin]
         public async Task UnAuth(UnAuthRoleResourceInput input)
         {
-            await PermissionService.UnAuthorizeRoleResource(GetResourceId(), input.Role);
+            await PermissionService.UnAuthorizeRoleResource(input.ResourceId, input.Role);
         }
     }
 }

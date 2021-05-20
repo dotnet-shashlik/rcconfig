@@ -20,19 +20,19 @@ export async function resourceAuthList(searchModel: any, options?: { [key: strin
 }
 
 /** 授权角色资源 POST /resources/{app}/{env}/bind */
-export async function authRoleResource(resourceId: string, data: any, options?: { [key: string]: any }) {
-  return await request<API.Response<any>>(`/resources/${resourceId}/auth`, {
+export async function authRoleResource(data: any, options?: { [key: string]: any }) {
+  return await request<API.Response<any>>(`/resources/auth`, {
     method: 'POST',
-    data: data,
+    data,
     ...(options || {})
   });
 }
 
 /** 删除授权角色资源 DELETE /resources/{app}/{env}/bind */
-export async function unAuthRoleResource(resourceId: string, data: any, options?: { [key: string]: any }) {
-  return await request<API.Response<any>>(`/resources/${resourceId}/auth`, {
+export async function unAuthRoleResource(data: any, options?: { [key: string]: any }) {
+  return await request<API.Response<any>>(`/resources/auth`, {
     method: 'DELETE',
-    data: data,
+    data,
     ...(options || {})
   });
 }

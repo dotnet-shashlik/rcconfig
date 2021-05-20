@@ -1,6 +1,6 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import { Button, Table, Modal, Form, Input, message, Row, Col } from 'antd';
-import { Link, useRequest } from 'umi';
+import { Button, Table, Modal, Form, message, Row, Col, Select, Pagination } from 'antd';
+import { useRequest } from 'umi';
 import { useState } from 'react';
 import { roleList } from '@/services/api/role';
 import { resourceAuthList, resourceList, authRoleResource, unAuthRoleResource } from '@/services/api/resource';
@@ -9,125 +9,217 @@ const { Column } = Table;
 
 const formLayout = {
   labelCol: { span: 8 },
-  wrapperCol: { span: 13 },
+  wrapperCol: { span: 16 }
 };
 
 interface ResourceModel {
   id?: string;
   resourceType?: string;
-  cctionStr?: string;
+  actionStr?: string;
   action?: number;
+  actions?: number[];
   role?: string;
 }
 
-interface SearchModel {
-  pageIndex: number;
-  pageSize: number;
+interface SearchForm {
   role?: string;
   id?: string;
 }
 
+interface SearchModel extends SearchForm {
+  pageIndex: number;
+  pageSize: number;
+}
+
 export default (props: any) => {
-  const { id } = props.location.query;
-  const [searchModel, setSearchModel] = useState<SearchModel>({ pageIndex: 1, pageSize: 2 });
+  const { selectId, selectRole } = props.location.query;
+  const [searchModel, setSearchModel] = useState<SearchModel>({ pageIndex: 1, pageSize: 2, id: selectId, role: selectRole });
   const [showCreate, setShowCreate] = useState(false);
   const resourceAuthListRequest = useRequest(resourceAuthList, { defaultParams: [searchModel] });
   const resourceListRequest = useRequest(resourceList);
   const roleListRequest = useRequest(roleList);
-  const reload = (newSearchModel: SearchModel) => {
-    setSearchModel(newSearchModel);
-    resourceAuthListRequest.run(searchModel);
+
+  const doSearchNoParams = (model?: SearchModel, showSuccessMsg?: boolean) => {
+    if (model) {
+      setSearchModel(model);
+      resourceAuthListRequest.run(model);
+    }
+    else
+      resourceAuthListRequest.run(searchModel);
+
     setShowCreate(false);
-    message.success('success');
+    if (showSuccessMsg ?? false)
+      message.success('success');
+  };
+  const doSearchOnPageChange = (pageIndex: number, pageSize?: number) => {
+    if (!pageSize)
+      doSearchNoParams({ ...searchModel, pageIndex });
+    else
+      doSearchNoParams({ ...searchModel, pageIndex, pageSize });
+  };
+
+  const doSearchOnFormSubmit = (model: SearchForm) => {
+    doSearchNoParams({ ...searchModel, ...model, pageIndex: 1 });
   };
 
   const authRoleResourceRequest = useRequest(authRoleResource, {
-    manual: true, onSuccess: reload
+    manual: true, onSuccess: () => doSearchNoParams(undefined, true)
   });
   const unAuthRoleResourceRequest = useRequest(unAuthRoleResource, {
-    manual: true, onSuccess: reload
+    manual: true, onSuccess: () => doSearchNoParams(undefined, true),
+    fetchKey: (resourceId: string, data: any) => `${resourceId}_${data.role}`
   });
 
-  const onDelete = (item: ResourceModel) => {
+  const onDelete = (model: ResourceModel) => {
     Modal.confirm({
       title: 'Are you sure delete this role?',
       onOk: async () => {
-        unAuthRoleResourceRequest.run(item.id!, {
-          role: item.role
+        unAuthRoleResourceRequest.run({
+          resourceId: model.id!,
+          role: model.role
         });
       }
     });
   };
-  const [form] = Form.useForm();
 
-  const getRoleOptions = () => {
-    return roleListRequest.data?.map((role: string) => {
-      return (<Select.Option key={`ROLE_${role}`} value={role}>{role}</Select.Option>);
-    }
+  const [form] = Form.useForm<ResourceModel>();
+
+  const onAuthSubmit = () => {
+    form.validateFields()
+      .then((model: ResourceModel) => {
+        let action = model.actions![0];
+        // eslint-disable-next-line no-plusplus
+        for (let i = 1; i < model.actions!.length; i++) {
+          // eslint-disable-next-line no-bitwise
+          action |= model.actions![i];
+        }
+
+        const data = { resourceId: model.id!, role: model.role, action };
+        authRoleResourceRequest.run(data);
+      });
+  };
+
+  const getRoleOptions = (purpose: string) => {
+    return roleListRequest.data?.map((role: any) => (<Select.Option key={`ROLE_${purpose}_${role.name}`} value={role.name}>{role.name}</Select.Option>)) ?? []
+  };
+  const getResourceOptions = (purpose: string) => {
+    return resourceListRequest.data?.map((resource: any) => (<Select.Option key={`RESOURCE_${purpose}_${resource.id}`} value={resource.id}>{resource.id}</Select.Option>)) ?? []
+  };
+  const getActionOptions = (purpose: string) => {
+    return (
+      <>
+        <Select.Option key={`action1_${purpose}`} value={1}>READ</Select.Option>
+        <Select.Option key={`action2_${purpose}`} value={2}>WRITE</Select.Option>
+        <Select.Option key={`action4_${purpose}`} value={4}>DELETE</Select.Option>
+      </>
+    )
   };
 
   return (
     <PageContainer>
       <Row style={{ marginBottom: "5px" }}>
-        <Col span={12}>
-          <Form form={form} style={{ top: 20 }} {...formLayout}
+        <Col span={16}>
+          <Form
+            layout="inline"
+            {...formLayout}
+            initialValues={searchModel}
+            onFinish={(model: SearchForm) => doSearchOnFormSubmit(model)}
           >
             <Form.Item
               label="资源Id"
-              name="name"
-              rules={[{ required: true }, { max: 32 }]}
+              name="id"
             >
-              <Input />
+              <Select
+                size="middle"
+                placeholder="Please select resource"
+                allowClear
+                style={{ width: '260px' }}
+              >
+                {getResourceOptions('search')}
+              </Select>
             </Form.Item>
             <Form.Item
               label="角色"
-              name="name"
-              rules={[{ required: true }, { max: 32 }]}
+              name="role"
             >
-              <Input />
+              <Select
+                size="middle"
+                placeholder="Please select resource"
+                allowClear
+                style={{ width: '260px' }}
+              >
+                {getRoleOptions('search')}
+              </Select>
             </Form.Item>
             <Form.Item>
-              <Button type="primary" htmlType="submit" value="查询" />
+              <Button type="primary" htmlType="submit" >查询</Button>
             </Form.Item>
           </Form>
         </Col>
-        <Col span={12} style={{ textAlign: "right" }}>
+        <Col span={8} style={{ textAlign: "right" }}>
           <Button type="primary" onClick={() => setShowCreate(true)}>资源授权</Button>
-          <Button type="default" onClick={() => reload(searchModel)}>刷新</Button>
+          <Button type="default" onClick={() => doSearchNoParams}>刷新</Button>
         </Col>
       </Row>
-      <Table dataSource={roleListRequest.data} loading={roleListRequest.loading}>
-        <Column title="ID" dataIndex="id" />
-        <Column title="Name" dataIndex="name" />
+      <Table dataSource={resourceAuthListRequest.data?.rows} loading={resourceAuthListRequest.loading}>
+        <Column title="Resource Id" dataIndex="id" />
+        <Column title="Resource Type" dataIndex="resourceType" />
+        <Column title="Authorization Role" dataIndex="role" />
+        <Column title="Action" dataIndex="actionStr" />
         <Column title="Action" key="action"
-          render={(text: any, item: any) => (
+          render={(_: any, item: any) => (
             <span>
-              <Button type="link" loading={deleteUserList.fetches[item.name]?.loading} onClick={() => { onDelete(item.name) }}>Delete</Button>
-              <Button type="link" loading={deleteUserList.fetches[item.name]?.loading} onClick={() => { resourceListRequest.run(item.name) }}>Resources</Button>
+              <Button type="link" loading={unAuthRoleResourceRequest.fetches[`${item.id}_${item.role}`]?.loading} onClick={() => { onDelete(item) }}>Delete</Button>
             </span>
           )} />
       </Table>
-
-      <Modal title="Create Role" visible={showCreate} onOk={() => createUserRequest.run(form.getFieldsValue())} onCancel={() => setShowCreate(false)}>
-        <Form form={form} style={{ top: 20 }} {...formLayout}>
+      <Pagination defaultCurrent={searchModel.pageIndex} total={resourceAuthListRequest.data?.total ?? 0}
+        onChange={doSearchOnPageChange} />
+      <Modal title="Create Role" visible={showCreate} onOk={onAuthSubmit} onCancel={() => setShowCreate(false)}
+        confirmLoading={authRoleResourceRequest.loading}
+      >
+        <Form form={form} initialValues={searchModel} style={{ top: 20 }} {...formLayout}>
+          <Form.Item
+            label="资源Id"
+            name="id"
+            rules={[{ required: true }]}
+          >
+            <Select
+              size="middle"
+              placeholder="Please select resource"
+              style={{ width: '100%' }}
+            >
+              {getResourceOptions('auth')}
+            </Select>
+          </Form.Item>
           <Form.Item
             label="Role Name"
-            name="name"
-            rules={[{ required: true }, { max: 32 }]}
+            name="role"
+            rules={[{ required: true }]}
           >
-            <Input />
+            <Select
+              size="middle"
+              placeholder="Please select role"
+              style={{ width: '100%' }}
+            >
+              {getRoleOptions('auth')}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            label="Select Action"
+            name="actions"
+            rules={[{ required: true, min: 1, max: 3, type: 'array' }]}
+          >
+            <Select
+              mode="multiple"
+              size="middle"
+              placeholder="Please select action"
+              style={{ width: '100%' }}
+            >
+              {getActionOptions('auth')}
+            </Select>
           </Form.Item>
         </Form>
-      </Modal>
-      <Modal title="Resources" visible={showResources} onCancel={() => setShowResources(false)}>
-        <ul>
-          <li>
-            <Link to="/resources">+ Bind Resource</Link>
-          </li>
-          {
-            resourceListRequest?.data?.map((item: any) => <li>{item.id}:{item.actionStr}</li>)
-          }
-        </ul>
       </Modal>
     </PageContainer>);
 };
