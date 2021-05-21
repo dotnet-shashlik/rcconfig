@@ -84,19 +84,16 @@ export default (props: any) => {
 
   const [form] = Form.useForm<ResourceModel>();
 
-  const onAuthSubmit = () => {
-    form.validateFields()
-      .then((model: ResourceModel) => {
-        let action = model.actions![0];
-        // eslint-disable-next-line no-plusplus
-        for (let i = 1; i < model.actions!.length; i++) {
-          // eslint-disable-next-line no-bitwise
-          action |= model.actions![i];
-        }
+  const authSubmit = (model: ResourceModel) => {
+    let action = model.actions![0];
+    // eslint-disable-next-line no-plusplus
+    for (let i = 1; i < model.actions!.length; i++) {
+      // eslint-disable-next-line no-bitwise
+      action |= model.actions![i];
+    }
 
-        const data = { resourceId: model.id!, role: model.role, action };
-        authRoleResourceRequest.run(data);
-      });
+    const data = { resourceId: model.id!, role: model.role, action };
+    authRoleResourceRequest.run(data);
   };
 
   const getRoleOptions = (purpose: string) => {
@@ -175,10 +172,16 @@ export default (props: any) => {
       </Table>
       <Pagination defaultCurrent={searchModel.pageIndex} total={resourceAuthListRequest.data?.total ?? 0}
         onChange={doSearchOnPageChange} />
-      <Modal title="Create Role" visible={showCreate} onOk={onAuthSubmit} onCancel={() => setShowCreate(false)}
+      <Modal title="Create Role" visible={showCreate}
+        onOk={form.submit}
+        onCancel={() => setShowCreate(false)}
         confirmLoading={authRoleResourceRequest.loading}
+        destroyOnClose
       >
-        <Form form={form} initialValues={searchModel} style={{ top: 20 }} {...formLayout}>
+        <Form form={form} initialValues={searchModel} style={{ top: 20 }} {...formLayout}
+          onFinish={authSubmit}
+          preserve={false}
+        >
           <Form.Item
             label="资源Id"
             name="id"

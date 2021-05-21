@@ -59,19 +59,6 @@ export default (props: any) => {
     setShowEdit(true);
   };
 
-  const onEditSubmit = () => {
-    editForm.validateFields()
-      .then((model: EnvModel) => {
-        updateEnvRequest.run(app, model.name!, model);
-      });
-
-  };
-  const onCreateSubmit = () => {
-    form.validateFields()
-      .then((model: EnvModel) => {
-        createEnvRequest.run(app, model);
-      });
-  };
 
   return (
     <PageContainer>
@@ -103,11 +90,14 @@ export default (props: any) => {
       <Modal
         title="Create Environment"
         visible={showCreate}
-        onOk={onCreateSubmit}
+        onOk={form.submit}
         onCancel={() => setShowCreate(false)}
         confirmLoading={updateEnvRequest.loading}
+        destroyOnClose
       >
-        <Form form={form} style={{ top: 20 }} {...formLayout}>
+        <Form form={form} style={{ top: 20 }} {...formLayout}
+          onFinish={(model) => createEnvRequest.run(app, model)}
+          preserve={false}>
           <Form.Item
             label="Environment Name"
             name="name"
@@ -135,11 +125,15 @@ export default (props: any) => {
       <Modal
         title="Edit Environment"
         visible={showEdit}
-        onOk={onEditSubmit}
+        onOk={editForm.submit}
         onCancel={() => setShowCreate(false)}
         confirmLoading={createEnvRequest.loading}
+        destroyOnClose
       >
-        <Form form={editForm} style={{ top: 20 }} {...formLayout}>
+        <Form form={editForm} style={{ top: 20 }} {...formLayout}
+          onFinish={(model) => updateEnvRequest.run(app, model.name!, model)}
+          preserve={false}
+        >
           <Form.Item
             label="Environment Name"
             name="name"

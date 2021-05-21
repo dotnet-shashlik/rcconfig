@@ -39,12 +39,7 @@ export default () => {
     });
   };
   const [form] = Form.useForm();
-  const onCreateSubmit = () => {
-    form.validateFields()
-      .then((model: any) => {
-        createUserRequest.run(model);
-      });
-  };
+
   return (
     <PageContainer>
       <div style={{ marginBottom: "5px", textAlign: "right" }}>
@@ -64,9 +59,15 @@ export default () => {
           )} />
       </Table>
 
-      <Modal title="Create User" visible={showCreate} onOk={onCreateSubmit} onCancel={() => setShowCreate(false)}
-        confirmLoading={createUserRequest.loading}>
-        <Form form={form} style={{ top: 20 }} {...formLayout}>
+      <Modal title="Create User" visible={showCreate}
+        onOk={form.submit}
+        onCancel={() => setShowCreate(false)}
+        confirmLoading={createUserRequest.loading}
+        destroyOnClose>
+        <Form form={form} style={{ top: 20 }} {...formLayout}
+          onFinish={createUserRequest.run}
+          preserve={false}
+        >
           <Form.Item
             label="UserName"
             name="userName"

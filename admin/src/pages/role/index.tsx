@@ -37,13 +37,6 @@ export default () => {
   };
   const [form] = Form.useForm();
 
-  const onSubmit = () => {
-    form.validateFields()
-      .then(formValues => {
-        createRoleRequest.run(formValues);
-      })
-  }
-
   return (
     <PageContainer>
       <div style={{ marginBottom: "5px", textAlign: "right" }}>
@@ -62,9 +55,14 @@ export default () => {
           )} />
       </Table>
 
-      <Modal title="Create Role" visible={showCreate} onOk={onSubmit} onCancel={() => setShowCreate(false)}
-        confirmLoading={createRoleRequest.loading}>
-        <Form form={form} style={{ top: 20 }} {...formLayout}>
+      <Modal title="Create Role" visible={showCreate}
+        onOk={form.submit}
+        onCancel={() => setShowCreate(false)}
+        confirmLoading={createRoleRequest.loading}
+        destroyOnClose>
+        <Form form={form} style={{ top: 20 }} {...formLayout}
+          onFinish={createRoleRequest.run}
+          preserve={false}>
           <Form.Item
             label="Role Name"
             name="name"

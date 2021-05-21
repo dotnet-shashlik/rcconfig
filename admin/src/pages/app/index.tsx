@@ -57,20 +57,6 @@ export default () => {
     setShowEdit(true);
   };
 
-  const onEditSubmit = () => {
-    editForm.validateFields()
-      .then((model: AppModel) => {
-        updateAppRequest.run(model.name!, model);
-      });
-
-  };
-  const onCreateSubmit = () => {
-    form.validateFields()
-      .then((model: AppModel) => {
-        createAppRequest.run(model);
-      });
-  };
-
   return (
     <PageContainer>
       <div style={{ marginBottom: "5px", textAlign: "right" }}>
@@ -87,6 +73,7 @@ export default () => {
             <span>
               <Button type="link" loading={deleteAppRequest.fetches[item.name]?.loading} onClick={() => { onDelete(item.name) }}>Delete</Button>
               <Button type="link" onClick={() => { onShowEdit(item) }}>Edit</Button>
+              <Link to={`/envs/${item.name}`}>{item.name}</Link>
               <Link to={`/resources?selectId=${item.resourceId}`}>Authorization</Link>
             </span>
           )} />
@@ -95,11 +82,13 @@ export default () => {
       <Modal
         title="Create Application"
         visible={showCreate}
-        onOk={onCreateSubmit}
+        onOk={form.submit}
         onCancel={() => setShowCreate(false)}
         confirmLoading={createAppRequest.loading}
+        destroyOnClose
       >
-        <Form form={form} style={{ top: 20 }} {...formLayout}>
+        <Form form={form} style={{ top: 20 }} {...formLayout}
+          onFinish={createAppRequest.run} preserve={false}>
           <Form.Item
             label="Application Name"
             name="name"
@@ -120,11 +109,13 @@ export default () => {
       <Modal
         title="Edit Application"
         visible={showEdit}
-        onOk={onEditSubmit}
+        onOk={editForm.submit}
         onCancel={() => setShowEdit(false)}
         confirmLoading={updateAppRequest.loading}
+        destroyOnClose
       >
         <Form form={editForm} style={{ top: 20 }} {...formLayout}
+          onFinish={createAppRequest.run} preserve={false}
         >
           <Form.Item
             label="Application Name"
