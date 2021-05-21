@@ -20,6 +20,6 @@ namespace Shashlik.RC.Services.Identity.Inputs
         [Required, StringLength(32, MinimumLength = 1)]
         public string NickName { get; set; }
 
-        [Required, StringLength(255)] public string Remark { get; set; }
+        [StringLength(255)] public string Remark { get; set; }
     }
 }

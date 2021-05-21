@@ -195,10 +195,11 @@ namespace Shashlik.RC.Services.Resource
             await using var transaction = await DbContext.Database.BeginTransactionAsync();
             var identityRole = await RoleService.FindByNameAsync(role);
             var claims = await RoleService.GetClaimsAsync(identityRole);
-            var claim = claims.FirstOrDefault(r => r.Type == GetClaimTypeFromResourceId(resourceId));
+            var claim = claims.SingleOrDefault(r => r.Type == GetClaimTypeFromResourceId(resourceId));
             IdentityResult res;
             if (claim is not null)
             {
+                action |= claim.Value.ParseTo<PermissionAction>();
                 res = await RoleService.RemoveClaimAsync(identityRole, claim);
                 if (!res.Succeeded)
                 {

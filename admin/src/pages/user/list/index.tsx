@@ -2,7 +2,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import { Button, Table, Modal, Form, Input, Select, message } from 'antd';
 import { Link, useRequest } from 'umi';
 import { useState } from 'react';
-import { userList, deleteUser, createUser } from '@/services/api/user';
+import { userList, deleteUser, createUser, updateUser, getUserById } from '@/services/api/user';
 import { roleList } from '@/services/api/role';
 
 
@@ -16,13 +16,19 @@ const formLayout = {
 export default () => {
 
   const [showCreate, setShowCreate] = useState(false);
+  const [showEdit, setshowEdit] = useState(false);
   const userListRequest = useRequest(userList);
+  const getUserByIdRequest = useRequest(getUserById, { manual: true, fetchKey: (userId: number) => userId.toString() });
   const reload = () => {
     userListRequest.run();
     setShowCreate(false);
+    setshowEdit(false);
     message.success('success');
   };
   const createUserRequest = useRequest(createUser, {
+    manual: true, onSuccess: reload
+  });
+  const updateUserRequest = useRequest(updateUser, {
     manual: true, onSuccess: reload
   });
   const roleListRequest = useRequest(roleList);
@@ -39,6 +45,17 @@ export default () => {
     });
   };
   const [form] = Form.useForm();
+  const [editForm] = Form.useForm();
+
+  const onShowEdit = async (userId: number) => {
+    const user = await getUserByIdRequest.run(userId);
+    editForm.setFieldsValue(user);
+    setshowEdit(true);
+  }
+
+  const getRoleOptions = (purpose: string) => {
+    return roleListRequest.data?.map((role: any) => (<Select.Option key={`ROLE_${purpose}_${role.name}`} value={role.name}>{role.name}</Select.Option>)) ?? []
+  };
 
   return (
     <PageContainer>
@@ -46,16 +63,17 @@ export default () => {
         <Button type="primary" onClick={() => setShowCreate(true)}>创建新用户</Button>
         <Button type="default" onClick={userListRequest.run}>刷新</Button>
       </div>
-      <Table dataSource={userListRequest.data} loading={userListRequest.loading}>
+      <Table dataSource={userListRequest.data} loading={userListRequest.loading} pagination={false}>
         <Column title="ID" dataIndex="id" />
         <Column title="UserName" dataIndex="userName" />
         <Column title="Roles" dataIndex="rolesStr" />
         <Column title="Action" key="action"
-          render={(te_xt: any, user: any) => (
-            <span>
+          render={(_: any, user: any) => (
+            (user.roles.indexOf('admin') === -1 && <>
               <Button type="link" loading={deleteUserList.fetches[user.id]?.loading} onClick={() => { onDelete(user.id) }}>Delete</Button>
+              <Button type="link" loading={getUserByIdRequest.fetches[user.id]?.loading} onClick={() => { onShowEdit(user.id) }}>Edit</Button>
               <Link to={`/users/detail/${user.id}`}>Detail</Link>
-            </span>
+            </>)
           )} />
       </Table>
 
@@ -109,7 +127,7 @@ export default () => {
           <Form.Item
             label="Roles"
             name="roles"
-            rules={[{ required: true }]}
+            rules={[{ required: true, type: "array" }]}
           >
             <Select
               mode="multiple"
@@ -117,9 +135,62 @@ export default () => {
               placeholder="Please select role"
               style={{ width: '100%' }}
             >
-              {roleListRequest.data?.map((role: any) => {
-                return (<Select.Option key={`ROLE_${role.name}`} value={role.name}>{role.name}</Select.Option>);
-              })}
+              {getRoleOptions('create')}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            label="Remark"
+            name="remark"
+            rules={[{ max: 255 }]}
+          >
+            <Input.TextArea />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal title="Edit User" visible={showEdit}
+        onOk={editForm.submit}
+        onCancel={() => setshowEdit(false)}
+        confirmLoading={updateUserRequest.loading}
+        destroyOnClose>
+        <Form form={editForm} style={{ top: 20 }} {...formLayout}
+          onFinish={(model: any) => updateUserRequest.run(model.id, model)}
+          preserve={false}
+        >
+          <Form.Item
+            label="Id"
+            name="id"
+            hidden={true}
+            rules={[{ required: true }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="UserName"
+            name="userName"
+            rules={[{ required: true }, { max: 32 }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="NickName"
+            name="nickName"
+            rules={[{ required: true }, { max: 32 }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Roles"
+            name="roles"
+            rules={[{ required: true, type: "array" }]}
+          >
+            <Select
+              mode="multiple"
+              size="middle"
+              placeholder="Please select role"
+              style={{ width: '100%' }}
+            >
+              {getRoleOptions('edit')}
             </Select>
           </Form.Item>
           <Form.Item

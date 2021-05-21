@@ -72,7 +72,7 @@ export default (props: any) => {
           <Button type="default" onClick={() => envListRequest.run(app)}>刷新</Button>
         </Col>
       </Row>
-      <Table dataSource={envListRequest.data} loading={envListRequest.loading}>
+      <Table dataSource={envListRequest.data} loading={envListRequest.loading} pagination={false}>
         <Column title="Name" dataIndex="name" />
         <Column title="ResourceId" dataIndex="resourceId" />
         <Column title="Description" dataIndex="desc" />

@@ -62,7 +62,7 @@ export default () => {
         <Button type="primary" onClick={createSecretRequest.run}>创建密钥</Button>
         <Button type="default" onClick={secretListRequest.run}>刷新</Button>
       </div>
-      <Table dataSource={secretListRequest.data} loading={secretListRequest.loading}>
+      <Table dataSource={secretListRequest.data} loading={secretListRequest.loading} pagination={false}>
         <Column title="SecretId" dataIndex="secretId" />
         <Column title="Secretkey" dataIndex="secretkey" render={(text: any, item: SecretModel) => secretKeyContent(item.secretKey!)} />
         <Column title="CreateTime" dataIndex="createTime" render={(text: any, item: SecretModel) => <span>{toTime(item.createTime!)}</span>} />

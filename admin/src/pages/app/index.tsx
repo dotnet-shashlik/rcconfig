@@ -63,7 +63,7 @@ export default () => {
         <Button type="primary" onClick={() => setShowCreate(true)}>创建应用</Button>
         <Button type="default" onClick={appListRequest.run}>刷新</Button>
       </div>
-      <Table dataSource={appListRequest.data} loading={appListRequest.loading}>
+      <Table dataSource={appListRequest.data} loading={appListRequest.loading} pagination={false}>
         <Column title="Name" dataIndex="name" render={(_: any, item: AppModel) => <Link to={`/envs/${item.name}`}>{item.name}</Link>} />
         <Column title="ResourceId" dataIndex="resourceId" />
         <Column title="Description" dataIndex="desc" />

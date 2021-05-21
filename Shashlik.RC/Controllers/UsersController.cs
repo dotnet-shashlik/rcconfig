@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityServer4.Extensions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Shashlik.RC.Common;
@@ -41,12 +42,17 @@ namespace Shashlik.RC.Controllers
         [HttpPost, Admin]
         public async Task Create(CreateUserInput input)
         {
+            if (input.Roles.Contains(Constants.Roles.Admin))
+                throw ResponseException.Forbidden("不允许创建管理员");
             await UserService.CreateUser(input);
         }
 
         [HttpPatch("{userId:int:min(1)}"), Admin]
         public async Task Update(int userId, UpdateUserInput input)
         {
+            if (input.Roles.Contains(Constants.Roles.Admin) ||
+                await UserService.IsInRoleAsync(new IdentityUser<int>() {Id = userId}, Constants.Roles.Admin))
+                throw ResponseException.Forbidden("不允许编辑管理员");
             await UserService.Update(userId, input);
         }
 

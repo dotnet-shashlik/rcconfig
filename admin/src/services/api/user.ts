@@ -45,6 +45,15 @@ export async function createUser(body: any, options?: { [key: string]: any }) {
   });
 }
 
+/** 创建用户 PATCH /users */
+export async function updateUser(userId: number, body: any, options?: { [key: string]: any }) {
+  return await request<API.Response<any>>(`/users/${userId}`, {
+    method: 'PATCH',
+    data: body,
+    ...(options || {})
+  });
+}
+
 /** 获取指定用户信息 GET /users/{userId} */
 export async function getUserById(userId: any, options?: { [key: string]: any }) {
   return await request<API.Response<any>>(`/users/${userId}`, {

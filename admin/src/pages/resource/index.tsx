@@ -1,7 +1,7 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import { Button, Table, Modal, Form, message, Row, Col, Select, Pagination } from 'antd';
 import { useRequest } from 'umi';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { roleList } from '@/services/api/role';
 import { resourceAuthList, resourceList, authRoleResource, unAuthRoleResource } from '@/services/api/resource';
 
@@ -33,46 +33,48 @@ interface SearchModel extends SearchForm {
 
 export default (props: any) => {
   const { selectId, selectRole } = props.location.query;
-  const [searchModel, setSearchModel] = useState<SearchModel>({ pageIndex: 1, pageSize: 2, id: selectId, role: selectRole });
+  const [searchModel, setSearchModel] = useState<SearchModel>({ pageIndex: 1, pageSize: 20, id: selectId, role: selectRole });
   const [showCreate, setShowCreate] = useState(false);
   const resourceAuthListRequest = useRequest(resourceAuthList, { defaultParams: [searchModel] });
   const resourceListRequest = useRequest(resourceList);
   const roleListRequest = useRequest(roleList);
 
-  const doSearchNoParams = (model?: SearchModel, showSuccessMsg?: boolean) => {
-    if (model) {
-      setSearchModel(model);
-      resourceAuthListRequest.run(model);
-    }
-    else
-      resourceAuthListRequest.run(searchModel);
+  useEffect(() => {
+    resourceAuthListRequest.run(searchModel);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchModel]);
 
-    setShowCreate(false);
-    if (showSuccessMsg ?? false)
-      message.success('success');
+  const doSearchOfReload = () => {
+    resourceAuthListRequest.run(searchModel);
   };
   const doSearchOnPageChange = (pageIndex: number, pageSize?: number) => {
     if (!pageSize)
-      doSearchNoParams({ ...searchModel, pageIndex });
+      setSearchModel({ ...searchModel, pageIndex });
     else
-      doSearchNoParams({ ...searchModel, pageIndex, pageSize });
+      setSearchModel({ ...searchModel, pageIndex, pageSize });
   };
 
   const doSearchOnFormSubmit = (model: SearchForm) => {
-    doSearchNoParams({ ...searchModel, ...model, pageIndex: 1 });
+    setSearchModel({ ...searchModel, ...model, pageIndex: 1 });
   };
 
   const authRoleResourceRequest = useRequest(authRoleResource, {
-    manual: true, onSuccess: () => doSearchNoParams(undefined, true)
+    manual: true, onSuccess: () => {
+      doSearchOfReload();
+      message.success('success');
+    }
   });
   const unAuthRoleResourceRequest = useRequest(unAuthRoleResource, {
-    manual: true, onSuccess: () => doSearchNoParams(undefined, true),
-    fetchKey: (resourceId: string, data: any) => `${resourceId}_${data.role}`
+    manual: true, onSuccess: () => {
+      doSearchOfReload();
+      message.success('success');
+    },
+    fetchKey: (data: any) => `${data.resourceId}_${data.role}`
   });
 
   const onDelete = (model: ResourceModel) => {
     Modal.confirm({
-      title: 'Are you sure delete this role?',
+      title: 'Are you sure delete this authorization?',
       onOk: async () => {
         unAuthRoleResourceRequest.run({
           resourceId: model.id!,
@@ -155,10 +157,16 @@ export default (props: any) => {
         </Col>
         <Col span={8} style={{ textAlign: "right" }}>
           <Button type="primary" onClick={() => setShowCreate(true)}>资源授权</Button>
-          <Button type="default" onClick={() => doSearchNoParams}>刷新</Button>
+          <Button type="default" onClick={doSearchOfReload}>刷新</Button>
         </Col>
       </Row>
-      <Table dataSource={resourceAuthListRequest.data?.rows} loading={resourceAuthListRequest.loading}>
+      <Table dataSource={resourceAuthListRequest.data?.rows} loading={resourceAuthListRequest.loading}
+        pagination={{
+          pageSize: searchModel.pageSize,
+          defaultCurrent: searchModel.pageIndex,
+          total: resourceAuthListRequest.data?.total ?? 0,
+          onChange: doSearchOnPageChange
+        }}>
         <Column title="Resource Id" dataIndex="id" />
         <Column title="Resource Type" dataIndex="resourceType" />
         <Column title="Authorization Role" dataIndex="role" />
@@ -170,8 +178,6 @@ export default (props: any) => {
             </span>
           )} />
       </Table>
-      <Pagination defaultCurrent={searchModel.pageIndex} total={resourceAuthListRequest.data?.total ?? 0}
-        onChange={doSearchOnPageChange} />
       <Modal title="Create Role" visible={showCreate}
         onOk={form.submit}
         onCancel={() => setShowCreate(false)}
