@@ -12,6 +12,7 @@ using Shashlik.RC.Services.Permission.Inputs;
 using Shashlik.RC.Services.Resource;
 using Shashlik.RC.Services.Resource.Dtos;
 using Shashlik.RC.Services.Resource.Inputs;
+using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Controllers
 {
@@ -28,12 +29,12 @@ namespace Shashlik.RC.Controllers
         private EnvironmentService EnvironmentService { get; }
         private ResourceService PermissionService { get; }
 
-        [HttpGet, Admin]
+        [HttpGet]
         public async Task<IEnumerable<ResourceDto>> List()
         {
             var applications = await ApplicationService.List();
             var environments = await EnvironmentService.List(null);
-            return applications
+            var list = applications
                     .Select(r => new ResourceDto
                     {
                         Id = r.ResourceId
@@ -44,6 +45,8 @@ namespace Shashlik.RC.Controllers
                     }))
                     .OrderBy(r => r.Id)
                 ;
+
+            return await PermissionService.DoFilter(LoginUserId!.Value, User.IsInRole(Constants.Roles.Admin), list);
         }
 
         [HttpGet("authorizations"), Admin]

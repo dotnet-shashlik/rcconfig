@@ -43,7 +43,7 @@ export default () => {
         <Button type="primary" onClick={() => setShowCreate(true)}>创建新角色</Button>
         <Button type="default" onClick={roleListRequest.run}>刷新</Button>
       </div>
-      <Table dataSource={roleListRequest.data} loading={roleListRequest.loading} pagination={false}>
+      <Table dataSource={roleListRequest.data} rowKey="id" loading={roleListRequest.loading} pagination={false}>
         <Column title="ID" dataIndex="id" />
         <Column title="Name" dataIndex="name" />
         <Column title="Action" key="action"

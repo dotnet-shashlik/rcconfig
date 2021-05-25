@@ -1,9 +1,10 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import { Button, Table, Modal, Form, Input, message, Row, Col, Space, Divider } from 'antd';
+import { Button, Table, Modal, Form, Input, message, Row, Col, Space, Divider, Select } from 'antd';
 import { Link, useRequest } from 'umi';
 import { useState } from 'react';
 import { envList, createEnv, deleteEnv, updateEnv } from '@/services/api/env';
 import { Regexs, toTime } from '@/utils/utils';
+import { resourceList } from '@/services/api/resource';
 
 const { Column } = Table;
 
@@ -22,11 +23,17 @@ interface EnvModel {
   resourceId?: string;
 };
 
+interface ResouceModel {
+  id: string;
+  resourceType: string;
+}
+
 export default (props: any) => {
-  const { app } = props.match?.params as any;
+  const { app } = props.location.query;
   const [showCreate, setShowCreate] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
-  const envListRequest = useRequest(envList, { defaultParams: [app] });
+  const envListRequest = useRequest(envList, { manual: !app, defaultParams: [app] });
+
   const reload = () => {
     envListRequest.run(app);
     setShowCreate(false);
@@ -41,6 +48,15 @@ export default (props: any) => {
   const deleteEnvRequest = useRequest(deleteEnv, {
     manual: true, fetchKey: (appP: string, envP: string) => `${appP}/${envP}`, onSuccess: reload
   });
+  const [resources, setResources] = useState<ResouceModel[]>([]);
+  useRequest(resourceList, {
+    onSuccess: (data: ResouceModel[]) => {
+      setResources(data.filter(r => r.resourceType === 'Application'));
+    }
+  });
+  const getResourceOptions = (purpose: string) => {
+    return resources.map((resource: any) => (<Select.Option key={`RESOURCE_${purpose}_${resource.id}`} value={resource.id}>{resource.id}</Select.Option>)) ?? []
+  };
 
   const onDelete = (env: string) => {
     Modal.confirm({
@@ -59,31 +75,57 @@ export default (props: any) => {
     setShowEdit(true);
   };
 
-
   return (
     <PageContainer>
-
       <Row style={{ marginBottom: "5px" }}>
-        <Col span={12}>
-          <h3>Application: {app}</h3>
+        <Col span={16}>
+          <Form
+            layout="inline"
+            {...formLayout}
+            initialValues={{ app }}
+            onFinish={(model: any) => {
+              if (!model.app) {
+                message.error('请选择应用');
+                return;
+              }
+              envListRequest.run(model.app);
+            }}
+          >
+            <Form.Item
+              label="应用"
+              name="app"
+            >
+              <Select
+                size="middle"
+                placeholder="Please select application"
+                style={{ width: '260px' }}
+              >
+                {getResourceOptions('search')}
+              </Select>
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit" >查询</Button>
+            </Form.Item>
+          </Form>
         </Col>
-        <Col span={12} style={{ textAlign: "right" }}>
+        <Col span={8} style={{ textAlign: "right" }}>
           <Button type="primary" onClick={() => setShowCreate(true)}>创建环境</Button>
           <Button type="default" onClick={() => envListRequest.run(app)}>刷新</Button>
         </Col>
       </Row>
-      <Table dataSource={envListRequest.data} loading={envListRequest.loading} pagination={false}>
+      <Table dataSource={envListRequest.data} rowKey="id" loading={envListRequest.loading} pagination={false}>
         <Column title="Name" dataIndex="name" />
         <Column title="ResourceId" dataIndex="resourceId" />
         <Column title="Description" dataIndex="desc" />
         <Column title="CreateTime" dataIndex="createTime" render={(text: any, item: EnvModel) => <span>{toTime(item.createTime!)}</span>} />
         <Column title="Action" key="action"
           render={(_: any, item: any) => (
-            <>
+            <Space>
               <Button type="link" loading={deleteEnvRequest.fetches[item.resourceId]?.loading} onClick={() => { onDelete(item.name) }}>Delete</Button>
               <Button type="link" onClick={() => { onShowEdit(item) }}>Edit</Button>
+              <Link to={`/files?selectResourceId=${item.resourceId}`}>Files</Link>
               <Link to={`/resources?selectId=${item.resourceId}`}>Authorization</Link>
-            </>
+            </Space>
           )} />
       </Table>
 

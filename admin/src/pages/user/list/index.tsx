@@ -63,7 +63,7 @@ export default () => {
         <Button type="primary" onClick={() => setShowCreate(true)}>创建新用户</Button>
         <Button type="default" onClick={userListRequest.run}>刷新</Button>
       </div>
-      <Table dataSource={userListRequest.data} loading={userListRequest.loading} pagination={false}>
+      <Table dataSource={userListRequest.data} rowKey="id" loading={userListRequest.loading} pagination={false}>
         <Column title="ID" dataIndex="id" />
         <Column title="UserName" dataIndex="userName" />
         <Column title="Roles" dataIndex="rolesStr" />
@@ -101,6 +101,20 @@ export default () => {
             <Input />
           </Form.Item>
           <Form.Item
+            label="Roles"
+            name="roles"
+            rules={[{ required: true, type: "array" }]}
+          >
+            <Select
+              mode="multiple"
+              size="middle"
+              placeholder="Please select role"
+              style={{ width: '100%' }}
+            >
+              {getRoleOptions('create')}
+            </Select>
+          </Form.Item>
+          <Form.Item
             label="Password"
             name="password"
             rules={[{ required: true }, { max: 32 }]}
@@ -124,20 +138,7 @@ export default () => {
           >
             <Input.Password />
           </Form.Item>
-          <Form.Item
-            label="Roles"
-            name="roles"
-            rules={[{ required: true, type: "array" }]}
-          >
-            <Select
-              mode="multiple"
-              size="middle"
-              placeholder="Please select role"
-              style={{ width: '100%' }}
-            >
-              {getRoleOptions('create')}
-            </Select>
-          </Form.Item>
+
           <Form.Item
             label="Remark"
             name="remark"

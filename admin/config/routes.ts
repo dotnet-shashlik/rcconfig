@@ -63,8 +63,7 @@
   {
     name: 'envs',
     icon: 'table',
-    hideInMenu: true,
-    path: '/envs/:app',
+    path: '/envs',
     component: './env',
   },
   {

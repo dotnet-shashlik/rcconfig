@@ -1,5 +1,5 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import { Button, Table, Modal, Form, Input, message } from 'antd';
+import { Button, Table, Modal, Form, Input, message, Space } from 'antd';
 import { Link, useRequest } from 'umi';
 import { useState } from 'react';
 import { appList, createApp, deleteApp, updateApp } from '@/services/api/app';
@@ -63,19 +63,19 @@ export default () => {
         <Button type="primary" onClick={() => setShowCreate(true)}>创建应用</Button>
         <Button type="default" onClick={appListRequest.run}>刷新</Button>
       </div>
-      <Table dataSource={appListRequest.data} loading={appListRequest.loading} pagination={false}>
-        <Column title="Name" dataIndex="name" render={(_: any, item: AppModel) => <Link to={`/envs/${item.name}`}>{item.name}</Link>} />
+      <Table dataSource={appListRequest.data} rowKey="id" loading={appListRequest.loading} pagination={false}>
+        <Column title="Name" dataIndex="name" render={(_: any, item: AppModel) => <Link to={`/envs?app=${item.name}`}>{item.name}</Link>} />
         <Column title="ResourceId" dataIndex="resourceId" />
         <Column title="Description" dataIndex="desc" />
         <Column title="CreateTime" dataIndex="createTime" render={(_: any, item: AppModel) => <span>{toTime(item.createTime!)}</span>} />
         <Column title="Action" key="action"
           render={(_: any, item: any) => (
-            <span>
+            <Space>
               <Button type="link" loading={deleteAppRequest.fetches[item.name]?.loading} onClick={() => { onDelete(item.name) }}>Delete</Button>
               <Button type="link" onClick={() => { onShowEdit(item) }}>Edit</Button>
-              <Link to={`/envs/${item.name}`}>{item.name}</Link>
+              <Link to={`/envs?app=${item.name}`}>Environment</Link>
               <Link to={`/resources?selectId=${item.resourceId}`}>Authorization</Link>
-            </span>
+            </Space>
           )} />
       </Table>
 

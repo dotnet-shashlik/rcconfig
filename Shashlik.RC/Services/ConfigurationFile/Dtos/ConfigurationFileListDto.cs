@@ -28,8 +28,13 @@ namespace Shashlik.RC.Services.ConfigurationFile.Dtos
         public string Type { get; set; }
 
         /// <summary>
+        /// 环境id
+        /// </summary>
+        public int EnvironmentId { get; set; }
+        
+        /// <summary>
         /// 环境 name
         /// </summary>
-        public int EnvironmentName { get; set; }
+        public string EnvironmentResourceId { get; set; }
     }
 }

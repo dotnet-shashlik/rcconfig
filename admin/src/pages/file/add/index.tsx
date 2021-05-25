@@ -23,11 +23,11 @@ interface ResouceModel {
   resourceType: string;
 }
 
-export default (props: any) => {
-  const { selectResourceId } = props.location.query;
+export default () => {
+
   const [searchModel, setSearchModel] = useState<SearchModel>({ pageIndex: 1, pageSize: 20, resourceId: '' });
-  const fileListRequest = useRequest(fileList, { manual: !selectResourceId, defaultParams: [selectResourceId, searchModel] });
   const [resources, setResources] = useState<ResouceModel[]>([]);
+  const fileListRequest = useRequest(fileList, { manual: true });
   useRequest(resourceList, {
     onSuccess: (data: ResouceModel[]) => {
       setResources(data.filter(r => r.resourceType === 'Environment'));
@@ -36,6 +36,7 @@ export default (props: any) => {
 
   useEffect(() => {
     if (!searchModel.resourceId) {
+      message.error('请选择资源');
       return;
     }
     fileListRequest.run(searchModel.resourceId, searchModel);
@@ -52,10 +53,6 @@ export default (props: any) => {
       setSearchModel({ ...searchModel, pageIndex, pageSize });
   };
   const doSearchOnFormSubmit = (model: SearchModel) => {
-    if (!model.resourceId) {
-      message.error('请选择资源');
-      return;
-    }
     setSearchModel({ ...searchModel, ...model, pageIndex: 1 });
   };
 
@@ -84,16 +81,17 @@ export default (props: any) => {
           <Form
             layout="inline"
             {...formLayout}
-            initialValues={{ resourceId: selectResourceId }}
+            initialValues={searchModel}
             onFinish={(model: SearchModel) => doSearchOnFormSubmit(model)}
           >
             <Form.Item
               label="资源Id"
-              name="resourceId"
+              name="id"
             >
               <Select
                 size="middle"
                 placeholder="Please select resource"
+                allowClear
                 style={{ width: '260px' }}
               >
                 {getResourceOptions('search')}
@@ -109,13 +107,7 @@ export default (props: any) => {
           <Button type="default" onClick={doSearchOfReload}>刷新</Button>
         </Col>
       </Row>
-      <Table dataSource={fileListRequest.data?.rows ?? []} rowKey="id" loading={fileListRequest.loading}
-        pagination={{
-          pageSize: searchModel.pageSize,
-          defaultCurrent: searchModel.pageIndex,
-          total: fileListRequest.data?.total ?? 0,
-          onChange: doSearchOnPageChange
-        }}>
+      <Table dataSource={fileListRequest.data} rowKey="id" loading={fileListRequest.loading}>
         <Column title="Name" dataIndex="environmentResourceId" />
         <Column title="ID" dataIndex="id" />
         <Column title="Name" dataIndex="name" />
