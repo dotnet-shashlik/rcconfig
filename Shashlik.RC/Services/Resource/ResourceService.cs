@@ -141,7 +141,7 @@ namespace Shashlik.RC.Services.Resource
                     .Where(r => r.ClaimType.StartsWith(ResourceClaimTypePrefix))
                     .Select(r => new ResourceActionDto
                     {
-                        Id = r.ClaimType,
+                        Id = GetResourceIdFromClaimType(r.ClaimType),
                         Action = r.ClaimValue.ParseTo<PermissionAction>()
                     })
                     .CombineResourceAction()

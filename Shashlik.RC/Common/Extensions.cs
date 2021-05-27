@@ -20,7 +20,7 @@ namespace Shashlik.RC.Common
                     new ResourceActionDto
                     {
                         Id = r.Key,
-                        Action = r.Select(v => v.ParseTo<PermissionAction>()).Aggregate((a, b) => a | b)
+                        Action = r.Select(v => v.Action.ParseTo<PermissionAction>()).Aggregate((a, b) => a | b)
                     }
                 );
         }

@@ -4,6 +4,7 @@ using Shashlik.RC.Common;
 using Shashlik.RC.Services.ConfigurationFile;
 using Shashlik.RC.Services.ConfigurationFile.Dtos;
 using Shashlik.RC.Services.ConfigurationFile.Inputs;
+using Shashlik.Response;
 
 namespace Shashlik.RC.Controllers
 {
@@ -17,9 +18,16 @@ namespace Shashlik.RC.Controllers
         private ConfigurationFileService ConfigurationFileService { get; }
 
         [HttpGet(Constants.ResourceRoute.ApplicationAndEnvironment)]
-        public async Task<PageModel<ConfigurationFileDto>> Get([FromQuery] PageInput input)
+        public async Task<PageModel<ConfigurationFileListDto>> Get([FromQuery] PageInput input)
         {
             return await ConfigurationFileService.List(GetResourceId(), input);
+        }
+
+        [HttpGet(Constants.ResourceRoute.ApplicationAndEnvironment + "/{fileId:int:min(1)}")]
+        public async Task<ConfigurationFileDto> Get(int fileId)
+        {
+            var file = await ConfigurationFileService.Get(GetResourceId(), fileId);
+            return file ?? throw ResponseException.NotFound();
         }
 
         [HttpPost(Constants.ResourceRoute.ApplicationAndEnvironment)]

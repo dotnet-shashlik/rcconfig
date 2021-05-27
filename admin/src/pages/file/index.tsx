@@ -1,21 +1,15 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import { Button, Table, Modal, Form, Input, message, Row, Col, Select } from 'antd';
-import { Link, useRequest } from 'umi';
+import { Button, Table, Modal, message, Row, Col, Select } from 'antd';
+import { useRequest, history, Link } from 'umi';
 import { useState, useEffect } from 'react';
-import { fileList, createFile, deleteFile, updateFile } from '@/services/api/file';
+import { fileList, deleteFile } from '@/services/api/file';
 import { resourceList } from '@/services/api/resource';
 
 const { Column } = Table;
 
-const formLayout = {
-  labelCol: { span: 8 },
-  wrapperCol: { span: 13 },
-};
-
 interface SearchModel {
   pageIndex: number;
   pageSize: number;
-  resourceId: string;
 }
 
 interface ResouceModel {
@@ -24,9 +18,10 @@ interface ResouceModel {
 }
 
 export default (props: any) => {
+
   const { selectResourceId } = props.location.query;
-  const [searchModel, setSearchModel] = useState<SearchModel>({ pageIndex: 1, pageSize: 20, resourceId: '' });
-  const fileListRequest = useRequest(fileList, { manual: !selectResourceId, defaultParams: [selectResourceId, searchModel] });
+  const [searchModel, setSearchModel] = useState<SearchModel>({ pageIndex: 1, pageSize: 20 });
+  const fileListRequest = useRequest(fileList, { manual: true });
   const [resources, setResources] = useState<ResouceModel[]>([]);
   useRequest(resourceList, {
     onSuccess: (data: ResouceModel[]) => {
@@ -35,12 +30,21 @@ export default (props: any) => {
   });
 
   useEffect(() => {
-    if (!searchModel.resourceId) {
+    if (!selectResourceId) {
       return;
     }
-    fileListRequest.run(searchModel.resourceId, searchModel);
+    fileListRequest.run(selectResourceId, searchModel);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchModel]);
+  }, [props, searchModel]);
+
+  const goSearch = (goResource: string) => {
+    history.replace(`/files?selectResourceId=${goResource}`);
+  };
+  const goRefresh = () => {
+    if (selectResourceId) {
+      setSearchModel({ ...searchModel });
+    }
+  };
 
   const doSearchOfReload = () => {
     setSearchModel({ ...searchModel });
@@ -50,13 +54,6 @@ export default (props: any) => {
       setSearchModel({ ...searchModel, pageIndex });
     else
       setSearchModel({ ...searchModel, pageIndex, pageSize });
-  };
-  const doSearchOnFormSubmit = (model: SearchModel) => {
-    if (!model.resourceId) {
-      message.error('请选择资源');
-      return;
-    }
-    setSearchModel({ ...searchModel, ...model, pageIndex: 1 });
   };
 
   const deleteFileRequest = useRequest(deleteFile, {
@@ -81,32 +78,23 @@ export default (props: any) => {
     <PageContainer>
       <Row style={{ marginBottom: "5px" }}>
         <Col span={16}>
-          <Form
-            layout="inline"
-            {...formLayout}
-            initialValues={{ resourceId: selectResourceId }}
-            onFinish={(model: SearchModel) => doSearchOnFormSubmit(model)}
+          <Select
+            size="middle"
+            placeholder="Please select resource"
+            style={{ width: '260px' }}
+            onSelect={goSearch}
+            defaultValue={selectResourceId}
           >
-            <Form.Item
-              label="资源Id"
-              name="resourceId"
-            >
-              <Select
-                size="middle"
-                placeholder="Please select resource"
-                style={{ width: '260px' }}
-              >
-                {getResourceOptions('search')}
-              </Select>
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit" >查询</Button>
-            </Form.Item>
-          </Form>
+            {getResourceOptions('search')}
+          </Select>
         </Col>
         <Col span={8} style={{ textAlign: "right" }}>
-          {/* <Button type="primary" onClick={() => setShowCreate(true)}>创建文件</Button> */}
-          <Button type="default" onClick={doSearchOfReload}>刷新</Button>
+          {selectResourceId && (
+            <>
+              <Button type="primary" onClick={() => history.push(`/files/detail/${selectResourceId}`)}>New File</Button>
+              <Button type="default" onClick={goRefresh}>刷新</Button>
+            </>
+          )}
         </Col>
       </Row>
       <Table dataSource={fileListRequest.data?.rows ?? []} rowKey="id" loading={fileListRequest.loading}
@@ -116,11 +104,10 @@ export default (props: any) => {
           total: fileListRequest.data?.total ?? 0,
           onChange: doSearchOnPageChange
         }}>
-        <Column title="Name" dataIndex="environmentResourceId" />
         <Column title="ID" dataIndex="id" />
-        <Column title="Name" dataIndex="name" />
-        <Column title="Name" dataIndex="type" />
-        <Column title="Name" dataIndex="desc" />
+        <Column title="Name" dataIndex="name" render={(_, item: any) => (<Link to={`/files/detail/${selectResourceId}?fileId=${item.id}`}>{item.name}</Link>)} />
+        <Column title="File Type" dataIndex="type" />
+        <Column title="Description" dataIndex="desc" />
         <Column title="Action" key="action"
           render={(_: any, item: any) => (
             <span>

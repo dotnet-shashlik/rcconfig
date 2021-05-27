@@ -2,11 +2,19 @@
 /* eslint-disable */
 import { request } from 'umi';
 
-/** 获取文件列表 GET /ConfigurationFiles */
+/** 获取文件列表 GET /ConfigurationFiles/{resourceId} */
 export async function fileList(resourceId: string, params: any, options?: { [key: string]: any }) {
   return await request<API.Response<any>>(`/ConfigurationFiles/${resourceId}`, {
     method: 'GET',
     params: params,
+    ...(options || {})
+  });
+}
+
+/** 获取文件详情 GET /ConfigurationFiles/{resourceId}/{fileId} */
+export async function fileDetail(resourceId: string, fileId: number, options?: { [key: string]: any }) {
+  return await request<API.Response<any>>(`/ConfigurationFiles/${resourceId}/${fileId}`, {
+    method: 'GET',
     ...(options || {})
   });
 }

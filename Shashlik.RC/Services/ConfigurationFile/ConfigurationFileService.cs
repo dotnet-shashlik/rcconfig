@@ -79,12 +79,12 @@ namespace Shashlik.RC.Services.ConfigurationFile
             await DbContext.SaveChangesAsync();
         }
 
-        public async Task<PageModel<ConfigurationFileDto>> List(string environmentResourceId, PageInput pageInput)
+        public async Task<PageModel<ConfigurationFileListDto>> List(string environmentResourceId, PageInput pageInput)
         {
             return await DbContext.Set<ConfigurationFiles>()
                 .Where(r => r.EnvironmentResourceId == environmentResourceId)
                 .OrderBy(r => r.Id)
-                .QueryTo<ConfigurationFileDto>()
+                .QueryTo<ConfigurationFileListDto>()
                 .PageQuery(pageInput);
         }
 

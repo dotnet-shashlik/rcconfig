@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityServer4.Extensions;
@@ -86,9 +87,9 @@ namespace Shashlik.RC.Controllers
         }
 
         [HttpGet("{userId:int:min(1)}/resources"), Admin]
-        public async Task<IEnumerable<ResourceDto>> Resources(int userid, [FromServices] ResourceService permissionService)
+        public async Task<IEnumerable<ResourceActionDto>> Resources(int userid, [FromServices] ResourceService permissionService)
         {
-            return await permissionService.GetResourceActionsByUserId(userid);
+           return await permissionService.GetResourceActionsByUserId(userid);
         }
     }
 }

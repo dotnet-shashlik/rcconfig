@@ -33,7 +33,7 @@ export default (props: any) => {
       </Form.Item>
       <Form.Item label="Resources">
         {
-          userResourceListRequest?.data?.map((item: any) => (<div>{item.id} : {item.actionStr}</div>))
+          userResourceListRequest?.data?.map((item: any) => (<li>{item.id} : {item.actionStr}</li>))
         }
       </Form.Item>
     </Form>

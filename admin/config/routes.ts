@@ -73,6 +73,13 @@
     component: './file',
   },
   {
+    name: 'files-detail',
+    icon: 'table',
+    path: '/files/detail/:app/:env',
+    hideInMenu: true,
+    component: './file/detail',
+  },
+  {
     name: 'resources',
     icon: 'table',
     path: '/resources',
