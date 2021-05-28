@@ -80,6 +80,26 @@
     component: './file/detail',
   },
   {
+    name: 'logs',
+    icon: 'table',
+    path: '/logs',
+    component: './log',
+  },
+  {
+    name: 'logs-detail',
+    icon: 'table',
+    path: '/logs/detail/:app/:env/:logId',
+    hideInMenu: true,
+    component: './log/detail',
+  },
+  {
+    name: 'logs-byfileid',
+    icon: 'table',
+    path: '/logsbyfileid/:app/:env/:fileId',
+    hideInMenu: true,
+    component: './log/byFileId',
+  },
+  {
     name: 'resources',
     icon: 'table',
     path: '/resources',

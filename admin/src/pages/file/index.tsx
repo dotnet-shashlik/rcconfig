@@ -40,7 +40,7 @@ export default (props: any) => {
   const goSearch = (goResource: string) => {
     history.replace(`/files?selectResourceId=${goResource}`);
   };
-  const goRefresh = () => {
+  const doRefresh = () => {
     if (selectResourceId) {
       setSearchModel({ ...searchModel });
     }
@@ -92,7 +92,7 @@ export default (props: any) => {
           {selectResourceId && (
             <>
               <Button type="primary" onClick={() => history.push(`/files/detail/${selectResourceId}`)}>New File</Button>
-              <Button type="default" onClick={goRefresh}>刷新</Button>
+              <Button type="default" onClick={doRefresh}>刷新</Button>
             </>
           )}
         </Col>
@@ -112,7 +112,7 @@ export default (props: any) => {
           render={(_: any, item: any) => (
             <span>
               <Button type="link" loading={deleteFileRequest.fetches[`${item.environmentResourceId}/${item.id}`]?.loading} onClick={() => { onDelete(item) }}>Delete</Button>
-              {/* <Button type="link" loading={deleteFileList.fetches[item.name]?.loading} onClick={() => { fileListRequest.run(item.name) }}>修改记录</Button> */}
+              <Button type="link" onClick={() => { history.push(`/logsbyfileid/${selectResourceId}/${item.id}`) }}>Change Logs</Button>
             </span>
           )} />
       </Table>

@@ -12,8 +12,6 @@ require('codemirror/mode/xml/xml');
 require('codemirror/mode/yaml/yaml');
 require('codemirror/mode/properties/properties');
 require('codemirror/mode/javascript/javascript');
-require('codemirror/addon/hint/show-hint.css');
-require('codemirror/addon/hint/show-hint.js');
 
 interface FormModel {
   id?: number;

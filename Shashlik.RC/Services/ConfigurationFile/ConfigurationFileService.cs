@@ -86,7 +86,8 @@ namespace Shashlik.RC.Services.ConfigurationFile
             var file = await DbContext.FindAsync<ConfigurationFiles>(id);
             if (file is null || file.EnvironmentResourceId != environmentResourceId)
                 throw ResponseException.NotFound();
-            if (await DbContext.Set<ConfigurationFiles>().AnyAsync(r => r.EnvironmentResourceId == environmentResourceId && r.Name == input.Name))
+            if (await DbContext.Set<ConfigurationFiles>()
+                .AnyAsync(r => r.Id != file.Id && r.EnvironmentResourceId == environmentResourceId && r.Name == input.Name))
                 throw ResponseException.ArgError("文件名称重复");
             var beforeContent = file.Content;
             file.Desc = input.Desc;
