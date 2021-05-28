@@ -78,9 +78,10 @@ export const request: RequestConfig = {
     (url: string, options: any) => {
       const token = getAccessToken();
       const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
-      const baseUrl = getBaseUrl();
+      const baseUrl = isDev ? "http://localhost:5000" : "";
+      const prefix = url === '/connect/token' ? '' : '/api';
       return {
-        url: url.toLowerCase().startsWith('http://') || url.toLowerCase().startsWith('https://') ? url : `${baseUrl}${url}`,
+        url: url.toLowerCase().startsWith('http://') || url.toLowerCase().startsWith('https://') ? url : `${baseUrl}${prefix}${url}`,
         options: {
           ...options,
           interceptors: true,
@@ -138,18 +139,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         history.push(loginPath);
       }
     },
-    links: isDev
-      ? [
-        <Link to="/umi/plugin/openapi" target="_blank">
-          <LinkOutlined />
-          <span>openAPI 文档</span>
-        </Link>,
-        <Link to="/~docs">
-          <BookOutlined />
-          <span>业务组件文档</span>
-        </Link>,
-      ]
-      : [],
     menuHeaderRender: undefined,
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,

@@ -45,12 +45,6 @@ export const clearAccessToken = () => {
 export const getAccessToken = () => Cookies.get('assess_token') || false;
 
 /**
- * 获取baseUrl
- * @returns baseUrl
- */
-export const getBaseUrl = () => "http://localhost:5000";
-
-/**
  * 常用正则
  */
 export const Regexs = {

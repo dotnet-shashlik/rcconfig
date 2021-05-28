@@ -15,45 +15,7 @@
       },
     ],
   },
-  {
-    path: '/welcome',
-    name: 'welcome',
-    icon: 'smile',
-    component: './Welcome',
-  },
-  {
-    path: '/admin',
-    name: 'admin',
-    icon: 'crown',
-    component: './Admin',
-    routes: [
-      {
-        path: '/admin/sub-page',
-        name: 'sub-page',
-        icon: 'smile',
-        component: './Welcome',
-      },
-    ],
-  },
-  {
-    name: 'users',
-    icon: 'table',
-    path: '/users',
-    component: './user/list',
-  },
-  {
-    name: 'userDetail',
-    icon: 'table',
-    path: '/users/detail/:id',
-    hideInMenu: true,
-    component: './user/detail',
-  },
-  {
-    name: 'roles',
-    icon: 'table',
-    path: '/roles',
-    component: './role',
-  },
+
   {
     name: 'apps',
     icon: 'table',
@@ -100,10 +62,33 @@
     component: './log/byFileId',
   },
   {
+    name: 'users',
+    icon: 'table',
+    path: '/users',
+    component: './user/list',
+    access: 'admin'
+  },
+  {
+    name: 'userDetail',
+    icon: 'table',
+    path: '/users/detail/:id',
+    hideInMenu: true,
+    component: './user/detail',
+    access: 'admin'
+  },
+  {
+    name: 'roles',
+    icon: 'table',
+    path: '/roles',
+    component: './role',
+    access: 'admin'
+  },
+  {
     name: 'resources',
     icon: 'table',
     path: '/resources',
     component: './resource',
+    access: 'admin'
   },
   {
     name: 'secrets',
@@ -114,7 +99,7 @@
   },
   {
     path: '/',
-    redirect: '/welcome',
+    redirect: '/apps',
   },
   {
     name: 'password',

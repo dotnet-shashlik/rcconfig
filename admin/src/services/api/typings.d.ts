@@ -17,7 +17,8 @@ declare namespace API {
     id?: number;
     userName?: string;
     remark?: string;
-    claims?: string[];
+    roles?: string[];
+    rolesStr?: string;
   };
 
   type LoginResult = {

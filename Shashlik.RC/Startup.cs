@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using IdentityModel;
+using IdentityServer4.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -115,7 +117,7 @@ namespace Shashlik.RC
 
             services.AddAuthorization();
             services.AddMediatR(GetType().Assembly);
-            services.AddSpaStaticFiles(r => { r.RootPath = "wwwroot/dist"; });
+            services.AddSpaStaticFiles(r => { r.RootPath = "AdminUI/dist"; });
             services.AddShashlik(Configuration);
         }
 
@@ -125,8 +127,9 @@ namespace Shashlik.RC
             IdentityModelEventSource.ShowPII = true;
 
             app.UseCors();
-            app.UseRouting();
+            app.UseStaticFiles();
             app.UseSpaStaticFiles();
+            app.UseRouting();
 
             app.ApplicationServices.UseShashlik()
                 .MigrationDb()
@@ -150,6 +153,8 @@ namespace Shashlik.RC
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            app.UseSpa(spa => { spa.Options.SourcePath = "AdminUI"; });
         }
     }
 }

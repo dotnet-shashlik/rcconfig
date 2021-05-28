@@ -17,7 +17,7 @@ namespace Shashlik.RC.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [Produces("application/json")]
     [ExceptionWrapper]
     [ResponseWrapper]
