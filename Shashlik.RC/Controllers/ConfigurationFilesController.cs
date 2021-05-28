@@ -34,21 +34,21 @@ namespace Shashlik.RC.Controllers
         public async Task Post(CreateConfigurationFileInput input)
         {
             //TODO: event
-            await ConfigurationFileService.Create(GetResourceId(), input);
+            await ConfigurationFileService.Create(LoginUserId!.Value, User.Identity!.Name!, GetResourceId(), input);
         }
 
         [HttpPatch(Constants.ResourceRoute.ApplicationAndEnvironment + "/{fileId:int:min(1)}")]
         public async Task Patch(int fileId, UpdateConfigurationFileInput input)
         {
             //TODO: event
-            await ConfigurationFileService.Update(GetResourceId(), fileId, input);
+            await ConfigurationFileService.Update(LoginUserId!.Value, User.Identity!.Name!, GetResourceId(), fileId, input);
         }
 
         [HttpDelete(Constants.ResourceRoute.ApplicationAndEnvironment + "/{fileId:int:min(1)}")]
         public async Task Delete(int fileId)
         {
             //TODO: event
-            await ConfigurationFileService.Delete(GetResourceId(), fileId);
+            await ConfigurationFileService.Delete(LoginUserId!.Value, User.Identity!.Name!, GetResourceId(), fileId);
         }
     }
 }

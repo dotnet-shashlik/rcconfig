@@ -12,21 +12,20 @@ namespace Shashlik.RC.Data.Entities
 
         public long LogTime { get; set; }
 
-        public int LogUserId { get; set; }
-
-        public string LogUserName { get; set; }
-
         /// <summary>
-        /// 日志概要信息
+        /// 操作类型
         /// </summary>
-        public string Summary { get; set; }
+        public string LogType { get; set; }
 
-        public int? FileId { get; set; }
+        public int UserId { get; set; }
+
+        public string UserName { get; set; }
+
+        public int FileId { get; set; }
+
         public string FileName { get; set; }
-        public int? ApplicationId { get; set; }
-        public string ApplicationName { get; set; }
-        public int? EnvironmentId { get; set; }
-        public string EnvironmentName { get; set; }
+
+        public string ResourceId { get; set; }
 
         public string BeforeContent { get; set; }
 
@@ -36,11 +35,9 @@ namespace Shashlik.RC.Data.Entities
         {
             public void Configure(EntityTypeBuilder<Logs> builder)
             {
-                builder.Property(r => r.LogUserName).HasMaxLength(255);
-                builder.Property(r => r.Summary).HasMaxLength(255);
-                builder.Property(r => r.FileName).HasMaxLength(255);
-                builder.Property(r => r.ApplicationName).HasMaxLength(255);
-                builder.Property(r => r.EnvironmentName).HasMaxLength(255);
+                builder.Property(r => r.UserName).HasMaxLength(255);
+                builder.Property(r => r.ResourceId).HasMaxLength(255);
+                builder.Property(r => r.LogType).HasMaxLength(255).IsRequired();
             }
         }
     }
