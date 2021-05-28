@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { PageContainer } from '@ant-design/pro-layout';
-import { Button, Form, Input, Radio } from 'antd';
+import { Button, Form, Input, message, Radio } from 'antd';
 import { useRequest, history } from 'umi';
 import { useState, useEffect } from 'react';
 import { createFile, updateFile, fileDetail } from '@/services/api/file';
@@ -43,9 +43,13 @@ export default (props: any) => {
   const createFileRequest = useRequest(createFile, {
     manual: true, onSuccess: () => {
       history.push(`/files?selectResourceId=${resourceId}`);
+      message.success(`success`);
     }
   });
-  const updateFileRequest = useRequest(updateFile, { manual: true });
+  const updateFileRequest = useRequest(updateFile, {
+    manual: true,
+    onSuccess: () => message.success(`success`)
+  });
 
   const [editor, setEditor] = useState<any>(false);
   useEffect(() => {
