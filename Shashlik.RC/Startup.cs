@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Shashlik.EfCore;
 using Shashlik.Kernel;
 using Shashlik.RC.Data.MySql;
 using Shashlik.RC.Data.PostgreSql;
@@ -107,6 +108,10 @@ namespace Shashlik.RC
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            app.ApplicationServices.UseShashlik()
+                .DoAutoMigration()
+                .AutowireServiceProvider();
 
             app.UseRouting();
 
