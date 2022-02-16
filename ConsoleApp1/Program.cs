@@ -1,14 +1,35 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Shashlik.Utils.Extensions;
 
 namespace ConsoleApp1
 {
+    public class EventQueue
+    {
+        public static readonly BlockingCollection<string> Queues = new(1);
+
+        public static string Wait(CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (Queues.TryTake(out var file, 3 * 1000, cancellationToken))
+                    return file;
+                return string.Empty;
+            }
+            catch (OperationCanceledException)
+            {
+                return string.Empty;
+            }
+        }
+    }
+
     class Program
     {
         private static string CreatePassword(int len)
@@ -22,6 +43,7 @@ namespace ConsoleApp1
                 var b = a % 4;
                 res.Append(valid[b][a % valid[b].Length]);
             }
+
             return res.ToString();
         }
 
@@ -35,6 +57,7 @@ namespace ConsoleApp1
                 var a = random[i];
                 res.Append(valid[a % valid.Length]);
             }
+
             return res.ToString();
         }
 
@@ -50,7 +73,9 @@ namespace ConsoleApp1
             foreach (byte b in buf)
             {
                 sb.Append(valid[b % valid.Length]);
-            };
+            }
+
+            ;
 
 
             return sb.ToString();
@@ -97,7 +122,8 @@ namespace ConsoleApp1
                 //int first_letter_ascii = true;
                 if (chars == null && (numbers && end <= 48 || letters && end <= 65))
                 {
-                    throw new Exception("Parameter end (" + end + ") must be greater then (" + 48 + ") for generating digits or greater then (" + 65 + ") for generating letters.");
+                    throw new Exception("Parameter end (" + end + ") must be greater then (" + 48 +
+                                        ") for generating digits or greater then (" + 65 + ") for generating letters.");
                 }
                 else
                 {
@@ -132,7 +158,8 @@ namespace ConsoleApp1
                             {
                                 ++count;
                             }
-                            else if ((!letters || !char.IsLetter((char)codePoint)) && (!numbers || !char.IsDigit((char)codePoint)) && (letters || numbers))
+                            else if ((!letters || !char.IsLetter((char)codePoint)) && (!numbers || !char.IsDigit((char)codePoint)) &&
+                                     (letters || numbers))
                             {
                                 ++count;
                             }
@@ -164,34 +191,11 @@ namespace ConsoleApp1
 
         static void Main(string[] args)
         {
-
-            {
-                var s = new System.Diagnostics.Stopwatch();
-
-                s.Start();
-                for (int i = 0; i < 1000000; i++)
-                {
-                    random(24, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()_+-=");
-                }
-
-                s.Stop();
-                Console.WriteLine(s.ElapsedMilliseconds / 1000M);
-            }
-
-            {
-                var s = new System.Diagnostics.Stopwatch();
-
-                s.Start();
-                for (int i = 0; i < 1000000; i++)
-                {
-                    CreatePassword1(24);
-                }
-
-                s.Stop();
-                Console.WriteLine(s.ElapsedMilliseconds / 1000M);
-            }
-
-
+            using var cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.CancelAfter(100 * 1000);
+            Console.WriteLine("start: " + DateTime.Now);
+            var res = EventQueue.Wait(cancellationTokenSource.Token);
+            Console.WriteLine("end: " + DateTime.Now);
         }
     }
 

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Shashlik.RC.Data.Entities
 {
-    public class Environments :  IResource
+    public class Environments : IResource
     {
         /// <summary>
         /// id
@@ -35,6 +35,11 @@ namespace Shashlik.RC.Data.Entities
         /// 创建时间
         /// </summary>
         public long CreateTime { get; set; }
+
+        /// <summary>
+        /// 最后修改时间,包含环境中的文件
+        /// </summary>
+        public long FileUpdateTime { get; set; }
 
         public Applications Application { get; set; }
 

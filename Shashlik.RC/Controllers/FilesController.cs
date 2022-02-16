@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Shashlik.RC.Common;
+using Shashlik.RC.EventBus;
 using Shashlik.RC.Filters;
 using Shashlik.RC.Services.ConfigurationFile;
 using Shashlik.RC.Services.ConfigurationFile.Dtos;
@@ -60,10 +61,8 @@ namespace Shashlik.RC.Controllers
         [HttpGet(Constants.ResourceRoute.ApplicationAndEnvironment + "/poll")]
         public async Task<bool> Pool(CancellationToken cancellation)
         {
-
-            //TODO: ...
-
-            return true;
+            //TODO:...
+            return await EventQueue.Wait(GetResourceId(), 1L, cancellation);
         }
 
         /// <summary>
