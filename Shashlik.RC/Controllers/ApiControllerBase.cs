@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Security.Claims;
-using IdentityModel;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Shashlik.AspNetCore.Filters;
 using Shashlik.RC.Filters;
 using Shashlik.RC.Services.Identity;
 using Shashlik.Utils.Extensions;
@@ -22,7 +19,7 @@ namespace Shashlik.RC.Controllers
     [ExceptionWrapper]
     [ResponseWrapper]
     [ResourceFilter]
-    public class ApiControllerBase : ControllerBase
+    public abstract class ApiControllerBase : ControllerBase
     {
         protected ApiControllerBase()
         {

@@ -7,9 +7,9 @@ using Shashlik.AutoMapper;
 using Shashlik.Kernel.Dependency;
 using Shashlik.RC.Data;
 using Shashlik.RC.Data.Entities;
+using Shashlik.RC.Filters;
 using Shashlik.RC.Services.Application.Dtos;
 using Shashlik.RC.Services.Application.Inputs;
-using Shashlik.Response;
 using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Services.Application

@@ -1,21 +1,14 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using IdentityModel;
-using IdentityServer4.Extensions;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
-using Shashlik.AspNetCore;
 using Shashlik.Kernel;
 using Shashlik.RC.Common;
 using Shashlik.RC.Data;
@@ -70,7 +63,7 @@ namespace Shashlik.RC
             }
 
             services.AddControllers()
-                .SetCompatibilityVersion(CompatibilityVersion.Latest);
+                .AddControllersAsServices();
             services.AddCors(r =>
             {
                 r.AddDefaultPolicy(builder =>
@@ -117,7 +110,7 @@ namespace Shashlik.RC
 
             services.AddAuthorization();
             services.AddMediatR(GetType().Assembly);
-            services.AddSpaStaticFiles(r => { r.RootPath = "AdminUI/dist"; });
+           // services.AddSpaStaticFiles(r => { r.RootPath = "AdminUI/dist"; });
             services.AddShashlik(Configuration);
         }
 
@@ -128,14 +121,14 @@ namespace Shashlik.RC
 
             app.UseCors();
             app.UseStaticFiles();
-            app.UseSpaStaticFiles();
+            //app.UseSpaStaticFiles();
             app.UseRouting();
 
             app.ApplicationServices.UseShashlik()
                 .MigrationDb()
                 .InitRoleAndAdminUser()
-                .AutowireServiceProvider()
-                .AutowireAspNet(app);
+                .AssembleServiceProvider()
+                ;
 
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
@@ -154,7 +147,7 @@ namespace Shashlik.RC
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            app.UseSpa(spa => { spa.Options.SourcePath = "AdminUI"; });
+            //app.UseSpa(spa => { spa.Options.SourcePath = "AdminUI"; });
         }
     }
 }

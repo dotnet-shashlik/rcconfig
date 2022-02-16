@@ -1,18 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shashlik.RC.Common;
 using Shashlik.RC.Filters;
 using Shashlik.RC.Services.Application;
 using Shashlik.RC.Services.Environment;
-using Shashlik.RC.Services.Permission;
 using Shashlik.RC.Services.Permission.Inputs;
 using Shashlik.RC.Services.Resource;
 using Shashlik.RC.Services.Resource.Dtos;
 using Shashlik.RC.Services.Resource.Inputs;
-using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Controllers
 {
