@@ -13,7 +13,7 @@ namespace Shashlik.RC.EventBus.Handlers
     /// </summary>
     public class ConfigurationFileModifyEventForWebSocketHandler : INotificationHandler<ConfigurationFileModifyEvent>
     {
-        public ConfigurationFileModifyEventForWebSocketHandler(WebSocketContext webSocketContext, ConfigurationFileService configurationFileService,
+        public ConfigurationFileModifyEventForWebSocketHandler(WebSocketContext webSocketContext, FileService configurationFileService,
             ILogger<ConfigurationFileModifyEventForWebSocketHandler> logger)
         {
             WebSocketContext = webSocketContext;
@@ -22,7 +22,7 @@ namespace Shashlik.RC.EventBus.Handlers
         }
 
         private WebSocketContext WebSocketContext { get; }
-        private ConfigurationFileService ConfigurationFileService { get; }
+        private FileService ConfigurationFileService { get; }
         private ILogger<ConfigurationFileModifyEventForWebSocketHandler> Logger { get; }
 
         public async Task Handle(ConfigurationFileModifyEvent notification, CancellationToken cancellationToken)

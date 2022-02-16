@@ -18,6 +18,7 @@ using Shashlik.RC.Data.Sqlite;
 using Shashlik.RC.Data.SqlServer;
 using Shashlik.RC.IdentityServer;
 using Shashlik.RC.Initialization;
+using Shashlik.RC.Secret;
 using Shashlik.RC.WebSocket;
 
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
@@ -95,6 +96,8 @@ namespace Shashlik.RC
                     r.DefaultForbidScheme = "JwtBearer";
                     r.DefaultSignInScheme = "JwtBearer";
                     r.DefaultAuthenticateScheme = "JwtBearer";
+                    r.AddScheme<SecretAuthenticationHandler>(SecretAuthenticationHandler.SecretScheme,
+                        SecretAuthenticationHandler.SecretScheme);
                 })
                 .AddCookie()
                 .AddJwtBearer("JwtBearer", r =>
@@ -105,12 +108,13 @@ namespace Shashlik.RC
                     r.TokenValidationParameters.ValidateAudience = false;
                     r.TokenValidationParameters.NameClaimType = JwtClaimTypes.Name;
                     r.TokenValidationParameters.RoleClaimType = JwtClaimTypes.Role;
+                    r.SaveToken = true;
                 })
                 ;
 
             services.AddAuthorization();
             services.AddMediatR(GetType().Assembly);
-           // services.AddSpaStaticFiles(r => { r.RootPath = "AdminUI/dist"; });
+            // services.AddSpaStaticFiles(r => { r.RootPath = "AdminUI/dist"; });
             services.AddShashlik(Configuration);
         }
 

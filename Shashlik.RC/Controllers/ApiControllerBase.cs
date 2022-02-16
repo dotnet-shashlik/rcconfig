@@ -12,7 +12,7 @@ using Shashlik.RC.Common;
 
 namespace Shashlik.RC.Controllers
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = "secret,JwtBearer")]
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]

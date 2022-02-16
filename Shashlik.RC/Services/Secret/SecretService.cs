@@ -8,6 +8,8 @@ using Shashlik.Kernel.Dependency;
 using Shashlik.RC.Data;
 using Shashlik.RC.Data.Entities;
 using Shashlik.RC.Filters;
+using Shashlik.RC.Services.Identity;
+using Shashlik.RC.Services.Identity.Dtos;
 using Shashlik.RC.Services.Secret.Dtos;
 using Shashlik.Utils.Extensions;
 using Shashlik.Utils.Helpers;
@@ -18,12 +20,14 @@ namespace Shashlik.RC.Services.Secret
     [Scoped]
     public class SecretService
     {
-        public SecretService(RCDbContext dbContext)
+        public SecretService(RCDbContext dbContext, UserService userService)
         {
             DbContext = dbContext;
+            UserService = userService;
         }
 
         private RCDbContext DbContext { get; }
+        private UserService UserService { get; }
 
         public async Task<SecretDto?> GetBySecretId(string secretId)
         {

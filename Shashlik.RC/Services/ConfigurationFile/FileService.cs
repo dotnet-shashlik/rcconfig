@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -17,9 +18,9 @@ using Shashlik.Utils.Extensions;
 namespace Shashlik.RC.Services.ConfigurationFile
 {
     [Scoped]
-    public class ConfigurationFileService
+    public class FileService
     {
-        public ConfigurationFileService(RCDbContext dbContext, EnvironmentService environmentService, LogService logService)
+        public FileService(RCDbContext dbContext, EnvironmentService environmentService, LogService logService)
         {
             DbContext = dbContext;
             EnvironmentService = environmentService;
@@ -32,7 +33,8 @@ namespace Shashlik.RC.Services.ConfigurationFile
 
         public async Task Create(int userId, string userName, string environmentResourceId, CreateConfigurationFileInput input)
         {
-            if (await DbContext.Set<ConfigurationFiles>().AnyAsync(r => r.EnvironmentResourceId == environmentResourceId && r.Name == input.Name))
+            if (await DbContext.Set<ConfigurationFiles>()
+                    .AnyAsync(r => r.EnvironmentResourceId == environmentResourceId && r.Name == input.Name))
                 throw ResponseException.ArgError("文件名称重复");
 
             var environment = await EnvironmentService.Get(environmentResourceId);
@@ -86,7 +88,7 @@ namespace Shashlik.RC.Services.ConfigurationFile
             if (file is null || file.EnvironmentResourceId != environmentResourceId)
                 throw ResponseException.NotFound();
             if (await DbContext.Set<ConfigurationFiles>()
-                .AnyAsync(r => r.Id != file.Id && r.EnvironmentResourceId == environmentResourceId && r.Name == input.Name))
+                    .AnyAsync(r => r.Id != file.Id && r.EnvironmentResourceId == environmentResourceId && r.Name == input.Name))
                 throw ResponseException.ArgError("文件名称重复");
             var beforeContent = file.Content;
             file.Desc = input.Desc;
@@ -140,6 +142,14 @@ namespace Shashlik.RC.Services.ConfigurationFile
                 .Where(r => r.Id == id && r.EnvironmentResourceId == environmentResourceId)
                 .QueryTo<ConfigurationFileDto>()
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<List<ConfigurationFileDto>> All(string environmentResourceId)
+        {
+            return await DbContext.Set<ConfigurationFiles>()
+                .Where(r => r.EnvironmentResourceId == environmentResourceId)
+                .QueryTo<ConfigurationFileDto>()
+                .ToListAsync();
         }
     }
 }
