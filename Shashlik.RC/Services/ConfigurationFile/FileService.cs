@@ -51,12 +51,14 @@ namespace Shashlik.RC.Services.ConfigurationFile
                 Content = input.Content,
                 Type = input.Type
             };
-            await DbContext.AddAsync(file);
+
 
             await using var transaction = await DbContext.Database.BeginTransactionAsync();
             try
             {
+                await DbContext.AddAsync(file);
                 await DbContext.SaveChangesAsync();
+                await EnvironmentService.UpdateVersion(environmentResourceId);
                 await LogService.Add(
                     userId,
                     userName, LogType.Add,
@@ -96,16 +98,27 @@ namespace Shashlik.RC.Services.ConfigurationFile
             file.Type = input.Type;
             file.Content = input.Content;
 
-            await LogService.Add(
-                userId,
-                userName, LogType.Update,
-                file.Id,
-                $"{file.Name}.{file.Type}",
-                file.EnvironmentResourceId,
-                beforeContent,
-                file.Content
-            );
-            await DbContext.SaveChangesAsync();
+            await using var tran = await DbContext.Database.BeginTransactionAsync();
+            try
+            {
+                await LogService.Add(
+                    userId,
+                    userName, LogType.Update,
+                    file.Id,
+                    $"{file.Name}.{file.Type}",
+                    file.EnvironmentResourceId,
+                    beforeContent,
+                    file.Content
+                );
+                await DbContext.SaveChangesAsync();
+                await EnvironmentService.UpdateVersion(environmentResourceId);
+                await tran.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await tran.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task Delete(int userId, string userName, string environmentResourceId, int id)
@@ -113,18 +126,28 @@ namespace Shashlik.RC.Services.ConfigurationFile
             var file = await DbContext.FindAsync<ConfigurationFiles>(id);
             if (file is null || file.EnvironmentResourceId != environmentResourceId)
                 throw ResponseException.NotFound();
-            DbContext.Remove(file);
 
-            await LogService.Add(
-                userId,
-                userName, LogType.Delete,
-                file.Id,
-                $"{file.Name}.{file.Type}",
-                file.EnvironmentResourceId,
-                file.Content,
-                ""
-            );
-            await DbContext.SaveChangesAsync();
+            await using var tran = await DbContext.Database.BeginTransactionAsync();
+            try
+            {
+                DbContext.Remove(file);
+                await LogService.Add(
+                    userId,
+                    userName, LogType.Delete,
+                    file.Id,
+                    $"{file.Name}.{file.Type}",
+                    file.EnvironmentResourceId,
+                    file.Content,
+                    ""
+                );
+                await DbContext.SaveChangesAsync();
+                await EnvironmentService.UpdateVersion(environmentResourceId);
+            }
+            catch (Exception)
+            {
+                await tran.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<PageModel<ConfigurationFileListDto>> List(string environmentResourceId, PageInput pageInput)

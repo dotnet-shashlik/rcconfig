@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Authorization;
@@ -15,6 +17,7 @@ using Shashlik.RC.Services.Identity.Inputs;
 using Shashlik.RC.Services.Permission;
 using Shashlik.RC.Services.Resource;
 using Shashlik.RC.Services.Resource.Dtos;
+using Shashlik.Utils.Helpers;
 
 namespace Shashlik.RC.Controllers
 {
@@ -28,6 +31,7 @@ namespace Shashlik.RC.Controllers
         private UserService UserService { get; }
 
         [HttpGet("current")]
+        [AllowAnonymous]
         public async Task<UserDetailDto> UserInfo()
         {
             return (await UserService.Get(LoginUserId!.Value))!;
@@ -52,7 +56,7 @@ namespace Shashlik.RC.Controllers
         public async Task Update(int userId, UpdateUserInput input)
         {
             if (input.Roles.Contains(Constants.Roles.Admin) ||
-                await UserService.IsInRoleAsync(new IdentityUser<int>() {Id = userId}, Constants.Roles.Admin))
+                await UserService.IsInRoleAsync(new IdentityUser<int>() { Id = userId }, Constants.Roles.Admin))
                 throw ResponseException.Forbidden("不允许编辑管理员");
             await UserService.Update(userId, input);
         }
@@ -89,7 +93,7 @@ namespace Shashlik.RC.Controllers
         [HttpGet("{userId:int:min(1)}/resources"), Admin]
         public async Task<IEnumerable<ResourceActionDto>> Resources(int userid, [FromServices] ResourceService permissionService)
         {
-           return await permissionService.GetResourceActionsByUserId(userid);
+            return await permissionService.GetResourceActionsByUserId(userid);
         }
     }
 }

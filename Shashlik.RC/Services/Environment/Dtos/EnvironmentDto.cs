@@ -46,7 +46,7 @@ namespace Shashlik.RC.Services.Environment.Dtos
         /// <summary>
         /// 最后修改时间,包含环境中的文件
         /// </summary>
-        public long FileUpdateTime { get; set; }
+        public long Version { get; set; }
 
         /// <summary>
         /// 资源id

@@ -10,15 +10,14 @@ namespace Shashlik.RC.EventBus;
 
 public class EventQueue
 {
-    public static ConcurrentDictionary<string, long> TimeVersions = new();
-    public static ConcurrentDictionary<string, ConcurrentBag<CancellationTokenSource>> Tokens = new();
+    public static readonly ConcurrentDictionary<string, long> TimeVersions = new();
 
-    public static async Task<bool> Wait(string resourceId, long current, CancellationToken cancellationToken)
+    public static async Task<bool> Wait(string resourceId, long version, CancellationToken cancellationToken)
     {
         bool hold = false;
         if (TimeVersions.TryGetValue(resourceId, out var lasted))
         {
-            if (lasted > current)
+            if (lasted > version)
                 return true;
             hold = true;
         }
@@ -30,24 +29,37 @@ public class EventQueue
             if (environmentDto is null)
                 return false;
 
-            TimeVersions.AddOrUpdate(resourceId, environmentDto.FileUpdateTime, (a, b) => environmentDto.FileUpdateTime);
-            if (lasted > current)
+            TimeVersions.AddOrUpdate(resourceId, environmentDto.Version, (a, b) => environmentDto.Version);
+            if (lasted > version)
                 return true;
             hold = true;
         }
 
         if (hold)
         {
-            //TODO: ..
-            var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-            cancellationToken.Register(cancellationTokenSource.Cancel);
-            await Task.Delay(TimeSpan.FromSeconds(30), cancellationTokenSource.Token);
-            if (TimeVersions.TryGetValue(resourceId, out var lasted1))
-                return lasted1 > current;
+            var token = CancelTokenSourceHolder.Add(resourceId, cancellationToken);
+
+            try
+            {
+                await Task.Delay(TimeSpan.FromSeconds(30), token);
+                if (TimeVersions.TryGetValue(resourceId, out var lasted1))
+                    return lasted1 > version;
+            }
+            catch (OperationCanceledException)
+            {
+                if (TimeVersions.TryGetValue(resourceId, out var lasted1))
+                    return lasted1 > version;
+            }
 
             return false;
         }
 
         return false;
+    }
+
+    public static void OnUpdate(string resourceId, long timeVersion)
+    {
+        TimeVersions.AddOrUpdate(resourceId, timeVersion, (a, b) => timeVersion);
+        CancelTokenSourceHolder.Remove(resourceId);
     }
 }

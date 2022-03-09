@@ -12,6 +12,7 @@ using Shashlik.RC.Services.Application;
 using Shashlik.RC.Services.Environment.Dtos;
 using Shashlik.RC.Services.Environment.Inputs;
 using Shashlik.Utils.Extensions;
+using Z.EntityFramework.Plus;
 
 namespace Shashlik.RC.Services.Environment
 {
@@ -86,6 +87,14 @@ namespace Shashlik.RC.Services.Environment
                 .Where(r => r.ResourceId == resourceId)
                 .QueryTo<EnvironmentDto>()
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task UpdateVersion(string resourceId)
+        {
+            var time = DateTime.Now.GetLongDate();
+            await DbContext.Set<Environments>()
+                .Where(r => r.ResourceId == resourceId)
+                .UpdateAsync(r => new Environments { Version = time });
         }
     }
 }

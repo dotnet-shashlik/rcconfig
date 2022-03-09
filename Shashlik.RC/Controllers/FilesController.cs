@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Shashlik.RC.Common;
 using Shashlik.RC.EventBus;
@@ -8,6 +10,8 @@ using Shashlik.RC.Filters;
 using Shashlik.RC.Services.ConfigurationFile;
 using Shashlik.RC.Services.ConfigurationFile.Dtos;
 using Shashlik.RC.Services.ConfigurationFile.Inputs;
+using Shashlik.RC.Services.Environment;
+using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Controllers
 {
@@ -48,9 +52,10 @@ namespace Shashlik.RC.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet(Constants.ResourceRoute.ApplicationAndEnvironment + "/all")]
-        public async Task<List<ConfigurationFileDto>> All()
+        public async Task<object> All([FromServices] EnvironmentService environmentService)
         {
-            return await ConfigurationFileService.All(GetResourceId());
+            var environmentDto = await environmentService.Get(GetResourceId());
+            return new { list = await ConfigurationFileService.All(GetResourceId()), version = environmentDto!.Version };
         }
 
         /// <summary>
@@ -59,10 +64,9 @@ namespace Shashlik.RC.Controllers
         /// <param name="cancellation"></param>
         /// <returns></returns>
         [HttpGet(Constants.ResourceRoute.ApplicationAndEnvironment + "/poll")]
-        public async Task<bool> Pool(CancellationToken cancellation)
+        public async Task<bool> Pool(long version, CancellationToken cancellation)
         {
-            //TODO:...
-            return await EventQueue.Wait(GetResourceId(), 1L, cancellation);
+            return await EventQueue.Wait(GetResourceId(), version, cancellation);
         }
 
         /// <summary>
@@ -73,8 +77,8 @@ namespace Shashlik.RC.Controllers
         [HttpPost(Constants.ResourceRoute.ApplicationAndEnvironment)]
         public async Task Post(CreateConfigurationFileInput input)
         {
-            //TODO: event
             await ConfigurationFileService.Create(LoginUserId!.Value, User.Identity!.Name!, GetResourceId(), input);
+            EventQueue.OnUpdate(GetResourceId(), DateTime.Now.GetLongDate());
         }
 
         /// <summary>
@@ -88,6 +92,7 @@ namespace Shashlik.RC.Controllers
         {
             //TODO: event
             await ConfigurationFileService.Update(LoginUserId!.Value, User.Identity!.Name!, GetResourceId(), fileId, input);
+            EventQueue.OnUpdate(GetResourceId(), DateTime.Now.GetLongDate());
         }
 
         /// <summary>
@@ -100,6 +105,7 @@ namespace Shashlik.RC.Controllers
         {
             //TODO: event
             await ConfigurationFileService.Delete(LoginUserId!.Value, User.Identity!.Name!, GetResourceId(), fileId);
+            EventQueue.OnUpdate(GetResourceId(), DateTime.Now.GetLongDate());
         }
     }
 }
