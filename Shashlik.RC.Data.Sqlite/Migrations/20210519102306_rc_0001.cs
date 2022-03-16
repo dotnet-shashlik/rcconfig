@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Shashlik.RC.Data.Sqlite.Migrations
+namespace Shashlik.RC.Server.Data.Sqlite.Migrations
 {
     public partial class rc_0001 : Migration
     {

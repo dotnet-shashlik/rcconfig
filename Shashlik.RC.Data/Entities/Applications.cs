@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Shashlik.RC.Data.Entities
+namespace Shashlik.RC.Server.Data.Entities
 {
     public class Applications :  IResource
     {

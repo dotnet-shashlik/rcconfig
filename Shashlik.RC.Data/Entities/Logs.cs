@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Shashlik.RC.Data.Entities
+namespace Shashlik.RC.Server.Data.Entities
 {
     /// <summary>
     /// 日志记录

@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Shashlik.RC.Data;
+using Shashlik.RC.Server.Data;
 
-namespace Shashlik.RC.Data.MySql.Migrations
+namespace Shashlik.RC.Server.Data.MySql.Migrations
 {
     [DbContext(typeof(RCDbContext))]
     [Migration("20210510081014_rc_0001")]

@@ -1,35 +1,22 @@
-﻿using System;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 
-namespace Shashlik.RC.Config
+namespace Shashlik.RC.Client
 {
     public class RCConfigSource : IConfigurationSource
     {
-        public RCConfigSource(RCOptions options, string env, TimeSpan? polling = null)
+        public RCConfigSource(RCOptions options, ApiClient apiClient)
         {
             Options = options;
-            Env = env;
-            Polling = polling;
+            ApiClient = apiClient;
         }
 
         internal RCOptions Options { get; }
 
-        /// <summary>
-        /// 环境变量
-        /// </summary>
-        internal string Env { get; }
-
-        /// <summary>
-        /// 轮询加载配置,配置不开启轮询
-        /// </summary>
-        internal TimeSpan? Polling { get; }
-
-        internal static RCConfigSource Instance { get; private set; }
+        internal ApiClient ApiClient { get; }
 
         public IConfigurationProvider Build(IConfigurationBuilder builder)
         {
-            Instance = this;
-            return new RCConfigProvider(this);
+            return new RCConfigProvider(this, ApiClient);
         }
     }
 }

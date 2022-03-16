@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Shashlik.RC.Data.Entities;
+using Shashlik.RC.Server.Data.Entities;
 
 // ReSharper disable InconsistentNaming
 
-namespace Shashlik.RC.Data
+namespace Shashlik.RC.Server.Data
 {
     public class RCDbContext : IdentityDbContext<IdentityUser<int>, IdentityRole<int>, int>
     {

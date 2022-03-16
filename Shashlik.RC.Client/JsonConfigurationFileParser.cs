@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Shashlik.RC.Config
+namespace Shashlik.RC.Client
 {
     internal class JsonConfigurationFileParser
     {

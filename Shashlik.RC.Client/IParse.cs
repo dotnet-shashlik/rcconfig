@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace Shashlik.RC.Config
+namespace Shashlik.RC.Client
 {
     /// <summary>
     /// 内容解析

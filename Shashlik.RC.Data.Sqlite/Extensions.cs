@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable InconsistentNaming
 
-namespace Shashlik.RC.Data.Sqlite
+namespace Shashlik.RC.Server.Data.Sqlite
 {
     public static class Extensions
     {

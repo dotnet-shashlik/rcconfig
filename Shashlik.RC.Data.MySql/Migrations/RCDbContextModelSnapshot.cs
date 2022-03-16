@@ -3,9 +3,9 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Shashlik.RC.Data;
+using Shashlik.RC.Server.Data;
 
-namespace Shashlik.RC.Data.MySql.Migrations
+namespace Shashlik.RC.Server.Data.MySql.Migrations
 {
     [DbContext(typeof(RCDbContext))]
     partial class RCDbContextModelSnapshot : ModelSnapshot

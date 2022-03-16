@@ -2,7 +2,7 @@
 using System.IO;
 using NetEscapades.Configuration.Yaml;
 
-namespace Shashlik.RC.Config
+namespace Shashlik.RC.Client
 {
     /// <summary>
     /// yaml内容解析

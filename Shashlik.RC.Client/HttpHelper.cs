@@ -9,11 +9,12 @@ using System.Threading.Tasks;
 using RestSharp;
 using Shashlik.Utils.Extensions;
 
-namespace Shashlik.RC.Config
+namespace Shashlik.RC.Client
 {
     public static class HttpHelper
     {
-        private static RestClient GetClient(string uri, IWebProxy? proxy = null, Encoding? encoding = null, IDictionary<string, string>? cookies = null)
+        private static RestClient GetClient(string uri, IWebProxy? proxy = null, Encoding? encoding = null,
+            IDictionary<string, string>? cookies = null)
         {
             if (string.IsNullOrWhiteSpace(uri))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(uri));
@@ -31,14 +32,14 @@ namespace Shashlik.RC.Config
             return client;
         }
 
-        private static RestRequest GetRequest(IDictionary<string, string>? headers = null,
-             int timeout = 30)
+        private static RestRequest GetRequest(IDictionary<string, string?>? headers = null,
+            int timeout = 30)
         {
             var request = new RestRequest { Timeout = timeout * 1000 };
 
             if (headers != null && headers.Any())
                 foreach (var (key, value) in headers!)
-                    request.AddHeader(key, value);
+                    request.AddHeader(key, value ?? string.Empty);
             return request;
         }
 
@@ -542,15 +543,19 @@ namespace Shashlik.RC.Config
         /// <param name="proxy">代理设置</param>
         /// <param name="encoding"></param>
         /// <returns></returns>
-        public static async Task<string?> GetString(string url, object? queryStringData = null,
-            IDictionary<string, string>? headers = null, IDictionary<string, string>? cookies = null, int timeout = 30,
+        public static async Task<string?> GetString(string url, IDictionary<string, string?>? queryStringData = null,
+            IDictionary<string, string?>? headers = null, IDictionary<string, string>? cookies = null, int timeout = 30,
             IWebProxy? proxy = null, Encoding? encoding = null)
         {
             var client = GetClient(url, proxy, encoding, cookies);
             var request = GetRequest(headers, timeout);
 
             if (queryStringData != null)
-                request.AddObject(queryStringData);
+                foreach (var keyValuePair in queryStringData)
+                {
+                    request.AddQueryParameter(keyValuePair.Key, keyValuePair.Value);
+                }
+
             var response = await client.ExecuteGetAsync(request);
             if (response.IsSuccessful)
                 return response.Content;

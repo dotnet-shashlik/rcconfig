@@ -1,4 +1,4 @@
-﻿namespace Shashlik.RC.Config
+﻿namespace Shashlik.RC.Client
 {
     public class RCOptions
     {
@@ -10,26 +10,21 @@
         /// <summary>
         /// appId
         /// </summary>
-        public string AppId { get; set; }
+        public string SecretId { get; set; }
 
         /// <summary>
         /// app key
         /// </summary>
-        public string AppKey { get; set; }
+        public string SecretKey { get; set; }
 
         /// <summary>
-        /// get configuration api url 
+        /// 资源id
         /// </summary>
-        public string ApiUrl => $"{Server.TrimEnd('/')}/config/get";
-
-        /// <summary>
-        /// websocket connection url
-        /// </summary>
-        public string Websocket => $"{Server.ToLower().Replace("http://", "ws://").Replace("https://", "wss://").TrimEnd('/')}/ws/subscribe";
+        public string ResourceId { get; set; }
 
         /// <summary>
         /// 轮询间隔, 单位秒, 0:不轮询
         /// </summary>
-        public int Polling { get; set; } = 0;
+        public int Timeout { get; set; } = 29;
     }
 }

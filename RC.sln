@@ -3,10 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shashlik.RC", "Shashlik.RC\Shashlik.RC.csproj", "{0B54A323-980D-4B2A-A8CC-83FF27B8A968}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shashlik.RC.Config.Demo", "Shashlik.RC.Config.Demo\Shashlik.RC.Config.Demo.csproj", "{6643F197-6FFE-448C-BCFA-2B7B0C66F97B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shashlik.RC.Data", "Shashlik.RC.Data\Shashlik.RC.Data.csproj", "{A384DD33-14CA-44F6-A641-954DED2B28C7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{D42039CD-A0E9-4248-948C-A2BE49188F51}"
@@ -44,20 +40,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{389956
 		build-migrations.sh = build-migrations.sh
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shashlik.RC.Server", "Shashlik.RC.Server\Shashlik.RC.Server.csproj", "{95D7F120-2905-4B71-96E3-F648D168B10A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shashlik.RC.Client.Demo", "Shashlik.RC.Client.Demo\Shashlik.RC.Client.Demo.csproj", "{D01CBADF-B5C4-4227-A890-16998A00A339}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0B54A323-980D-4B2A-A8CC-83FF27B8A968}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0B54A323-980D-4B2A-A8CC-83FF27B8A968}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0B54A323-980D-4B2A-A8CC-83FF27B8A968}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0B54A323-980D-4B2A-A8CC-83FF27B8A968}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6643F197-6FFE-448C-BCFA-2B7B0C66F97B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6643F197-6FFE-448C-BCFA-2B7B0C66F97B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6643F197-6FFE-448C-BCFA-2B7B0C66F97B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6643F197-6FFE-448C-BCFA-2B7B0C66F97B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A384DD33-14CA-44F6-A641-954DED2B28C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A384DD33-14CA-44F6-A641-954DED2B28C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A384DD33-14CA-44F6-A641-954DED2B28C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -86,6 +78,14 @@ Global
 		{534E5CD0-C190-4167-9AA5-40C1D6C5D452}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{534E5CD0-C190-4167-9AA5-40C1D6C5D452}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{534E5CD0-C190-4167-9AA5-40C1D6C5D452}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95D7F120-2905-4B71-96E3-F648D168B10A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95D7F120-2905-4B71-96E3-F648D168B10A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95D7F120-2905-4B71-96E3-F648D168B10A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95D7F120-2905-4B71-96E3-F648D168B10A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D01CBADF-B5C4-4227-A890-16998A00A339}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D01CBADF-B5C4-4227-A890-16998A00A339}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D01CBADF-B5C4-4227-A890-16998A00A339}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D01CBADF-B5C4-4227-A890-16998A00A339}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

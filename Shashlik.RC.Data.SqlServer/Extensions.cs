@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable InconsistentNaming
 
-namespace Shashlik.RC.Data.SqlServer
+namespace Shashlik.RC.Server.Data.SqlServer
 {
     public static class Extensions
     {

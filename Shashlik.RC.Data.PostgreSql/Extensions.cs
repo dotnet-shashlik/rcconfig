@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable InconsistentNaming
 
-namespace Shashlik.RC.Data.PostgreSql
+namespace Shashlik.RC.Server.Data.PostgreSql
 {
     public static class Extensions
     {
