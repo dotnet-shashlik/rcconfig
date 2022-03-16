@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Shashlik.RC.Data;
 
 // ReSharper disable InconsistentNaming
 
-namespace Shashlik.RC.Server.Data.PostgreSql
+namespace Shashlik.RC.Data.PostgreSql
 {
     public static class Extensions
     {

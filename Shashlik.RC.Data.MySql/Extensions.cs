@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Shashlik.RC.Data;
 
 // ReSharper disable InconsistentNaming
 
-namespace Shashlik.RC.Server.Data.MySql
+namespace Shashlik.RC.Data.MySql
 {
     public static class Extensions
     {

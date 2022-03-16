@@ -4,9 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Shashlik.RC.Server.Data;
+using Shashlik.RC.Data;
+using Shashlik.RC.Data;
 
-namespace Shashlik.RC.Server.Data.Sqlite.Migrations
+namespace Shashlik.RC.Data.Sqlite.Migrations
 {
     [DbContext(typeof(RCDbContext))]
     [Migration("20210528084911_rc_0002")]

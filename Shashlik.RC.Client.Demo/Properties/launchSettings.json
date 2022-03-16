@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Shashlik.RC.Config.Demo": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:6001"
+    }
+  }
+}

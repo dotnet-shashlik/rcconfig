@@ -1,4 +1,4 @@
-﻿namespace Shashlik.RC.Server.Data
+﻿namespace Shashlik.RC.Data
 {
     /// <summary>
     /// 资源定义

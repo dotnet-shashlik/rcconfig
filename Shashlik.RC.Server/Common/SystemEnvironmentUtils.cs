@@ -59,6 +59,7 @@ namespace Shashlik.RC.Server.Common
         /// </summary>
         public static bool IsStandalone => string.IsNullOrWhiteSpace(Servers);
 
+        //TODO: ..干掉
         /// <summary>
         /// 权限读取策略,默认值: Token
         /// </summary>

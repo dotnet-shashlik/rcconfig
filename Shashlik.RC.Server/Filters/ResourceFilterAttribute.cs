@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Security.Claims;
-using IdentityModel;
-using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Shashlik.RC.Server.Common;
 using Shashlik.RC.Server.Services.Resource;
-using Shashlik.RC.Server.Services.Permission;
 using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Server.Filters
@@ -42,13 +39,13 @@ namespace Shashlik.RC.Server.Filters
                 resourceId += "/" + environment;
             }
 
-            if (!string.IsNullOrWhiteSpace(resourceId) && !context.HttpContext.User.IsAuthenticated())
+            if (!string.IsNullOrWhiteSpace(resourceId) && !(context.HttpContext.User.Identity?.IsAuthenticated ?? false))
             {
                 context.HttpContext.Response.StatusCode = 403;
                 return;
             }
 
-            var userId = context.HttpContext.User.FindFirstValue(JwtClaimTypes.Subject).ParseTo<int>();
+            var userId = context.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier).ParseTo<int>();
 
             if (!resourceId.IsNullOrWhiteSpace() && !context.HttpContext.User.IsInRole(Constants.Roles.Admin))
             {
@@ -69,7 +66,7 @@ namespace Shashlik.RC.Server.Filters
             if (method.EndsWithIgnoreCase("post")
                 || method.EndsWithIgnoreCase("put")
                 || method.EndsWithIgnoreCase("patch")
-            )
+               )
                 return PermissionAction.Write;
             if (method.EndsWithIgnoreCase("delete"))
                 return PermissionAction.Delete;

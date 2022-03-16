@@ -1,10 +1,11 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Shashlik.RC.Data;
 
 // ReSharper disable InconsistentNaming
 
-namespace Shashlik.RC.Server.Data.Sqlite
+namespace Shashlik.RC.Data.Sqlite
 {
     public static class Extensions
     {

@@ -1,19 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Shashlik.Kernel.Dependency;
+using Shashlik.RC.Data;
 using Shashlik.RC.Server.Common;
-using Shashlik.RC.Server.Data;
+using Shashlik.RC.Data;
 using Shashlik.RC.Server.Filters;
+using Shashlik.RC.Server.Secret;
 using Shashlik.RC.Server.Services.Identity.Dtos;
 using Shashlik.RC.Server.Services.Identity.Inputs;
+using Shashlik.Utils.Extensions;
 using Z.EntityFramework.Plus;
 
 namespace Shashlik.RC.Server.Services.Identity
@@ -23,15 +27,19 @@ namespace Shashlik.RC.Server.Services.Identity
     {
         public UserService(IUserStore<IdentityUser<int>> store, IOptions<IdentityOptions> optionsAccessor,
             IPasswordHasher<IdentityUser<int>> passwordHasher, IEnumerable<IUserValidator<IdentityUser<int>>> userValidators,
-            IEnumerable<IPasswordValidator<IdentityUser<int>>> passwordValidators, ILookupNormalizer keyNormalizer, IdentityErrorDescriber errors,
-            IServiceProvider services, ILogger<UserManager<IdentityUser<int>>> logger, RCDbContext dbContext) : base(store, optionsAccessor,
-            passwordHasher, userValidators,
-            passwordValidators, keyNormalizer, errors, services, logger)
+            IEnumerable<IPasswordValidator<IdentityUser<int>>> passwordValidators, ILookupNormalizer keyNormalizer,
+            IdentityErrorDescriber errors,
+            IServiceProvider services, ILogger<UserManager<IdentityUser<int>>> logger, RCDbContext dbContext, KeyProvider keyProvider) :
+            base(store, optionsAccessor,
+                passwordHasher, userValidators,
+                passwordValidators, keyNormalizer, errors, services, logger)
         {
             DbContext = dbContext;
+            KeyProvider = keyProvider;
         }
 
         private RCDbContext DbContext { get; }
+        private KeyProvider KeyProvider { get; }
 
         public async Task<UserDetailDto?> Get(int userId)
         {
@@ -62,7 +70,7 @@ namespace Shashlik.RC.Server.Services.Identity
                 )
                 .ToListAsync();
 
-            return list.GroupBy(r => new {r.Id, r.UserName})
+            return list.GroupBy(r => new { r.Id, r.UserName })
                 .Select(r => new UserDto
                 {
                     Id = r.Key.Id,
@@ -169,11 +177,45 @@ namespace Shashlik.RC.Server.Services.Identity
         {
             var rows = await DbContext.UserClaims
                 .Where(r => r.UserId == user.Id && r.ClaimType == claim.Type)
-                .UpdateAsync(r => new IdentityUserClaim<int> {ClaimValue = claim.Value});
+                .UpdateAsync(r => new IdentityUserClaim<int> { ClaimValue = claim.Value });
             if (rows == 0)
                 return await AddClaimAsync(user, claim);
 
             return IdentityResult.Success;
+        }
+
+        public async Task<bool> IsLockedOut(int userId)
+        {
+            var user = await FindByIdAsync(userId.ToString());
+            return await IsLockedOutAsync(user);
+        }
+
+        public TokenDto CreateToken(UserDetailDto user)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var now = DateTime.UtcNow;
+            var claims = user!.Roles.Select(r => new Claim(ClaimTypes.Role, r)).ToList();
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
+            claims.Add(new Claim(ClaimTypes.Name, user.NickName ?? user.UserName!));
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = now.AddHours(2),
+                IssuedAt = now,
+                NotBefore = now,
+                Issuer = JwtAuthenticationAssembler.Iss,
+                Audience = JwtAuthenticationAssembler.Aud,
+                SigningCredentials =
+                    new SigningCredentials(new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(KeyProvider.GetKey())),
+                        SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            return new TokenDto
+            {
+                access_token = tokenHandler.WriteToken(tokenHandler.CreateToken(tokenDescriptor)),
+                expires_in = 3600 * 2
+            };
         }
     }
 }

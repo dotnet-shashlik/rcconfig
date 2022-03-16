@@ -7,8 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shashlik.Kernel;
+using Shashlik.RC.Data;
 using Shashlik.RC.Server.Common;
-using Shashlik.RC.Server.Data;
+using Shashlik.RC.Data;
 using Shashlik.RC.Server.Services.Identity;
 
 namespace Shashlik.RC.Server.Initialization

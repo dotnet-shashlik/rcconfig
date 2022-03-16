@@ -1,5 +1,5 @@
 ﻿using Shashlik.AutoMapper;
-using Shashlik.RC.Server.Data.Entities;
+using Shashlik.RC.Data.Entities;
 
 #nullable disable
 namespace Shashlik.RC.Server.Services.Secret.Dtos

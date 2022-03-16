@@ -1,4 +1,4 @@
-﻿using Shashlik.RC.Server.Data;
+﻿using Shashlik.RC.Data;
 
 #nullable disable
 namespace Shashlik.RC.Server.Services.Resource.Dtos

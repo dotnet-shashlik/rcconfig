@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using Shashlik.RC.Server.Common;
 using Shashlik.RC.Server.Filters;
+using Shashlik.RC.Server.Secret.GrantTypes;
 using Shashlik.RC.Server.Services.Identity;
 using Shashlik.RC.Server.Services.Identity.Dtos;
 using Shashlik.RC.Server.Services.Identity.Inputs;
 using Shashlik.RC.Server.Services.Resource;
 using Shashlik.RC.Server.Services.Resource.Dtos;
-using Shashlik.RC.Server.Services.Permission;
-using Shashlik.Utils.Helpers;
+using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Server.Controllers
 {
@@ -29,6 +25,30 @@ namespace Shashlik.RC.Server.Controllers
         }
 
         private UserService UserService { get; }
+
+        [HttpPost("token")]
+        [AllowAnonymous]
+        public async Task<TokenDto> Token(
+            JObject requestContent,
+            [FromServices] IEnumerable<IGrantType> grantTypes,
+            [FromServices] UserService userService)
+        {
+            var propertyValue = requestContent.GetPropertyValue("grant_type");
+            var grantType = propertyValue.value?.ToString();
+            if (grantType.IsNullOrWhiteSpace())
+                throw ResponseException.ArgError("缺少必要的参数grant_type");
+            var strategy = grantTypes.GetStrategy(grantType!);
+            if (strategy is null)
+                throw ResponseException.ArgError("错误的参数grant_type");
+
+            var user = await strategy.Get(requestContent!);
+            if (user is null)
+                throw ResponseException.ArgError("用户不存在");
+            if (await userService.IsLockedOut(user.Id))
+                throw ResponseException.ArgError("用户已禁止登录");
+
+            return UserService.CreateToken(user);
+        }
 
         [HttpGet("current")]
         [AllowAnonymous]

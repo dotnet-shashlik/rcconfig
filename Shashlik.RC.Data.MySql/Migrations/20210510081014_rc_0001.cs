@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Shashlik.RC.Server.Data.MySql.Migrations
+namespace Shashlik.RC.Data.MySql.Migrations
 {
     public partial class rc_0001 : Migration
     {

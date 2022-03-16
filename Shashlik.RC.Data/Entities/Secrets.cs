@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Shashlik.RC.Server.Data.Entities
+namespace Shashlik.RC.Data.Entities
 {
     public class Secrets
     {

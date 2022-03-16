@@ -1,8 +1,8 @@
 ﻿#nullable disable
 using System.Collections.Generic;
 using Shashlik.AutoMapper;
-using Shashlik.RC.Server.Data;
-using Shashlik.RC.Server.Data.Entities;
+using Shashlik.RC.Data;
+using Shashlik.RC.Data.Entities;
 
 namespace Shashlik.RC.Server.Services.Environment.Dtos
 {

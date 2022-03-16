@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Shashlik.RC.Server.Data.Sqlite.Migrations
+namespace Shashlik.RC.Data.Sqlite.Migrations
 {
     public partial class rc_0003 : Migration
     {

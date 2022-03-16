@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Shashlik.RC.Server.Data.Entities;
+using Shashlik.RC.Data.Entities;
 
 // ReSharper disable InconsistentNaming
 
-namespace Shashlik.RC.Server.Data
+namespace Shashlik.RC.Data
 {
     public class RCDbContext : IdentityDbContext<IdentityUser<int>, IdentityRole<int>, int>
     {
@@ -18,7 +18,6 @@ namespace Shashlik.RC.Server.Data
         public DbSet<Secrets> Secrets { get; set; }
         public DbSet<ConfigurationFiles> Files { get; set; }
         public DbSet<Logs> Logs { get; set; }
-        public DbSet<SignatureKeys> SignatureKeys { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -28,7 +27,6 @@ namespace Shashlik.RC.Server.Data
             builder.ApplyConfiguration(new Secrets.Configs());
             builder.ApplyConfiguration(new ConfigurationFiles.Configs());
             builder.ApplyConfiguration(new Logs.Configs());
-            builder.ApplyConfiguration(new SignatureKeys.Configs());
         }
     }
 }

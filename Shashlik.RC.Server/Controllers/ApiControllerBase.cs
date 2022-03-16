@@ -1,5 +1,4 @@
 ﻿using System;
-using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -23,21 +22,22 @@ namespace Shashlik.RC.Server.Controllers
     {
         protected ApiControllerBase()
         {
-            _lazyUser = new Lazy<IdentityUser<int>?>(() => User.IsAuthenticated()
-                ? HttpContext.RequestServices.GetRequiredService<UserService>().FindByIdAsync(User.Identity.GetSubjectId()).GetAwaiter().GetResult()
+            _lazyUser = new Lazy<IdentityUser<int>?>(() => User.Identity?.IsAuthenticated ?? false
+                ? HttpContext.RequestServices.GetRequiredService<UserService>().FindByIdAsync(User.GetUserId().ToString()).GetAwaiter()
+                    .GetResult()
                 : null);
-            _lazyLoginUserId = new Lazy<int>(() => User.Identity.GetSubjectId().ParseTo<int>());
+            _lazyLoginUserId = new Lazy<int?>(() => User.GetUserId()?.ParseTo<int>());
             _logger = new Lazy<ILogger>(() => HttpContext.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(GetType()));
         }
 
-        private readonly Lazy<int> _lazyLoginUserId;
+        private readonly Lazy<int?> _lazyLoginUserId;
         private readonly Lazy<IdentityUser<int>?> _lazyUser;
         private readonly Lazy<ILogger> _logger;
 
         /// <summary>
         /// 当前登录用户id,未登录:null
         /// </summary>
-        protected int? LoginUserId => User.IsAuthenticated() ? _lazyLoginUserId.Value : null;
+        protected int? LoginUserId => _lazyLoginUserId.Value;
 
         /// <summary>
         /// 当前登录用户信息,未登录:null,会执行数据库查询,当只需要用户id时请使用<see cref="LoginUserId"/>

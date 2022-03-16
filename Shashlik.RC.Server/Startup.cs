@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IdentityModel.Tokens.Jwt;
-using IdentityModel;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -10,15 +8,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using Shashlik.Kernel;
-using Shashlik.RC.Server.Data.MySql;
-using Shashlik.RC.Server.Data.PostgreSql;
-using Shashlik.RC.Server.Data.Sqlite;
-using Shashlik.RC.Server.Data.SqlServer;
-using Shashlik.RC.Server.IdentityServer;
+using Shashlik.RC.Data;
+using Shashlik.RC.Data.MySql;
+using Shashlik.RC.Data.PostgreSql;
+using Shashlik.RC.Data.Sqlite;
+using Shashlik.RC.Data.SqlServer;
 using Shashlik.RC.Server.Initialization;
 using Shashlik.RC.Server.Common;
-using Shashlik.RC.Server.Data;
-using Shashlik.RC.Server.Secret;
+using Shashlik.RC.Data;
 using Shashlik.RC.Server.WebSocket;
 
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
@@ -84,33 +81,6 @@ namespace Shashlik.RC.Server
                 })
                 .AddEntityFrameworkStores<RCDbContext>()
                 ;
-            services.AddIds4();
-
-            // 清除claimType转换
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-            // jwt认证
-            services.AddAuthentication(r =>
-                {
-                    r.DefaultScheme = "JwtBearer";
-                    r.DefaultChallengeScheme = "JwtBearer";
-                    r.DefaultForbidScheme = "JwtBearer";
-                    r.DefaultSignInScheme = "JwtBearer";
-                    r.DefaultAuthenticateScheme = "JwtBearer";
-                    r.AddScheme<SecretAuthenticationHandler>(SecretAuthenticationHandler.SecretScheme,
-                        SecretAuthenticationHandler.SecretScheme);
-                })
-                .AddCookie()
-                .AddJwtBearer("JwtBearer", r =>
-                {
-                    r.Authority = SystemEnvironmentUtils.Authority;
-                    r.RequireHttpsMetadata = false;
-                    r.TokenValidationParameters.RequireAudience = false;
-                    r.TokenValidationParameters.ValidateAudience = false;
-                    r.TokenValidationParameters.NameClaimType = JwtClaimTypes.Name;
-                    r.TokenValidationParameters.RoleClaimType = JwtClaimTypes.Role;
-                    r.SaveToken = true;
-                })
-                ;
 
             services.AddAuthorization();
             services.AddMediatR(GetType().Assembly);
@@ -139,7 +109,6 @@ namespace Shashlik.RC.Server
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
 
-            app.UseIdentityServer();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseWebSocketPush();

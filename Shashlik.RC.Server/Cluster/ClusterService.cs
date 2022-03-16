@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using IdentityServer4.Events;
 using Microsoft.Extensions.Logging;
 using Shashlik.Kernel.Dependency;
-using Shashlik.RC.Server.EventBus;
 using Shashlik.RC.Server.Common;
 using Shashlik.Utils.Extensions;
 
