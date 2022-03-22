@@ -38,8 +38,10 @@ namespace Shashlik.RC.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var conn = SystemEnvironmentUtils.DbConn;
-            var dbType = SystemEnvironmentUtils.DbType;
+            var rcOptions = Configuration.GetSection("RC")
+                .Get<RCOptions>();
+            var conn = rcOptions.DbConn;
+            var dbType = rcOptions.DbType;
 
             switch (dbType)
             {

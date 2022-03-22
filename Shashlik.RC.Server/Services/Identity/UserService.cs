@@ -12,7 +12,6 @@ using Microsoft.IdentityModel.Tokens;
 using Shashlik.Kernel.Dependency;
 using Shashlik.RC.Data;
 using Shashlik.RC.Server.Common;
-using Shashlik.RC.Data;
 using Shashlik.RC.Server.Filters;
 using Shashlik.RC.Server.Secret;
 using Shashlik.RC.Server.Services.Identity.Dtos;
@@ -29,17 +28,18 @@ namespace Shashlik.RC.Server.Services.Identity
             IPasswordHasher<IdentityUser<int>> passwordHasher, IEnumerable<IUserValidator<IdentityUser<int>>> userValidators,
             IEnumerable<IPasswordValidator<IdentityUser<int>>> passwordValidators, ILookupNormalizer keyNormalizer,
             IdentityErrorDescriber errors,
-            IServiceProvider services, ILogger<UserManager<IdentityUser<int>>> logger, RCDbContext dbContext, KeyProvider keyProvider) :
+            IServiceProvider services, ILogger<UserManager<IdentityUser<int>>> logger, RCDbContext dbContext,
+            IOptions<RCOptions> rcOptions) :
             base(store, optionsAccessor,
                 passwordHasher, userValidators,
                 passwordValidators, keyNormalizer, errors, services, logger)
         {
             DbContext = dbContext;
-            KeyProvider = keyProvider;
+            RcOptions = rcOptions;
         }
 
         private RCDbContext DbContext { get; }
-        private KeyProvider KeyProvider { get; }
+        private IOptions<RCOptions> RcOptions { get; }
 
         public async Task<UserDetailDto?> Get(int userId)
         {
@@ -194,20 +194,20 @@ namespace Shashlik.RC.Server.Services.Identity
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var now = DateTime.UtcNow;
-            var claims = user!.Roles.Select(r => new Claim(ClaimTypes.Role, r)).ToList();
+            var claims = user.Roles.Select(r => new Claim(ClaimTypes.Role, r)).ToList();
             claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
             claims.Add(new Claim(ClaimTypes.Name, user.NickName ?? user.UserName!));
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = now.AddHours(2),
+                Expires = now.AddSeconds(RcOptions.Value.AccessTokenLifetime),
                 IssuedAt = now,
                 NotBefore = now,
                 Issuer = JwtAuthenticationAssembler.Iss,
                 Audience = JwtAuthenticationAssembler.Aud,
                 SigningCredentials =
-                    new SigningCredentials(new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(KeyProvider.GetKey())),
+                    new SigningCredentials(new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(RcOptions.Value.SignKey)),
                         SecurityAlgorithms.HmacSha256Signature)
             };
 

@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Shashlik.Kernel;
 using Shashlik.RC.Data;
 using Shashlik.RC.Server.Common;
-using Shashlik.RC.Data;
 using Shashlik.RC.Server.Services.Identity;
 
 namespace Shashlik.RC.Server.Initialization
@@ -52,20 +52,21 @@ namespace Shashlik.RC.Server.Initialization
             var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Initialization");
             using var userService = scope.ServiceProvider.GetRequiredService<UserService>();
             using var roleService = scope.ServiceProvider.GetRequiredService<RoleService>();
+            var rcOptions = scope.ServiceProvider.GetRequiredService<IOptions<RCOptions>>();
             InitRole(roleService, Constants.Roles.Admin, logger);
             InitRole(roleService, Constants.Roles.User, logger);
 
-            var user = userService.FindByNameAsync(SystemEnvironmentUtils.AdminUser).GetAwaiter().GetResult();
+            var user = userService.FindByNameAsync(rcOptions.Value.AdminUser).GetAwaiter().GetResult();
             if (user is null)
             {
                 user = new IdentityUser<int>
                 {
-                    UserName = SystemEnvironmentUtils.AdminUser
+                    UserName = rcOptions.Value.AdminUser
                 };
 
                 try
                 {
-                    var res = userService.CreateAsync(user, SystemEnvironmentUtils.AdminPassword).GetAwaiter().GetResult();
+                    var res = userService.CreateAsync(user, rcOptions.Value.AdminPassword).GetAwaiter().GetResult();
                     if (!res.Succeeded && res.Errors.All(r => r.Code != "DuplicateUserName"))
                         throw new InvalidOperationException($"create admin user failed, detail: {res}");
                     userService.AddClaimsAsync(user, new List<Claim>()

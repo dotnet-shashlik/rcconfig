@@ -4,13 +4,13 @@
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "RC_DB_TYPE": "sqlite",
-        "RC_DB_CONN": "Data Source=./data/rc.db;",
-        "RC_ADMIN_PASS": "Shashlik.RC.Server",
-        "RC_ACCESS_TOKEN_LIFETIME": "7200",
-        "RC_PERMISSION_READ_POLICY": "Db",
-        "RC_SERVER_TOKEN": "Shashlik.RC.ServerToken",
-        "RC_AUTHORITY": "http://localhost:5000",
+        "RC__DbType": "sqlite",
+        "RC__DbConn": "Data Source=./data/rc.db;",
+        "RC__AdminPassword": "Shashlik.RC.Server",
+        "RC__AccessTokenLifetime": "7200",
+        "RC__ServerToken": "Shashlik.RC.ServerToken",
+        "RC__Servers": "",
+        "RC__SignKey": "NPNzzRQd8kw9yW1RmAt9dh9k",
         "ASPNETCORE_URLS": "http://*:5000"
       }
     }

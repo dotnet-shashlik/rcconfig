@@ -2,3 +2,10 @@ Logging:
   LogLevel:
     Default: Debug
 AllowedHosts: "*"
+#RC:
+#  DbType: "sqlite"
+#  DbConn: "Data Source=./data/rc.db;"
+#  AdminPassword: "Shashlik.RC.Server"
+#  AccessTokenLifetime: "7200"
+#  ServerToken: "Shashlik.RC.ServerToken"
+#  Servers: ""

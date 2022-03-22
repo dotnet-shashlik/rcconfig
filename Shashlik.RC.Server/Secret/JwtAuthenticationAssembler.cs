@@ -1,9 +1,12 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Shashlik.Kernel;
 using Shashlik.Kernel.Dependency;
+using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Server.Secret;
 
@@ -13,16 +16,20 @@ public class JwtAuthenticationAssembler : IServiceAssembler
     public const string Iss = "shashlik.rc.iss";
     public const string Aud = "shashlik.rc.aud";
 
-    public JwtAuthenticationAssembler(KeyProvider keyProvider)
+
+    public JwtAuthenticationAssembler(IOptions<RCOptions> rcOptions)
     {
-        KeyProvider = keyProvider;
+        RcOptions = rcOptions;
     }
 
-    private KeyProvider KeyProvider { get; }
+    private IOptions<RCOptions> RcOptions { get; }
 
 
     public void Configure(IKernelServices kernelServices)
     {
+        if (RcOptions.Value.SignKey.IsNullOrWhiteSpace() || RcOptions.Value.SignKey!.Length != 24)
+            throw new InvalidOperationException("SignKey参数必须为24位");
+
         kernelServices.Services.AddHttpContextAccessor();
 
         kernelServices.Services.AddAuthentication(r =>
@@ -42,7 +49,7 @@ public class JwtAuthenticationAssembler : IServiceAssembler
                 {
                     ValidateIssuer = true,
                     ValidIssuer = Iss,
-                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(KeyProvider.GetKey())),
+                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(RcOptions.Value.SignKey)),
                     ValidateAudience = true,
                     ValidAudience = Aud,
                     SaveSigninToken = true,

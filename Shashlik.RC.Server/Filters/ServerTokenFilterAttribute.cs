@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Shashlik.RC.Server.Common;
 
 namespace Shashlik.RC.Server.Filters
@@ -10,14 +12,16 @@ namespace Shashlik.RC.Server.Filters
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            if (SystemEnvironmentUtils.IsStandalone)
+            var rcOptions = context.HttpContext.RequestServices.GetRequiredService<IOptions<RCOptions>>();
+
+            if (rcOptions.Value.IsStandalone)
             {
                 context.HttpContext.Response.StatusCode = 400;
                 return;
             }
 
             if (!context.HttpContext.Request.Headers.TryGetValue(Constants.HeaderKeys.ServerToken, out var token)
-                || token.ToString() != SystemEnvironmentUtils.ServerToken)
+                || token.ToString() != rcOptions.Value.ServerToken)
             {
                 context.HttpContext.Response.StatusCode = 400;
             }
