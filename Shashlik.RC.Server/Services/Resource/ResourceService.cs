@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -9,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Shashlik.Kernel.Dependency;
 using Shashlik.RC.Data;
 using Shashlik.RC.Server.Common;
-using Shashlik.RC.Data;
 using Shashlik.RC.Server.Filters;
 using Shashlik.RC.Server.Services.Identity;
 using Shashlik.RC.Server.Services.Permission.Inputs;
@@ -21,7 +19,8 @@ namespace Shashlik.RC.Server.Services.Resource
     [Scoped]
     public class ResourceService
     {
-        public ResourceService(RoleService roleService, RCDbContext dbContext, IHttpContextAccessor httpContextAccessor, UserService userService)
+        public ResourceService(RoleService roleService, RCDbContext dbContext, IHttpContextAccessor httpContextAccessor,
+            UserService userService)
         {
             RoleService = roleService;
             DbContext = dbContext;
@@ -33,8 +32,6 @@ namespace Shashlik.RC.Server.Services.Resource
         private RoleService RoleService { get; }
         private UserService UserService { get; }
         private IHttpContextAccessor HttpContextAccessor { get; }
-
-        private IEnumerable<Claim> RequestUserClaims => HttpContextAccessor.HttpContext?.User.Claims ?? new List<Claim>();
 
         public const string ResourceClaimTypePrefix = "RESOURCE:";
 
@@ -113,12 +110,7 @@ namespace Shashlik.RC.Server.Services.Resource
 
         public async Task<IEnumerable<ResourceActionDto>> GetResourceList(int userId)
         {
-            return SystemEnvironmentUtils.PermissionReadPolicy switch
-            {
-                PermissionReadPolicy.Db => await GetResourceActionsByUserId(userId),
-                PermissionReadPolicy.Token => RequestUserClaims.Select(GetResourceActionByClaim),
-                _ => throw new IndexOutOfRangeException()
-            };
+            return await GetResourceActionsByUserId(userId);
         }
 
         /// <summary>
@@ -133,7 +125,7 @@ namespace Shashlik.RC.Server.Services.Resource
                     join role in DbContext.Roles on userRole.RoleId equals role.Id
                     join roleClaim in DbContext.RoleClaims on role.Id equals roleClaim.RoleId
                     where userRole.UserId.Equals(userId)
-                    select new {roleClaim.ClaimType, roleClaim.ClaimValue}
+                    select new { roleClaim.ClaimType, roleClaim.ClaimValue }
                 )
                 .Distinct()
                 .ToListAsync();
@@ -209,7 +201,8 @@ namespace Shashlik.RC.Server.Services.Resource
                 }
             }
 
-            res = await RoleService.AddClaimAsync(identityRole, new Claim(GetClaimTypeFromResourceId(resourceId), action.ToPermissionActionString()));
+            res = await RoleService.AddClaimAsync(identityRole,
+                new Claim(GetClaimTypeFromResourceId(resourceId), action.ToPermissionActionString()));
             if (!res.Succeeded)
             {
                 await transaction.RollbackAsync();

@@ -18,8 +18,6 @@ namespace Shashlik.RC.Server.Common
             AdminUser = Environment.GetEnvironmentVariable("RC_ADMIN_USER") ?? "admin";
             AdminPassword = Environment.GetEnvironmentVariable("RC_ADMIN_PASS") ?? "Shashlik.RC.Server";
             Servers = Environment.GetEnvironmentVariable("RC_SERVERS");
-            PermissionReadPolicy = Environment.GetEnvironmentVariable("RC_PERMISSION_READ_POLICY")?.ParseTo<PermissionReadPolicy>() ??
-                                   PermissionReadPolicy.Db;
             ServerToken = Environment.GetEnvironmentVariable("RC_SERVER_TOKEN") ?? "Shashlik.RC.ServerToken";
             Authority = Environment.GetEnvironmentVariable("RC_AUTHORITY") ?? "http://localhost:5000";
         }
@@ -58,12 +56,6 @@ namespace Shashlik.RC.Server.Common
         /// 是否为单机版
         /// </summary>
         public static bool IsStandalone => string.IsNullOrWhiteSpace(Servers);
-
-        //TODO: ..干掉
-        /// <summary>
-        /// 权限读取策略,默认值: Token
-        /// </summary>
-        public static PermissionReadPolicy PermissionReadPolicy { get; }
 
         /// <summary>
         /// 集群环境,服务器内部安全认证token,集群环境请一定要设置
