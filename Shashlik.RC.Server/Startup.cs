@@ -15,8 +15,6 @@ using Shashlik.RC.Data.Sqlite;
 using Shashlik.RC.Data.SqlServer;
 using Shashlik.RC.Server.Initialization;
 using Shashlik.RC.Server.Common;
-using Shashlik.RC.Data;
-using Shashlik.RC.Server.WebSocket;
 
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
 
@@ -111,7 +109,6 @@ namespace Shashlik.RC.Server
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseWebSocketPush();
 
             app.UseEndpoints(endpoints =>
             {
