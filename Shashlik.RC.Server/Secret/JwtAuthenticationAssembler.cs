@@ -33,6 +33,8 @@ public class JwtAuthenticationAssembler : IServiceAssembler
                 r.DefaultForbidScheme = JwtBearerDefaults.AuthenticationScheme;
                 r.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
                 r.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
+                r.AddScheme<SecretAuthenticationHandler>(SecretAuthenticationHandler.SecretScheme,
+                    SecretAuthenticationHandler.SecretScheme);
             })
             .AddJwtBearer(r =>
             {

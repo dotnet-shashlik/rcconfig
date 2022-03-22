@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Shashlik.RC.Server.Common;
 using Shashlik.RC.Server.Filters;
@@ -29,10 +30,10 @@ namespace Shashlik.RC.Server.Controllers
         [HttpPost("token")]
         [AllowAnonymous]
         public async Task<TokenDto> Token(
-            JObject requestContent,
             [FromServices] IEnumerable<IGrantType> grantTypes,
             [FromServices] UserService userService)
         {
+            var requestContent = (await Request.Body.ReadToStringAsync()).DeserializeJson<JObject>();
             var propertyValue = requestContent.GetPropertyValue("grant_type");
             var grantType = propertyValue.value?.ToString();
             if (grantType.IsNullOrWhiteSpace())

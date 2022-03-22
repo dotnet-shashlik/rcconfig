@@ -31,7 +31,7 @@ const goto = () => {
 
 const Login: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
-  const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
+  const [userLoginState, setUserLoginState] = useState<API.Response<API.LoginResult>>({ code: 200, success: true });
   const { initialState, setInitialState } = useModel('@@initialState');
 
   const intl = useIntl();
@@ -53,17 +53,15 @@ const Login: React.FC = () => {
       // 登录
       const msg = await login({
         ...values,
-        client_id: 'shashlik-rc-admin',
         grant_type: 'password',
-        scope: 'shashlik-rc-api:all'
       });
-      if (msg.access_token) {
+      if (msg.success) {
         const defaultloginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
           defaultMessage: '登录成功！',
         });
 
-        setAccessToken(msg.access_token, msg.expires_in!);
+        setAccessToken(msg.data!.access_token!, msg.data!.expires_in!);
         message.success(defaultloginSuccessMessage);
         await fetchUserInfo();
         goto();
@@ -82,7 +80,7 @@ const Login: React.FC = () => {
     }
     setSubmitting(false);
   };
-  const { status, type: loginType } = userLoginState;
+  const { msg, success } = userLoginState;
 
   return (
     <div className={styles.container}>
@@ -118,11 +116,11 @@ const Login: React.FC = () => {
             }}
           >
 
-            {status === 'error' && loginType === 'account' && (
+            {!success && (
               <LoginMessage
                 content={intl.formatMessage({
                   id: 'pages.login.accountLogin.errorMessage',
-                  defaultMessage: '账户或密码错误（admin/ant.design)',
+                  defaultMessage: msg,
                 })}
               />
             )}
@@ -175,8 +173,6 @@ const Login: React.FC = () => {
                 />
               </div>
             )}
-
-            {status === 'error' && loginType === 'mobile' && <LoginMessage content="验证码错误" />}
           </ProForm>
         </div>
       </div>

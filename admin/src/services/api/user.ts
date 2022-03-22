@@ -19,9 +19,8 @@ export async function currentUser(options?: { [key: string]: any }) {
 
 /** 登录接口 POST /connect/token */
 export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
-  return request<API.LoginResult>('/connect/token', {
+  return request<API.Response<API.LoginResult>>('/users/token', {
     method: 'POST',
-    requestType: 'form',
     data: body,
     ...(options || {}),
   });

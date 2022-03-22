@@ -342,3 +342,4 @@ upload
 /Test.settings
 /Shashlik.RC/data/*.db-shm
 /Shashlik.RC/data/*.db-wal
+/Shashlik.RC.Server/sign.key

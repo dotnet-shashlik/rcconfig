@@ -11,7 +11,7 @@ using Shashlik.RC.Server.Services.Identity;
 
 namespace Shashlik.RC.Server.Controllers
 {
-    [Authorize(AuthenticationSchemes = "Secret,JwtBearer")]
+    [Authorize(AuthenticationSchemes = "Secret,Bearer")]
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
