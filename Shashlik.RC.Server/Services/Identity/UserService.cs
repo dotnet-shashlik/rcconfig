@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using Shashlik.Kernel.Dependency;
 using Shashlik.RC.Server.Common;
 using Shashlik.RC.Server.Filters;
+using Shashlik.RC.Server.FreeSqlUtils;
 using Shashlik.RC.Server.Secret;
 using Shashlik.RC.Server.Services.Identity.Dtos;
 using Shashlik.RC.Server.Services.Identity.Inputs;
@@ -93,81 +94,87 @@ namespace Shashlik.RC.Server.Services.Identity
 
         public async Task CreateUser(CreateUserInput input)
         {
-            var user = new IdentityUser<int>
+            await DbContext.BeginTransactionAsync(async () =>
             {
-                UserName = input.UserName
-            };
-            var res = await CreateAsync(user, input.Password);
-            if (!res.Succeeded)
-            {
-                throw ResponseException.ArgError(res.ToString());
-            }
-
-            res = await AddClaimsAsync(user, new List<Claim>()
-            {
-                new Claim(Constants.UserClaimTypes.NickName, input.NickName ?? string.Empty),
-                new Claim(Constants.UserClaimTypes.Remark, input.Remark ?? string.Empty)
-            });
-            if (!res.Succeeded)
-            {
-                throw ResponseException.ArgError(res.ToString());
-            }
-
-            res = await AddToRolesAsync(user, input.Roles);
-            if (!res.Succeeded)
-            {
-                throw ResponseException.ArgError(res.ToString());
-            }
-        }
-
-        public async Task Update(int userId, UpdateUserInput input)
-        {
-            var user = await FindByIdAsync(userId.ToString());
-            if (user is null)
-            {
-                throw ResponseException.NotFound();
-            }
-
-            user.UserName = input.UserName;
-
-            #region claim
-
-            var res = await AddOrUpdateClaim(user, new Claim(Constants.UserClaimTypes.NickName, input.NickName));
-            if (!res.Succeeded)
-            {
-                throw ResponseException.ArgError(res.ToString());
-            }
-
-            res = await AddOrUpdateClaim(user, new Claim(Constants.UserClaimTypes.Remark, input.Remark));
-            if (!res.Succeeded)
-            {
-                throw ResponseException.ArgError(res.ToString());
-            }
-
-            #endregion
-
-            #region roles
-
-            var roles = await GetRolesAsync(user);
-            if (!roles.IsNullOrEmpty())
-            {
-                res = await RemoveFromRolesAsync(user, roles);
+                var user = new IdentityUser<int>
+                {
+                    UserName = input.UserName
+                };
+                var res = await CreateAsync(user, input.Password);
                 if (!res.Succeeded)
                 {
                     throw ResponseException.ArgError(res.ToString());
                 }
-            }
 
-            if (!input.Roles.IsNullOrEmpty())
-            {
+                res = await AddClaimsAsync(user, new List<Claim>()
+                {
+                    new Claim(Constants.UserClaimTypes.NickName, input.NickName ?? string.Empty),
+                    new Claim(Constants.UserClaimTypes.Remark, input.Remark ?? string.Empty)
+                });
+                if (!res.Succeeded)
+                {
+                    throw ResponseException.ArgError(res.ToString());
+                }
+
                 res = await AddToRolesAsync(user, input.Roles);
                 if (!res.Succeeded)
                 {
                     throw ResponseException.ArgError(res.ToString());
                 }
-            }
+            });
+        }
 
-            #endregion
+        public async Task Update(int userId, UpdateUserInput input)
+        {
+            await DbContext.BeginTransactionAsync(async () =>
+            {
+                var user = await FindByIdAsync(userId.ToString());
+                if (user is null)
+                {
+                    throw ResponseException.NotFound();
+                }
+
+                user.UserName = input.UserName;
+
+                #region claim
+
+                var res = await AddOrUpdateClaim(user, new Claim(Constants.UserClaimTypes.NickName, input.NickName));
+                if (!res.Succeeded)
+                {
+                    throw ResponseException.ArgError(res.ToString());
+                }
+
+                res = await AddOrUpdateClaim(user, new Claim(Constants.UserClaimTypes.Remark, input.Remark));
+                if (!res.Succeeded)
+                {
+                    throw ResponseException.ArgError(res.ToString());
+                }
+
+                #endregion
+
+                #region roles
+
+                var roles = await GetRolesAsync(user);
+                if (!roles.IsNullOrEmpty())
+                {
+                    res = await RemoveFromRolesAsync(user, roles);
+                    if (!res.Succeeded)
+                    {
+                        throw ResponseException.ArgError(res.ToString());
+                    }
+                }
+
+                if (!input.Roles.IsNullOrEmpty())
+                {
+                    res = await AddToRolesAsync(user, input.Roles);
+                    if (!res.Succeeded)
+                    {
+                        throw ResponseException.ArgError(res.ToString());
+                    }
+                }
+
+                #endregion
+            });
         }
 
         public async Task<IdentityResult> AddOrUpdateClaim(IdentityUser<int> user, Claim claim)

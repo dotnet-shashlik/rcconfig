@@ -109,7 +109,7 @@ public class UserStore<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TU
             throw new ArgumentNullException(nameof(user));
         }
 
-        var row = await Context.Delete<TUser>().WhereDynamic(user.Id).ExecuteAffrowsAsync(cancellationToken);
+        var row = await Context.Delete<TUser>(user).ExecuteAffrowsAsync(cancellationToken);
         if (row > 0)
             return IdentityResult.Failed(ErrorDescriber.ConcurrencyFailure());
         return IdentityResult.Success;
@@ -128,7 +128,7 @@ public class UserStore<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TU
         cancellationToken.ThrowIfCancellationRequested();
         ThrowIfDisposed();
         var id = ConvertIdFromString(userId);
-        return Context.Select<TUser>().WhereDynamic(id).FirstAsync(cancellationToken);
+        return Context.Select<TUser>().Where(r => r.Id.Equals(id)).FirstAsync(cancellationToken);
     }
 
     /// <summary>
@@ -168,7 +168,9 @@ public class UserStore<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TU
     /// <returns>The user role if it exists.</returns>
     protected override Task<TUserRole> FindUserRoleAsync(TKey userId, TKey roleId, CancellationToken cancellationToken)
     {
-        return Context.Select<TUserRole>().WhereDynamic(new object[] { userId, roleId }).FirstAsync(cancellationToken);
+        return Context.Select<TUserRole>()
+            .Where(r => r.UserId.Equals(userId) && r.RoleId.Equals(roleId))
+            .FirstAsync(cancellationToken);
     }
 
     /// <summary>
@@ -179,7 +181,7 @@ public class UserStore<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TU
     /// <returns>The user if it exists.</returns>
     protected override Task<TUser> FindUserAsync(TKey userId, CancellationToken cancellationToken)
     {
-        return Context.Select<TUser>().WhereDynamic(userId).FirstAsync(cancellationToken);
+        return Context.Select<TUser>().Where(r => r.Id.Equals(userId)).FirstAsync(cancellationToken);
     }
 
     /// <summary>
@@ -622,7 +624,9 @@ public class UserStore<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TU
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
     /// <returns>The user token if it exists.</returns>
     protected override Task<TUserToken> FindTokenAsync(TUser user, string loginProvider, string name, CancellationToken cancellationToken)
-        => Context.Select<TUserToken>().WhereDynamic(new object[] { user.Id, loginProvider, name }).FirstAsync(cancellationToken);
+        => Context.Select<TUserToken>()
+            .Where(r => r.UserId.Equals(user.Id) && r.LoginProvider.Equals(loginProvider) && r.Name.Equals(name))
+            .FirstAsync(cancellationToken);
 
     /// <summary>
     /// Add a new user token.
