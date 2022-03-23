@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -7,7 +6,6 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
 using Shashlik.RC.Server.Common;
 using Shashlik.RC.Server.Services.Identity;
 using Shashlik.RC.Server.Services.Secret;
@@ -23,12 +21,12 @@ namespace Shashlik.RC.Server.Secret
         /// <summary>
         /// 认证体系
         /// </summary>
-        public AuthenticationScheme Scheme { get; private set; }
+        public AuthenticationScheme? Scheme { get; private set; }
 
         /// <summary>
         /// 当前上下文
         /// </summary>
-        protected HttpContext Context { get; private set; }
+        protected HttpContext? Context { get; private set; }
 
         /// <summary>
         /// 初始化认证
@@ -46,7 +44,7 @@ namespace Shashlik.RC.Server.Secret
         public async Task<AuthenticateResult> AuthenticateAsync()
         {
             // secret认证仅允许访问资源api
-            if (!Context.Request.RouteValues.TryGetValue(Constants.ResourceRoute.ApplicationKey, out _))
+            if (!Context!.Request.RouteValues.TryGetValue(Constants.ResourceRoute.ApplicationKey, out _))
                 return AuthenticateResult.Fail("invalid request path");
 
             var secretId = Context.Request.Headers.GetValue("SecretId");
@@ -91,7 +89,7 @@ namespace Shashlik.RC.Server.Secret
             var user = await userService.Get(secretDto.UserId.ParseTo<int>());
 
             //TODO: user claims
-            var claimsIdentity = new ClaimsIdentity(new Claim[]
+            var claimsIdentity = new ClaimsIdentity(new[]
             {
                 new Claim("sub", user!.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.UserName),
@@ -105,13 +103,13 @@ namespace Shashlik.RC.Server.Secret
 
         public Task ChallengeAsync(AuthenticationProperties? properties)
         {
-            Context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            Context!.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             return Task.CompletedTask;
         }
 
         public Task ForbidAsync(AuthenticationProperties? properties)
         {
-            Context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+            Context!.Response.StatusCode = (int)HttpStatusCode.Forbidden;
             return Task.CompletedTask;
         }
     }

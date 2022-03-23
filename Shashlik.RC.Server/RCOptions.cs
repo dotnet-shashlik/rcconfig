@@ -1,4 +1,5 @@
-﻿using Shashlik.Kernel.Attributes;
+﻿using FreeSql;
+using Shashlik.Kernel.Attributes;
 using Shashlik.RC.Server.Common;
 using Shashlik.Utils.Helpers;
 
@@ -15,7 +16,7 @@ public class RCOptions
     /// <summary>
     /// 数据库类型
     /// </summary>
-    public string DbType { get; set; } = Constants.Db.Sqlite;
+    public DataType DbType { get; set; } = DataType.Sqlite;
 
     /// <summary>
     /// 数据库连接字符串

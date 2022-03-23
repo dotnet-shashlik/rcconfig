@@ -9,13 +9,13 @@ namespace Shashlik.RC.Server.Common
         {
         }
 
-        public PageModel(int total, List<T> rows)
+        public PageModel(long total, List<T> rows)
         {
             Total = total;
             Rows = rows;
         }
 
-        public int Total { get; set; }
+        public long Total { get; set; }
 
         public List<T> Rows { get; set; }
     }

@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.FreeSql;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shashlik.Kernel;
-using Shashlik.RC.Data;
 using Shashlik.RC.Server.Common;
 using Shashlik.RC.Server.Services.Identity;
 
@@ -16,14 +15,6 @@ namespace Shashlik.RC.Server.Initialization
 {
     public static class Extensions
     {
-        public static IKernelServiceProvider MigrationDb(this IKernelServiceProvider serviceProvider)
-        {
-            using var scope = serviceProvider.CreateScope();
-            using var dbContext = scope.ServiceProvider.GetRequiredService<RCDbContext>();
-            dbContext.Database.Migrate();
-            return serviceProvider;
-        }
-
         private static void InitRole(RoleService roleService, string role, ILogger logger)
         {
             var adminRole = roleService.FindByNameAsync(role).GetAwaiter().GetResult();
@@ -48,7 +39,6 @@ namespace Shashlik.RC.Server.Initialization
         public static IKernelServiceProvider InitRoleAndAdminUser(this IKernelServiceProvider serviceProvider)
         {
             using var scope = serviceProvider.CreateScope();
-
             var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Initialization");
             using var userService = scope.ServiceProvider.GetRequiredService<UserService>();
             using var roleService = scope.ServiceProvider.GetRequiredService<RoleService>();
@@ -71,11 +61,11 @@ namespace Shashlik.RC.Server.Initialization
                         throw new InvalidOperationException($"create admin user failed, detail: {res}");
                     userService.AddClaimsAsync(user, new List<Claim>()
                     {
-                        new Claim(Constants.UserClaimTypes.NickName, "超级管理员")
+                        new(Constants.UserClaimTypes.NickName, "Administrator")
                     }).GetAwaiter().GetResult();
                     userService.AddToRoleAsync(user, Constants.Roles.Admin).GetAwaiter().GetResult();
                 }
-                catch (DbUpdateException e)
+                catch (Exception e)
                 {
                     logger.LogWarning(e, $"create admin user occurred error");
                 }

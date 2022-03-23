@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Shashlik.RC.Server.Common;
 using Shashlik.RC.Server.Filters;
 using Shashlik.RC.Server.Services.Identity;
@@ -13,8 +11,6 @@ using Shashlik.RC.Server.Services.Identity.Dtos;
 using Shashlik.RC.Server.Services.Identity.Inputs;
 using Shashlik.RC.Server.Services.Resource;
 using Shashlik.RC.Server.Services.Resource.Dtos;
-using Shashlik.RC.Server.Services.Permission;
-using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Server.Controllers
 {

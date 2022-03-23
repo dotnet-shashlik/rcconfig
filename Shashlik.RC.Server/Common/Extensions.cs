@@ -2,12 +2,11 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using FreeSql;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Shashlik.RC.Server.Secret.GrantTypes;
 using Shashlik.RC.Server.Services.Resource;
 using Shashlik.RC.Server.Services.Resource.Dtos;
-using Shashlik.RC.Server.Services.Permission;
 using Shashlik.Utils.Extensions;
 
 namespace Shashlik.RC.Server.Common
@@ -27,17 +26,12 @@ namespace Shashlik.RC.Server.Common
                 );
         }
 
-        public static async Task<PageModel<T>> PageQuery<T>(this IQueryable<T> source, PageInput input)
+        public static async Task<PageModel<TDto>> Page<T1, TDto>(this ISelect<T1> @select, PageInput pageInput)
         {
-            var total = source.Count();
-            if (total == 0)
-                return new PageModel<T> { Rows = new List<T>() };
-            var list = await source.DoPage(input.PageIndex, input.PageSize).ToListAsync();
-            return new PageModel<T>
-            {
-                Total = total,
-                Rows = list
-            };
+            var list = await @select.Count(out var total)
+                .Page(pageInput.PageIndex, pageInput.PageSize)
+                .ToListAsync<TDto>();
+            return new PageModel<TDto>(total, list);
         }
 
         public static string ToPermissionActionString(this PermissionAction permissionAction)

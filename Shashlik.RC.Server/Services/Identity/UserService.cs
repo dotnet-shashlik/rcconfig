@@ -5,19 +5,16 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Shashlik.Kernel.Dependency;
-using Shashlik.RC.Data;
 using Shashlik.RC.Server.Common;
 using Shashlik.RC.Server.Filters;
 using Shashlik.RC.Server.Secret;
 using Shashlik.RC.Server.Services.Identity.Dtos;
 using Shashlik.RC.Server.Services.Identity.Inputs;
 using Shashlik.Utils.Extensions;
-using Z.EntityFramework.Plus;
 
 namespace Shashlik.RC.Server.Services.Identity
 {
@@ -28,7 +25,7 @@ namespace Shashlik.RC.Server.Services.Identity
             IPasswordHasher<IdentityUser<int>> passwordHasher, IEnumerable<IUserValidator<IdentityUser<int>>> userValidators,
             IEnumerable<IPasswordValidator<IdentityUser<int>>> passwordValidators, ILookupNormalizer keyNormalizer,
             IdentityErrorDescriber errors,
-            IServiceProvider services, ILogger<UserManager<IdentityUser<int>>> logger, RCDbContext dbContext,
+            IServiceProvider services, ILogger<UserManager<IdentityUser<int>>> logger, IFreeSql dbContext,
             IOptions<RCOptions> rcOptions) :
             base(store, optionsAccessor,
                 passwordHasher, userValidators,
@@ -38,7 +35,7 @@ namespace Shashlik.RC.Server.Services.Identity
             RcOptions = rcOptions;
         }
 
-        private RCDbContext DbContext { get; }
+        private IFreeSql DbContext { get; }
         private IOptions<RCOptions> RcOptions { get; }
 
         public async Task<UserDetailDto?> Get(int userId)
@@ -53,22 +50,36 @@ namespace Shashlik.RC.Server.Services.Identity
                 Id = user.Id,
                 UserName = user.UserName,
                 Claims = claims ?? new List<Claim>(),
-                Roles = roles ?? new string[0]
+                Roles = roles ?? Array.Empty<string>()
+            };
+        }
+
+        public async Task<UserDetailDto?> Get(string userName)
+        {
+            var user = await FindByNameAsync(userName);
+            if (user is null)
+                return null;
+            var claims = await GetClaimsAsync(user);
+            var roles = await GetRolesAsync(user);
+            return new UserDetailDto
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Claims = claims ?? new List<Claim>(),
+                Roles = roles ?? Array.Empty<string>()
             };
         }
 
         public async Task<List<UserDto>> Get()
         {
-            var list = await (from user in DbContext.Users
-                    join userRole in DbContext.UserRoles on user.Id equals userRole.UserId
-                    join role in DbContext.Roles on userRole.RoleId equals role.Id
-                    select new
-                    {
-                        user.Id, user.UserName,
-                        RoleName = role.Name
-                    }
-                )
-                .ToListAsync();
+            var list = await DbContext.Select<IdentityUserRole<int>, IdentityUser<int>, IdentityRole<int>>()
+                .InnerJoin((userRole, user, role) => userRole.UserId.Equals(user.Id))
+                .InnerJoin((userRole, user, role) => userRole.RoleId.Equals(role.Id))
+                .ToListAsync((userRole, user, role) => new
+                {
+                    user.Id, user.UserName,
+                    RoleName = role.Name
+                });
 
             return list.GroupBy(r => new { r.Id, r.UserName })
                 .Select(r => new UserDto
@@ -82,7 +93,6 @@ namespace Shashlik.RC.Server.Services.Identity
 
         public async Task CreateUser(CreateUserInput input)
         {
-            await using var transaction = await DbContext.Database.BeginTransactionAsync();
             var user = new IdentityUser<int>
             {
                 UserName = input.UserName
@@ -90,38 +100,31 @@ namespace Shashlik.RC.Server.Services.Identity
             var res = await CreateAsync(user, input.Password);
             if (!res.Succeeded)
             {
-                await transaction.RollbackAsync();
                 throw ResponseException.ArgError(res.ToString());
             }
 
             res = await AddClaimsAsync(user, new List<Claim>()
             {
-                new Claim(Constants.UserClaimTypes.NickName, input.NickName),
-                new Claim(Constants.UserClaimTypes.Remark, input.Remark)
+                new Claim(Constants.UserClaimTypes.NickName, input.NickName ?? string.Empty),
+                new Claim(Constants.UserClaimTypes.Remark, input.Remark ?? string.Empty)
             });
             if (!res.Succeeded)
             {
-                await transaction.RollbackAsync();
                 throw ResponseException.ArgError(res.ToString());
             }
 
             res = await AddToRolesAsync(user, input.Roles);
             if (!res.Succeeded)
             {
-                await transaction.RollbackAsync();
                 throw ResponseException.ArgError(res.ToString());
             }
-
-            await transaction.CommitAsync();
         }
 
         public async Task Update(int userId, UpdateUserInput input)
         {
-            await using var transaction = await DbContext.Database.BeginTransactionAsync();
             var user = await FindByIdAsync(userId.ToString());
             if (user is null)
             {
-                await transaction.RollbackAsync();
                 throw ResponseException.NotFound();
             }
 
@@ -132,14 +135,12 @@ namespace Shashlik.RC.Server.Services.Identity
             var res = await AddOrUpdateClaim(user, new Claim(Constants.UserClaimTypes.NickName, input.NickName));
             if (!res.Succeeded)
             {
-                await transaction.RollbackAsync();
                 throw ResponseException.ArgError(res.ToString());
             }
 
             res = await AddOrUpdateClaim(user, new Claim(Constants.UserClaimTypes.Remark, input.Remark));
             if (!res.Succeeded)
             {
-                await transaction.RollbackAsync();
                 throw ResponseException.ArgError(res.ToString());
             }
 
@@ -153,7 +154,6 @@ namespace Shashlik.RC.Server.Services.Identity
                 res = await RemoveFromRolesAsync(user, roles);
                 if (!res.Succeeded)
                 {
-                    await transaction.RollbackAsync();
                     throw ResponseException.ArgError(res.ToString());
                 }
             }
@@ -163,21 +163,19 @@ namespace Shashlik.RC.Server.Services.Identity
                 res = await AddToRolesAsync(user, input.Roles);
                 if (!res.Succeeded)
                 {
-                    await transaction.RollbackAsync();
                     throw ResponseException.ArgError(res.ToString());
                 }
             }
 
             #endregion
-
-            await transaction.CommitAsync();
         }
 
         public async Task<IdentityResult> AddOrUpdateClaim(IdentityUser<int> user, Claim claim)
         {
-            var rows = await DbContext.UserClaims
+            var rows = await DbContext.Update<IdentityUserClaim<int>>()
                 .Where(r => r.UserId == user.Id && r.ClaimType == claim.Type)
-                .UpdateAsync(r => new IdentityUserClaim<int> { ClaimValue = claim.Value });
+                .Set(r => r.ClaimValue, claim.Value)
+                .ExecuteAffrowsAsync();
             if (rows == 0)
                 return await AddClaimAsync(user, claim);
 

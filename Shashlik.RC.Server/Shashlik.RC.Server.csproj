@@ -34,14 +34,15 @@
   </Target>
 
   <ItemGroup>
-    <PackageReference Include="MediatR" Version="10.0.1" />
-    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
+
+    <PackageReference Include="FreeSql.Provider.MySqlConnector" Version="3.2.100" />
+    <PackageReference Include="FreeSql.Provider.PostgreSQL" Version="3.2.100" />
+    <PackageReference Include="FreeSql.Provider.Sqlite" Version="3.2.100" />
+    <PackageReference Include="FreeSql.Provider.SqlServer" Version="3.2.100" />
+    <PackageReference Include="FreeSql.Provider.Odbc" Version="3.2.100" />
+
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="NetEscapades.Configuration.Yaml" Version="2.1.0" />
     <PackageReference Include="RestSharp" Version="107.3.0" />
     <PackageReference Include="Shashlik.AutoMapper" Version="2.0.0-preview4" />
@@ -50,10 +51,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Shashlik.RC.Data.MySql\Shashlik.RC.Data.MySql.csproj" />
-    <ProjectReference Include="..\Shashlik.RC.Data.PostgreSql\Shashlik.RC.Data.PostgreSql.csproj" />
-    <ProjectReference Include="..\Shashlik.RC.Data.Sqlite\Shashlik.RC.Data.Sqlite.csproj" />
-    <ProjectReference Include="..\Shashlik.RC.Data.SqlServer\Shashlik.RC.Data.SqlServer.csproj" />
+    <ProjectReference Include="..\Microsoft.AspNetCore.Identity.FreeSql\Microsoft.AspNetCore.Identity.FreeSql.csproj" />
     <ProjectReference Include="..\Shashlik.RC.Data\Shashlik.RC.Data.csproj" />
   </ItemGroup>
 </Project>

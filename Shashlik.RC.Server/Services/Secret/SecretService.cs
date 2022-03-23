@@ -1,49 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Shashlik.AutoMapper;
 using Shashlik.Kernel.Dependency;
-using Shashlik.RC.Data;
-using Shashlik.RC.Data;
 using Shashlik.RC.Data.Entities;
 using Shashlik.RC.Server.Filters;
-using Shashlik.RC.Server.Services.Identity;
 using Shashlik.RC.Server.Services.Secret.Dtos;
-using Shashlik.RC.Server.Services.Identity.Dtos;
 using Shashlik.Utils.Extensions;
 using Shashlik.Utils.Helpers;
-using Z.EntityFramework.Plus;
 
 namespace Shashlik.RC.Server.Services.Secret
 {
     [Scoped]
     public class SecretService
     {
-        public SecretService(RCDbContext dbContext, UserService userService)
+        public SecretService(IFreeSql dbContext)
         {
             DbContext = dbContext;
-            UserService = userService;
         }
 
-        private RCDbContext DbContext { get; }
-        private UserService UserService { get; }
+        private IFreeSql DbContext { get; }
 
         public async Task<SecretDto?> GetBySecretId(string secretId)
         {
-            return await DbContext.Set<Secrets>()
+            return await DbContext.Select<Secrets>()
                 .Where(r => r.SecretId == secretId)
-                .QueryTo<SecretDto>()
-                .FirstOrDefaultAsync();
+                .FirstAsync<SecretDto>();
         }
 
         public async Task<List<SecretDto>> List(string userId)
         {
-            return await DbContext.Set<Secrets>()
+            return await DbContext.Select<Secrets>()
                 .Where(r => r.UserId == userId)
-                .QueryTo<SecretDto>()
-                .ToListAsync();
+                .ToListAsync<SecretDto>();
         }
 
         public async Task<SecretDto> Create(string userId)
@@ -51,30 +40,27 @@ namespace Shashlik.RC.Server.Services.Secret
             var secret = new Secrets
             {
                 SecretId = Guid.NewGuid().ToString("n"),
-                SecretKey = RandomKey(userId),
+                SecretKey = RandomKey(),
                 CreateTime = DateTime.Now.GetLongDate(),
                 UserId = userId,
             };
 
-            await DbContext.AddAsync(secret);
-            await DbContext.SaveChangesAsync();
-
+            await DbContext.Insert(secret).ExecuteAffrowsAsync();
             return secret.MapTo<SecretDto>();
         }
 
         public async Task Delete(string userId, string secretId)
         {
-            var row = await DbContext.Set<Secrets>()
+            var row = await DbContext.Delete<Secrets>()
                 .Where(r => r.SecretId == secretId && r.UserId == userId)
-                .DeleteAsync();
+                .ExecuteAffrowsAsync();
             if (row == 0)
                 throw ResponseException.NotFound();
         }
 
-        private string RandomKey(string resourceId)
+        private string RandomKey()
         {
-            var s = HashHelper.HMACSHA1(Guid.NewGuid().ToString(), resourceId);
-            return s[4..s.Length];
+            return RandomHelper.RandomString(24);
         }
     }
 }

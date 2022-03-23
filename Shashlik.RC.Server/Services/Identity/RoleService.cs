@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shashlik.AutoMapper;
 using Shashlik.Kernel.Dependency;
@@ -14,14 +12,18 @@ namespace Shashlik.RC.Server.Services.Identity
     public class RoleService : RoleManager<IdentityRole<int>>
     {
         public RoleService(IRoleStore<IdentityRole<int>> store, IEnumerable<IRoleValidator<IdentityRole<int>>> roleValidators,
-            ILookupNormalizer keyNormalizer, IdentityErrorDescriber errors, ILogger<RoleManager<IdentityRole<int>>> logger) : base(store,
+            ILookupNormalizer keyNormalizer, IdentityErrorDescriber errors, ILogger<RoleManager<IdentityRole<int>>> logger,
+            IFreeSql dbContext) : base(store,
             roleValidators, keyNormalizer, errors, logger)
         {
+            DbContext = dbContext;
         }
+
+        private IFreeSql DbContext { get; }
 
         public async Task<List<RoleDto>> List()
         {
-            return await Roles.QueryTo<RoleDto>().ToListAsync();
+            return await DbContext.Select<IdentityRole<int>>().ToListAsync<RoleDto>();
         }
     }
 }

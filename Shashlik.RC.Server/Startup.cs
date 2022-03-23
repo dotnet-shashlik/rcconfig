@@ -1,18 +1,14 @@
 ﻿using System;
-using MediatR;
+using FreeSql;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.FreeSql;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using Shashlik.Kernel;
-using Shashlik.RC.Data;
-using Shashlik.RC.Data.MySql;
-using Shashlik.RC.Data.PostgreSql;
-using Shashlik.RC.Data.Sqlite;
-using Shashlik.RC.Data.SqlServer;
 using Shashlik.RC.Server.Initialization;
 using Shashlik.RC.Server.Common;
 
@@ -20,12 +16,6 @@ using Shashlik.RC.Server.Common;
 
 namespace Shashlik.RC.Server
 {
-    /**
-     * Sqlite: dotnet ef migrations add rc_0001 -c RCDbContext -o Migrations -p ./Shashlik.RC.Data.Sqlite/Shashlik.RC.Data.Sqlite.csproj -s ./Shashlik.RC/Shashlik.RC.csproj
-     * MySql: dotnet ef migrations add rc_0001 -c RCDbContext -o Migrations -p ./Shashlik.RC.Data.MySql/Shashlik.RC.Data.MySql.csproj -s ./Shashlik.RC/Shashlik.RC.csproj
-     * PostgreSql: dotnet ef migrations add rc_0001 -c RCDbContext -o Migrations -p ./Shashlik.RC.Data.PostgreSql/Shashlik.RC.Data.PostgreSql.csproj -s ./Shashlik.RC/Shashlik.RC.csproj
-     * SqlServer: dotnet ef migrations add rc_0001 -c RCDbContext -o Migrations -p ./Shashlik.RC.Data.SqlServer/Shashlik.RC.Data.SqlServer.csproj -s ./Shashlik.RC/Shashlik.RC.csproj
-     */
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -43,22 +33,21 @@ namespace Shashlik.RC.Server
             var conn = rcOptions.DbConn;
             var dbType = rcOptions.DbType;
 
-            switch (dbType)
-            {
-                case Constants.Db.Sqlite:
-                    services.AddSqliteData(conn);
-                    break;
-                case Constants.Db.MySql:
-                    services.AddMySqlData(conn);
-                    break;
-                case Constants.Db.PostgreSql:
-                    services.AddNpgsqlData(conn);
-                    break;
-                case Constants.Db.SqlServer:
-                    services.AddSqlServerData(conn);
-                    break;
-                default: throw new InvalidOperationException("invalid db type");
-            }
+            var freeSql = new FreeSqlBuilder()
+                .UseConnectionString(dbType, conn)
+                .CreateDatabaseIfNotExists()
+                .UseAutoSyncStructure(true)
+                .Build();
+            services.AddIdentity<IdentityUser<int>, IdentityRole<int>>(options =>
+                {
+                    options.Password.RequireDigit = false;
+                    options.Password.RequiredLength = 6;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                })
+                .AddFreeSqlStoresWithIntKey(freeSql);
+            services.AddSingleton(freeSql);
 
             services.AddControllers()
                 .AddControllersAsServices();
@@ -71,19 +60,9 @@ namespace Shashlik.RC.Server
                         .AllowAnyMethod();
                 });
             });
-            services.AddIdentity<IdentityUser<int>, IdentityRole<int>>(options =>
-                {
-                    options.Password.RequireDigit = false;
-                    options.Password.RequiredLength = 1;
-                    options.Password.RequireLowercase = false;
-                    options.Password.RequireUppercase = false;
-                    options.Password.RequireNonAlphanumeric = false;
-                })
-                .AddEntityFrameworkStores<RCDbContext>()
-                ;
+
 
             services.AddAuthorization();
-            services.AddMediatR(GetType().Assembly);
             // services.AddSpaStaticFiles(r => { r.RootPath = "AdminUI/dist"; });
             services.AddShashlik(Configuration);
         }
@@ -99,7 +78,6 @@ namespace Shashlik.RC.Server
             app.UseRouting();
 
             app.ApplicationServices.UseShashlik()
-                .MigrationDb()
                 .InitRoleAndAdminUser()
                 .AssembleServiceProvider()
                 ;

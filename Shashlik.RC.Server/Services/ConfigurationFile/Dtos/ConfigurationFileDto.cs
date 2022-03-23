@@ -5,7 +5,7 @@ using Shashlik.RC.Data.Entities;
 
 namespace Shashlik.RC.Server.Services.ConfigurationFile.Dtos
 {
-    public class ConfigurationFileDto : IMapFrom<ConfigurationFiles>
+    public class ConfigurationFileDto : IMapFrom<Files>
     {
         /// <summary>
         /// 文件id
