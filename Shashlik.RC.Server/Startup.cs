@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Logging;
 using Shashlik.Kernel;
 using Shashlik.RC.Server.Initialization;
 using Shashlik.RC.Server.Common;
+using Shashlik.RC.Server.FreeSqlUtils;
 
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
 
@@ -37,7 +38,7 @@ namespace Shashlik.RC.Server
                 .UseConnectionString(dbType, conn)
                 .CreateDatabaseIfNotExists()
                 .UseAutoSyncStructure(true)
-                .Build();
+                .BuildAsyncTransactionSupport();
             services.AddIdentity<IdentityUser<int>, IdentityRole<int>>(options =>
                 {
                     options.Password.RequireDigit = false;

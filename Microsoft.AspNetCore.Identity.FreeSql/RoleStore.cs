@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Security.Claims;
+
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
 // ReSharper disable ClassWithVirtualMembersNeverInherited.Global
 #pragma warning disable CS8600
@@ -83,10 +84,10 @@ public class RoleStore<TRole, TKey, TUserRole, TRoleClaim> :
 
         try
         {
-            using var repo = Context.GetRepository<TRole>();
-            repo.Attach(role);
             role.ConcurrencyStamp = Guid.NewGuid().ToString();
-            await repo.UpdateAsync(role, cancellationToken);
+            await Context.Update<TRole>()
+                .SetSource(role)
+                .ExecuteAffrowsAsync(cancellationToken);
         }
         catch
         {

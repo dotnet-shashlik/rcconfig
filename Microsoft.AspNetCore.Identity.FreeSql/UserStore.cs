@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using FreeSql;
 
 // ReSharper disable ClassWithVirtualMembersNeverInherited.Global
 
@@ -58,7 +59,6 @@ public class UserStore<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TU
         {
             throw new ArgumentNullException(nameof(user));
         }
-        
 
         await Context.InsertAndIdentityIfAsync(user, cancellationToken);
         return IdentityResult.Success;
@@ -81,10 +81,10 @@ public class UserStore<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TU
 
         try
         {
-            using var repo = Context.GetRepository<TUser>();
-            repo.Attach(user);
             user.ConcurrencyStamp = Guid.NewGuid().ToString();
-            await repo.UpdateAsync(user, cancellationToken);
+            await Context.Update<TUser>()
+                .SetSource(user)
+                .ExecuteAffrowsAsync(cancellationToken);
         }
         catch (Exception)
         {
