@@ -42,6 +42,7 @@ public static class FreeSqlTransactionExtensions
             finally
             {
                 Transactions.Value = null;
+                await tran.DisposeAsync();
             }
         }
         else await handler();
