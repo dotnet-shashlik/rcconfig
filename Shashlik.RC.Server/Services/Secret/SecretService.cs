@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Shashlik.AutoMapper;
 using Shashlik.Kernel.Dependency;
 using Shashlik.RC.Data.Entities;
 using Shashlik.RC.Server.Filters;
@@ -35,7 +34,7 @@ namespace Shashlik.RC.Server.Services.Secret
                 .ToListAsync<SecretDto>();
         }
 
-        public async Task<SecretDto> Create(string userId)
+        public async Task Create(string userId)
         {
             var secret = new Secrets
             {
@@ -46,7 +45,6 @@ namespace Shashlik.RC.Server.Services.Secret
             };
 
             await DbContext.Insert(secret).ExecuteAffrowsAsync();
-            return secret.MapTo<SecretDto>();
         }
 
         public async Task Delete(string userId, string secretId)

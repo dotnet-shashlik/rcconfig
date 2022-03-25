@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using Shashlik.AutoMapper;
 using Shashlik.Kernel.Dependency;
 using Shashlik.RC.Server.Services.Identity.Dtos;
 
