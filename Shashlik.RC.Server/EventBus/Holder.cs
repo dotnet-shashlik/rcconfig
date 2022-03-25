@@ -3,6 +3,7 @@ using System.Threading;
 
 namespace Shashlik.RC.Server.EventBus;
 
+//TODO: 优化
 public class CancelTokenSourceHolder
 {
     private static readonly ConcurrentDictionary<string, ConcurrentDictionary<CancellationTokenSource, CancellationTokenSource>>

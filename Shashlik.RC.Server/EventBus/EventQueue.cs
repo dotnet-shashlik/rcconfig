@@ -8,6 +8,7 @@ using Shashlik.RC.Server.Services.Environment;
 
 namespace Shashlik.RC.Server.EventBus;
 
+//TODO: 优化
 public class EventQueue
 {
     public static readonly ConcurrentDictionary<string, long> TimeVersions = new();

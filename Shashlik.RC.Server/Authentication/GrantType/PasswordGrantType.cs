@@ -2,11 +2,12 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Shashlik.Kernel.Dependency;
+using Shashlik.RC.Server.Common;
 using Shashlik.RC.Server.Filters;
 using Shashlik.RC.Server.Services.Identity;
 using Shashlik.RC.Server.Services.Identity.Dtos;
 
-namespace Shashlik.RC.Server.Secret.GrantTypes;
+namespace Shashlik.RC.Server.Authentication.GrantType;
 
 [Scoped]
 public class PasswordGrantType : IGrantType

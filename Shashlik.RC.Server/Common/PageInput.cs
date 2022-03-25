@@ -1,9 +1,8 @@
-﻿namespace Shashlik.RC.Server.Common
-{
-    public class PageInput
-    {
-        public int PageIndex { get; set; } = 1;
+﻿namespace Shashlik.RC.Server.Common;
 
-        public int PageSize { get; set; } = 20;
-    }
+public class PageInput
+{
+    public int PageIndex { get; set; } = 1;
+
+    public int PageSize { get; set; } = 20;
 }

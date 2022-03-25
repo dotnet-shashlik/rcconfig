@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Shashlik.RC.Server.Common;
 using Shashlik.RC.Server.Services.Identity;
@@ -12,7 +12,7 @@ using Shashlik.RC.Server.Services.Secret;
 using Shashlik.Utils.Extensions;
 using Shashlik.Utils.Helpers;
 
-namespace Shashlik.RC.Server.Secret
+namespace Shashlik.RC.Server.Authentication
 {
     public class SecretAuthenticationHandler : IAuthenticationHandler
     {

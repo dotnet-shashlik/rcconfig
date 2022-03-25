@@ -1,4 +1,4 @@
-﻿namespace Shashlik.RC.Server.Secret.GrantTypes;
+﻿namespace Shashlik.RC.Server.Authentication.GrantType;
 
 /// <summary>
 /// 服务策略

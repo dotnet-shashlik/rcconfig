@@ -4,7 +4,7 @@ using System.Data;
 using FreeSql;
 using FreeSql.Internal;
 
-namespace Shashlik.RC.Server.FreeSqlUtils;
+namespace Shashlik.RC.Server.FreeSql;
 
 public class FreeSqlAsyncTransactionSupport : IFreeSql
 {

@@ -6,9 +6,10 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Shashlik.Kernel;
 using Shashlik.Kernel.Dependency;
+using Shashlik.RC.Server.Common;
 using Shashlik.Utils.Extensions;
 
-namespace Shashlik.RC.Server.Secret;
+namespace Shashlik.RC.Server.Authentication;
 
 [Transient]
 public class JwtAuthenticationAssembler : IServiceAssembler

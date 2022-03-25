@@ -9,12 +9,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shashlik.Kernel;
 using Shashlik.RC.Server.Common;
-using Shashlik.RC.Server.FreeSqlUtils;
 using Shashlik.RC.Server.Services.Identity;
 
 namespace Shashlik.RC.Server.Initialization
 {
-    public static class Extensions
+    public static class SeedDataExtensions
     {
         private static void InitRole(RoleService roleService, string role, ILogger logger)
         {

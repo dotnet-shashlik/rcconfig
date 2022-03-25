@@ -9,22 +9,22 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Remove="data\rc.db"/>
+        <None Remove="data\rc.db" />
     </ItemGroup>
     <ItemGroup>
         <!-- Don't publish the SPA source files, but do show them in the project files list -->
-        <Content Remove="$(SpaRoot)**"/>
-        <None Remove="$(SpaRoot)**"/>
+        <Content Remove="$(SpaRoot)**" />
+        <None Remove="$(SpaRoot)**" />
     </ItemGroup>
 
     <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
         <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
-        <Exec WorkingDirectory="$(SpaRoot)" Command="yarn"/>
-        <Exec WorkingDirectory="$(SpaRoot)" Command="yarn build"/>
+        <Exec WorkingDirectory="$(SpaRoot)" Command="yarn" />
+        <Exec WorkingDirectory="$(SpaRoot)" Command="yarn build" />
 
         <!-- Include the newly-built files in the publish output -->
         <ItemGroup>
-            <DistFiles Include="$(SpaRoot)dist\**; $(SpaRoot)dist-ssr\**"/>
+            <DistFiles Include="$(SpaRoot)dist\**; $(SpaRoot)dist-ssr\**" />
             <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
                 <RelativePath>%(DistFiles.Identity)</RelativePath>
                 <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
@@ -35,22 +35,21 @@
 
     <ItemGroup>
 
-        <PackageReference Include="FreeSql.Provider.MySqlConnector" Version="3.2.100"/>
-        <PackageReference Include="FreeSql.Provider.PostgreSQL" Version="3.2.100"/>
-        <PackageReference Include="FreeSql.Provider.Sqlite" Version="3.2.100"/>
-        <PackageReference Include="FreeSql.Provider.SqlServer" Version="3.2.100"/>
-        <PackageReference Include="FreeSql.Provider.Odbc" Version="3.2.100"/>
+        <PackageReference Include="FreeSql.Provider.MySqlConnector" Version="3.2.100" />
+        <PackageReference Include="FreeSql.Provider.PostgreSQL" Version="3.2.100" />
+        <PackageReference Include="FreeSql.Provider.Sqlite" Version="3.2.100" />
+        <PackageReference Include="FreeSql.Provider.SqlServer" Version="3.2.100" />
+        <PackageReference Include="FreeSql.Provider.Odbc" Version="3.2.100" />
 
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.2"/>
-        <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.2"/>
-        <PackageReference Include="NetEscapades.Configuration.Yaml" Version="2.1.0"/>
-        <PackageReference Include="RestSharp" Version="107.3.0"/>
-        <PackageReference Include="Shashlik.Utils" Version="2.0.0-preview4"/>
-        <PackageReference Include="Shashlik.Kernel" Version="2.0.0-preview4"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.2" />
+        <PackageReference Include="NetEscapades.Configuration.Yaml" Version="2.1.0" />
+        <PackageReference Include="Shashlik.Utils" Version="2.0.0-preview4" />
+        <PackageReference Include="Shashlik.Kernel" Version="2.0.0-preview4" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Microsoft.AspNetCore.Identity.FreeSql\Microsoft.AspNetCore.Identity.FreeSql.csproj"/>
-        <ProjectReference Include="..\Shashlik.RC.Data\Shashlik.RC.Data.csproj"/>
+        <ProjectReference Include="..\Microsoft.AspNetCore.Identity.FreeSql\Microsoft.AspNetCore.Identity.FreeSql.csproj" />
+        <ProjectReference Include="..\Shashlik.RC.Data\Shashlik.RC.Data.csproj" />
     </ItemGroup>
 </Project>

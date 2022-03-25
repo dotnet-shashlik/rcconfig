@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using RestSharp;
 using Shashlik.Utils.Extensions;
 
+//TODO: 优化
 namespace Shashlik.RC.Client
 {
     public static class HttpHelper

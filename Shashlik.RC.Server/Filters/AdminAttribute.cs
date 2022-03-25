@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Shashlik.RC.Server.Common;
 
-namespace Shashlik.RC.Server.Filters
+namespace Shashlik.RC.Server.Filters;
+
+public class AdminAttribute : AuthorizeAttribute
 {
-    public class AdminAttribute : AuthorizeAttribute
+    public AdminAttribute()
     {
-        public AdminAttribute()
-        {
-            Roles = Constants.Roles.Admin;
-        }
+        Roles = Constants.Roles.Admin;
     }
 }

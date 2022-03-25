@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FreeSql;
 
-namespace Shashlik.RC.Server.FreeSqlUtils;
+namespace Shashlik.RC.Server.FreeSql;
 
 public static class FreeSqlTransactionExtensions
 {

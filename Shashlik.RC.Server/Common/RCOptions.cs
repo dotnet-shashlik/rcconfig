@@ -1,9 +1,8 @@
 ﻿using FreeSql;
 using Shashlik.Kernel.Attributes;
-using Shashlik.RC.Server.Common;
 using Shashlik.Utils.Helpers;
 
-namespace Shashlik.RC.Server;
+namespace Shashlik.RC.Server.Common;
 
 [AutoOptions("RC")]
 public class RCOptions
