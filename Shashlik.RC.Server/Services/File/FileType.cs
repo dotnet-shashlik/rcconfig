@@ -1,4 +1,4 @@
-﻿namespace Shashlik.RC.Server.Services.ConfigurationFile
+﻿namespace Shashlik.RC.Server.Services.File
 {
     public enum FileType
     {

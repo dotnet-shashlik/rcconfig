@@ -1,6 +1,7 @@
-﻿namespace Shashlik.RC.Client.Models;
+﻿#nullable disable
+namespace Shashlik.RC.Server.Services.File.Dtos;
 
-public class FileModel
+public class ConfigurationFileListDto
 {
     /// <summary>
     /// 文件id
@@ -21,11 +22,6 @@ public class FileModel
     /// 文件类型,yaml/json
     /// </summary>
     public string Type { get; set; }
-
-    /// <summary>
-    /// 文件内容
-    /// </summary>
-    public string Content { get; set; }
 
     /// <summary>
     /// 环境id

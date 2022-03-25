@@ -2,7 +2,7 @@
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
-namespace Shashlik.RC.Client
+namespace Shashlik.RC.Client.Models
 {
     /// <summary>
     /// 响应结果

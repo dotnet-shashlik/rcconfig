@@ -1,9 +1,7 @@
 ﻿#nullable disable
-using Shashlik.RC.Data.Entities;
+namespace Shashlik.RC.Server.Services.File.Dtos;
 
-namespace Shashlik.RC.Server.Services.ConfigurationFile.Dtos;
-
-public class ConfigurationFileListDto
+public class ConfigurationFileDto
 {
     /// <summary>
     /// 文件id
@@ -24,6 +22,11 @@ public class ConfigurationFileListDto
     /// 文件类型,yaml/json
     /// </summary>
     public string Type { get; set; }
+
+    /// <summary>
+    /// 文件内容
+    /// </summary>
+    public string Content { get; set; }
 
     /// <summary>
     /// 环境id

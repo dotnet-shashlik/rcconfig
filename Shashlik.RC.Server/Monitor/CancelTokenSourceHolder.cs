@@ -1,36 +1,37 @@
 ﻿using System.Collections.Concurrent;
 using System.Threading;
+using Shashlik.Kernel.Dependency;
 
-namespace Shashlik.RC.Server.EventBus;
+namespace Shashlik.RC.Server.Monitor;
 
-//TODO: 优化
+[Singleton]
 public class CancelTokenSourceHolder
 {
-    private static readonly ConcurrentDictionary<string, ConcurrentDictionary<CancellationTokenSource, CancellationTokenSource>>
-        Holder = new();
+    private readonly ConcurrentDictionary<string, ConcurrentDictionary<CancellationTokenSource, CancellationTokenSource>>
+        _holder = new();
 
-    public static CancellationToken Add(string resourceId, CancellationToken requestToken)
+    public CancellationToken Add(string resourceId, CancellationToken requestToken)
     {
         var tokenSource = new CancellationTokenSource();
         // token取消时从holder中删除
         tokenSource.Token.Register(() =>
         {
-            if (Holder.TryGetValue(resourceId, out var tokenSources))
+            if (_holder.TryGetValue(resourceId, out var tokenSources))
             {
                 tokenSources.TryRemove(tokenSource, out _);
             }
         });
         // 请求token取消时同时取消排队token
         requestToken.Register(tokenSource.Cancel);
-        var list = Holder.GetOrAdd(resourceId, new ConcurrentDictionary<CancellationTokenSource, CancellationTokenSource>());
+        var list = _holder.GetOrAdd(resourceId, new ConcurrentDictionary<CancellationTokenSource, CancellationTokenSource>());
         list.TryAdd(tokenSource, tokenSource);
 
         return tokenSource.Token;
     }
 
-    public static void Remove(string resourceId)
+    public void Remove(string resourceId)
     {
-        if (Holder.TryGetValue(resourceId, out var cancellationTokenSources))
+        if (_holder.TryGetValue(resourceId, out var cancellationTokenSources))
         {
             foreach (var cancellationTokenSource in cancellationTokenSources.Keys)
             {

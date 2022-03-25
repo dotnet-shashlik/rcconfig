@@ -4,23 +4,26 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Shashlik.RC.Server.Common;
 using Shashlik.RC.Server.EventBus;
-using Shashlik.RC.Server.Filters;
-using Shashlik.RC.Server.Services.ConfigurationFile;
-using Shashlik.RC.Server.Services.ConfigurationFile.Dtos;
-using Shashlik.RC.Server.Services.ConfigurationFile.Inputs;
+using Shashlik.RC.Server.Monitor;
+using Shashlik.RC.Server.Services.File;
+using Shashlik.RC.Server.Services.File.Inputs;
 using Shashlik.RC.Server.Services.Environment;
-using Shashlik.Utils.Extensions;
+using Shashlik.RC.Server.Services.File.Dtos;
 
 namespace Shashlik.RC.Server.Controllers
 {
     public class FilesController : ApiControllerBase
     {
-        public FilesController(FileService configurationFileService)
+        public FilesController(FileService configurationFileService, ResourceMonitor resourceMonitor, EnvironmentService environmentService)
         {
             ConfigurationFileService = configurationFileService;
+            ResourceMonitor = resourceMonitor;
+            EnvironmentService = environmentService;
         }
 
         private FileService ConfigurationFileService { get; }
+        private ResourceMonitor ResourceMonitor { get; }
+        private EnvironmentService EnvironmentService { get; }
 
         /// <summary>
         /// 分页获取文件数据
@@ -65,7 +68,7 @@ namespace Shashlik.RC.Server.Controllers
         [HttpGet(Constants.ResourceRoute.ApplicationAndEnvironment + "/poll")]
         public async Task<bool> Pool(long version, CancellationToken cancellation)
         {
-            return await EventQueue.Wait(GetResourceId(), version, cancellation);
+            return await ResourceMonitor.WaitUpdate(GetResourceId(), version, cancellation);
         }
 
         /// <summary>
@@ -77,7 +80,7 @@ namespace Shashlik.RC.Server.Controllers
         public async Task Post(CreateConfigurationFileInput input)
         {
             await ConfigurationFileService.Create(LoginUserId!.Value, User.Identity!.Name!, GetResourceId(), input);
-            EventQueue.OnUpdate(GetResourceId(), DateTime.Now.GetLongDate());
+            HttpContext.RequestServices.DispatchAsync(Constants.Events.ResourceUpdated, await EnvironmentService.Get(GetResourceId()));
         }
 
         /// <summary>
@@ -89,9 +92,8 @@ namespace Shashlik.RC.Server.Controllers
         [HttpPatch(Constants.ResourceRoute.ApplicationAndEnvironment + "/{fileId:int:min(1)}")]
         public async Task Patch(int fileId, UpdateConfigurationFileInput input)
         {
-            //TODO: event
             await ConfigurationFileService.Update(LoginUserId!.Value, User.Identity!.Name!, GetResourceId(), fileId, input);
-            EventQueue.OnUpdate(GetResourceId(), DateTime.Now.GetLongDate());
+            HttpContext.RequestServices.DispatchAsync(Constants.Events.ResourceUpdated, await EnvironmentService.Get(GetResourceId()));
         }
 
         /// <summary>
@@ -102,9 +104,8 @@ namespace Shashlik.RC.Server.Controllers
         [HttpDelete(Constants.ResourceRoute.ApplicationAndEnvironment + "/{fileId:int:min(1)}")]
         public async Task Delete(int fileId)
         {
-            //TODO: event
             await ConfigurationFileService.Delete(LoginUserId!.Value, User.Identity!.Name!, GetResourceId(), fileId);
-            EventQueue.OnUpdate(GetResourceId(), DateTime.Now.GetLongDate());
+            HttpContext.RequestServices.DispatchAsync(Constants.Events.ResourceUpdated, await EnvironmentService.Get(GetResourceId()));
         }
     }
 }

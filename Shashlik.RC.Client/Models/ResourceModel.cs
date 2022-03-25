@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Shashlik.RC.Client;
+namespace Shashlik.RC.Client.Models;
 
 public class ResourceModel
 {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using Shashlik.RC.Client.Models;
 using Shashlik.Utils.Extensions;
 using Shashlik.Utils.Helpers;
 
@@ -10,12 +11,12 @@ namespace Shashlik.RC.Client
 {
     public class ApiClient
     {
-        public ApiClient(RCOptions rcOptions)
+        public ApiClient(RCClientOptions rcOptions)
         {
             Options = rcOptions;
         }
 
-        private RCOptions Options { get; }
+        private RCClientOptions Options { get; }
         private long _version;
 
         private string BuildSign(string nonce, long timestamp, IDictionary<string, string?>? query, string? body)

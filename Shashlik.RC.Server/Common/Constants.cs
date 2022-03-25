@@ -53,4 +53,15 @@ public class Constants
     {
         public const string Name = "^[0-9a-zA-Z_]{1,32}$";
     }
+
+    /// <summary>
+    /// 事件
+    /// </summary>
+    public class Events
+    {
+        /// <summary>
+        /// 资源更新
+        /// </summary>
+        public const string ResourceUpdated = "RESOURCE_UPDATED";
+    }
 }
