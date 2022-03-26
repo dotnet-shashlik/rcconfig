@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
+using Flurl.Http;
 using Shashlik.RC.Client.Models;
 using Shashlik.Utils.Extensions;
 using Shashlik.Utils.Helpers;
-
 
 namespace Shashlik.RC.Client
 {
@@ -48,14 +47,16 @@ namespace Shashlik.RC.Client
                 { "Sign", sign },
                 { "Nonce", nonce },
             };
-            var response = HttpHelper.GetString($"{Options.Server}/api/Files/{Options.ResourceId}/all",
-                null, header).GetAwaiter().GetResult();
 
-            var model = JsonConvert.DeserializeObject<ResponseResult<ResourceModel>>(response!);
+            var model = $"{Options.Server}/api/Files/{Options.ResourceId}/all"
+                .WithHeaders(header)
+                .GetJsonAsync<ResponseResult<ResourceModel>>()
+                .GetAwaiter().GetResult();
+
             if (model is null)
                 throw new Exception("empty response");
             if (!model.Success)
-                throw new Exception("request failed: " + response);
+                throw new Exception("request failed: " + model.Msg);
 
             _version = model.Data!.Version;
             return model.Data;
@@ -79,10 +80,12 @@ namespace Shashlik.RC.Client
             };
             try
             {
-                var response = HttpHelper.GetString($"{Options.Server}/api/Files/{Options.ResourceId}/poll",
-                    query, header, null, timeout: 29).GetAwaiter().GetResult();
+                var res = $"{Options.Server}/api/Files/{Options.ResourceId}/poll"
+                    .WithHeaders(header)
+                    .WithTimeout(29)
+                    .GetJsonAsync<ResponseResult<bool>>()
+                    .GetAwaiter().GetResult();
 
-                var res = JsonConvert.DeserializeObject<ResponseResult<bool>>(response!);
                 if (res is null)
                     return false;
                 if (res.Success)
