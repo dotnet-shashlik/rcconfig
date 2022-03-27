@@ -7,8 +7,8 @@ namespace Shashlik.RC.Server.Monitor;
 [Singleton]
 public class CancelTokenSourceHolder
 {
-    private readonly ConcurrentDictionary<string, ConcurrentDictionary<CancellationTokenSource, CancellationTokenSource>>
-        _holder = new();
+    private static readonly ConcurrentDictionary<string, ConcurrentDictionary<CancellationTokenSource, CancellationTokenSource>>
+        Holder = new();
 
     public CancellationToken Add(string resourceId, CancellationToken requestToken)
     {
@@ -16,14 +16,14 @@ public class CancelTokenSourceHolder
         // token取消时从holder中删除
         tokenSource.Token.Register(() =>
         {
-            if (_holder.TryGetValue(resourceId, out var tokenSources))
+            if (Holder.TryGetValue(resourceId, out var tokenSources))
             {
                 tokenSources.TryRemove(tokenSource, out _);
             }
         });
         // 请求token取消时同时取消排队token
         requestToken.Register(tokenSource.Cancel);
-        var list = _holder.GetOrAdd(resourceId, new ConcurrentDictionary<CancellationTokenSource, CancellationTokenSource>());
+        var list = Holder.GetOrAdd(resourceId, new ConcurrentDictionary<CancellationTokenSource, CancellationTokenSource>());
         list.TryAdd(tokenSource, tokenSource);
 
         return tokenSource.Token;
@@ -31,7 +31,7 @@ public class CancelTokenSourceHolder
 
     public void Remove(string resourceId)
     {
-        if (_holder.TryGetValue(resourceId, out var cancellationTokenSources))
+        if (Holder.TryGetValue(resourceId, out var cancellationTokenSources))
         {
             foreach (var cancellationTokenSource in cancellationTokenSources.Keys)
             {
