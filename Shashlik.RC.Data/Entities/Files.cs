@@ -9,6 +9,7 @@ public class Files
     /// <summary>
     /// 文件id
     /// </summary>
+    [Column(IsIdentity = true)]
     public int Id { get; set; }
 
     /// <summary>
@@ -32,6 +33,7 @@ public class Files
     /// 文件内容
     /// </summary>
     [Required]
+    [Column(StringLength = -1)]
     public string Content { get; set; }
 
     /// <summary>
@@ -43,11 +45,6 @@ public class Files
     /// 环境id
     /// </summary>
     public int EnvironmentId { get; set; }
-
-    /// <summary>
-    /// 所属环境
-    /// </summary>
-    public Environments Environment { get; set; }
 
     public string EnvironmentResourceId { get; set; }
 }

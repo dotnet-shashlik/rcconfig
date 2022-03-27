@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Flurl.Http;
 using Shashlik.RC.Client.Models;
 using Shashlik.Utils.Extensions;
@@ -50,6 +51,7 @@ namespace Shashlik.RC.Client
 
             var model = $"{Options.Server}/api/Files/{Options.ResourceId}/all"
                 .WithHeaders(header)
+                .WithTimeout(180)
                 .GetJsonAsync<ResponseResult<ResourceModel>>()
                 .GetAwaiter().GetResult();
 
@@ -82,6 +84,7 @@ namespace Shashlik.RC.Client
             {
                 var res = $"{Options.Server}/api/Files/{Options.ResourceId}/poll"
                     .WithHeaders(header)
+                    .SetQueryParams(query)
                     .WithTimeout(29)
                     .GetJsonAsync<ResponseResult<bool>>()
                     .GetAwaiter().GetResult();
@@ -92,8 +95,13 @@ namespace Shashlik.RC.Client
                     return res.Data;
                 return false;
             }
-            catch (TimeoutException)
+            catch (FlurlHttpTimeoutException)
             {
+                return false;
+            }
+            catch
+            {
+                //TODO: log
                 return false;
             }
         }

@@ -1,12 +1,12 @@
 ﻿#nullable disable
 namespace Shashlik.RC.Server.Services.File.Dtos;
 
-public class ConfigurationFileListDto
+public class FileListDto
 {
     /// <summary>
     /// 文件id
     /// </summary>
-    public string Id { get; set; }
+    public int Id { get; set; }
 
     /// <summary>
     /// 文件名

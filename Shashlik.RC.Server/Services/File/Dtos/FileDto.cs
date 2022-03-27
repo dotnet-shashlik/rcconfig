@@ -1,33 +1,40 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Shashlik.RC.Server.Common;
+﻿#nullable disable
+namespace Shashlik.RC.Server.Services.File.Dtos;
 
-#nullable disable
-namespace Shashlik.RC.Server.Services.File.Inputs;
-
-public class CreateConfigurationFileInput
+public class FileDto
 {
+    /// <summary>
+    /// 文件id
+    /// </summary>
+    public int Id { get; set; }
+
     /// <summary>
     /// 文件名
     /// </summary>
-    [Required]
-    [StringLength(32, MinimumLength = 1)]
-    [RegularExpression(Constants.Regexs.Name)]
     public string Name { get; set; }
 
     /// <summary>
     /// 描述
     /// </summary>
-    [StringLength(255)]
     public string Desc { get; set; }
 
     /// <summary>
     /// 文件类型,yaml/json
     /// </summary>
-    [Required]
     public string Type { get; set; }
 
     /// <summary>
     /// 文件内容
     /// </summary>
     public string Content { get; set; }
+
+    /// <summary>
+    /// 环境id
+    /// </summary>
+    public int EnvironmentId { get; set; }
+
+    /// <summary>
+    /// 环境 name
+    /// </summary>
+    public string EnvironmentResourceId { get; set; }
 }

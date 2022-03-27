@@ -65,16 +65,22 @@ public class EnvironmentService
     public async Task<List<EnvironmentDto>> List(string? applicationName)
     {
         return await DbContext.Select<Environments>()
-            .OrderBy(r => r.Id)
             .WhereIf(!applicationName.IsNullOrWhiteSpace(), r => r.Application.Name == applicationName)
-            .ToListAsync<EnvironmentDto>();
+            .OrderBy(r => r.Id)
+            .ToListAsync(r => new EnvironmentDto
+            {
+                ApplicationName = r.Application.Name,
+            });
     }
 
     public async Task<EnvironmentDto?> Get(string resourceId)
     {
         return await DbContext.Select<Environments>()
             .Where(r => r.ResourceId == resourceId)
-            .FirstAsync<EnvironmentDto>();
+            .FirstAsync(r => new EnvironmentDto
+            {
+                ApplicationName = r.Application.Name,
+            });
     }
 
     public void UpdateVersion(string resourceId)

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using FreeSql.DataAnnotations;
 
 namespace Shashlik.RC.Data.Entities;
 
@@ -7,7 +8,7 @@ namespace Shashlik.RC.Data.Entities;
 /// </summary>
 public class Logs
 {
-    public long Id { get; set; }
+    [Column(IsIdentity = true)] public long Id { get; set; }
 
     public long LogTime { get; set; }
 
@@ -27,7 +28,7 @@ public class Logs
 
     public string ResourceId { get; set; }
 
-    public string BeforeContent { get; set; }
+    [Column(StringLength = -1)] public string BeforeContent { get; set; }
 
-    public string AfterContent { get; set; }
+    [Column(StringLength = -1)] public string AfterContent { get; set; }
 }

@@ -52,7 +52,6 @@ namespace Shashlik.RC.Server.Controllers
         }
 
         [HttpGet("current")]
-        [AllowAnonymous]
         public async Task<UserDetailDto> UserInfo()
         {
             return (await UserService.Get(LoginUserId!.Value))!;

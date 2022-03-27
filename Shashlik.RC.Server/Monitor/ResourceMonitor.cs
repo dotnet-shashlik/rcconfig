@@ -23,6 +23,8 @@ public class ResourceMonitor : IEventHandler
         CancelTokenSourceHolder = cancelTokenSourceHolder;
     }
 
+    public string Id = Guid.NewGuid().ToString();
+
     private IServiceScopeFactory ScopeFactory { get; }
     private CancelTokenSourceHolder CancelTokenSourceHolder { get; }
 
@@ -30,7 +32,7 @@ public class ResourceMonitor : IEventHandler
     /// <summary>
     /// 缓存的实时资源版本数据
     /// </summary>
-    public readonly ConcurrentDictionary<string, long> TimeVersions = new();
+    private static readonly ConcurrentDictionary<string, long> TimeVersions = new();
 
     /// <summary>
     /// 等待资源数据更新

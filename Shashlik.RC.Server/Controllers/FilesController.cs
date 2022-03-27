@@ -31,7 +31,7 @@ namespace Shashlik.RC.Server.Controllers
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpGet(Constants.ResourceRoute.ApplicationAndEnvironment)]
-        public async Task<PageModel<ConfigurationFileListDto>> Get([FromQuery] PageInput input)
+        public async Task<PageModel<FileListDto>> Get([FromQuery] PageInput input)
         {
             return await ConfigurationFileService.List(GetResourceId(), input);
         }
@@ -42,7 +42,7 @@ namespace Shashlik.RC.Server.Controllers
         /// <param name="fileId"></param>
         /// <returns></returns>
         [HttpGet(Constants.ResourceRoute.ApplicationAndEnvironment + "/{fileId:int:min(1)}")]
-        public async Task<ConfigurationFileDto> Get(int fileId)
+        public async Task<FileDto> Get(int fileId)
         {
             var file = await ConfigurationFileService.Get(GetResourceId(), fileId);
             return file ?? throw ResponseException.NotFound();
@@ -77,10 +77,10 @@ namespace Shashlik.RC.Server.Controllers
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost(Constants.ResourceRoute.ApplicationAndEnvironment)]
-        public async Task Post(CreateConfigurationFileInput input)
+        public async Task Post(CreateFileInput input)
         {
             await ConfigurationFileService.Create(LoginUserId!.Value, User.Identity!.Name!, GetResourceId(), input);
-            HttpContext.RequestServices.DispatchAsync(Constants.Events.ResourceUpdated, await EnvironmentService.Get(GetResourceId()));
+            HttpContext.RequestServices.Dispatch(Constants.Events.ResourceUpdated, await EnvironmentService.Get(GetResourceId()));
         }
 
         /// <summary>
@@ -90,10 +90,10 @@ namespace Shashlik.RC.Server.Controllers
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPatch(Constants.ResourceRoute.ApplicationAndEnvironment + "/{fileId:int:min(1)}")]
-        public async Task Patch(int fileId, UpdateConfigurationFileInput input)
+        public async Task Patch(int fileId, UpdateFileInput input)
         {
             await ConfigurationFileService.Update(LoginUserId!.Value, User.Identity!.Name!, GetResourceId(), fileId, input);
-            HttpContext.RequestServices.DispatchAsync(Constants.Events.ResourceUpdated, await EnvironmentService.Get(GetResourceId()));
+            HttpContext.RequestServices.Dispatch(Constants.Events.ResourceUpdated, await EnvironmentService.Get(GetResourceId()));
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace Shashlik.RC.Server.Controllers
         public async Task Delete(int fileId)
         {
             await ConfigurationFileService.Delete(LoginUserId!.Value, User.Identity!.Name!, GetResourceId(), fileId);
-            HttpContext.RequestServices.DispatchAsync(Constants.Events.ResourceUpdated, await EnvironmentService.Get(GetResourceId()));
+            HttpContext.RequestServices.Dispatch(Constants.Events.ResourceUpdated, await EnvironmentService.Get(GetResourceId()));
         }
     }
 }

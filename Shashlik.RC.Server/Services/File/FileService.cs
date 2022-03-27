@@ -26,7 +26,7 @@ public class FileService
     private EnvironmentService EnvironmentService { get; }
     private LogService LogService { get; }
 
-    public async Task Create(int userId, string userName, string environmentResourceId, CreateConfigurationFileInput input)
+    public async Task Create(int userId, string userName, string environmentResourceId, CreateFileInput input)
     {
         if (await DbContext.Select<Files>()
                 .AnyAsync(r => r.EnvironmentResourceId == environmentResourceId && r.Name == input.Name))
@@ -62,7 +62,7 @@ public class FileService
         });
     }
 
-    public async Task Update(int userId, string userName, string environmentResourceId, int id, UpdateConfigurationFileInput input)
+    public async Task Update(int userId, string userName, string environmentResourceId, int id, UpdateFileInput input)
     {
         var file = await DbContext.Select<Files>(id).FirstAsync();
         if (file is null || file.EnvironmentResourceId != environmentResourceId)
@@ -116,25 +116,25 @@ public class FileService
         });
     }
 
-    public async Task<PageModel<ConfigurationFileListDto>> List(string environmentResourceId, PageInput pageInput)
+    public async Task<PageModel<FileListDto>> List(string environmentResourceId, PageInput pageInput)
     {
         return await DbContext.Select<Files>()
             .Where(r => r.EnvironmentResourceId == environmentResourceId)
             .OrderBy(r => r.Id)
-            .Page<Files, ConfigurationFileListDto>(pageInput);
+            .Page<Files, FileListDto>(pageInput);
     }
 
-    public async Task<ConfigurationFileDto?> Get(string environmentResourceId, int id)
+    public async Task<FileDto?> Get(string environmentResourceId, int id)
     {
         return await DbContext.Select<Files>()
             .Where(r => r.Id == id && r.EnvironmentResourceId == environmentResourceId)
-            .FirstAsync<ConfigurationFileDto>();
+            .FirstAsync<FileDto>();
     }
 
-    public async Task<List<ConfigurationFileDto>> All(string environmentResourceId)
+    public async Task<List<FileDto>> All(string environmentResourceId)
     {
         return await DbContext.Select<Files>()
             .Where(r => r.EnvironmentResourceId == environmentResourceId)
-            .ToListAsync<ConfigurationFileDto>();
+            .ToListAsync<FileDto>();
     }
 }

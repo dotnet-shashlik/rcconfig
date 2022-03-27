@@ -7,7 +7,7 @@ namespace Shashlik.RC.Data.Entities;
 [Index("uk_Applications_ResourceId", "ResourceId", true)]
 public class Applications : IResource
 {
-    public int Id { get; set; }
+    [Column(IsIdentity = true)] public int Id { get; set; }
 
     /// <summary>
     /// app名称,不可修改
@@ -24,8 +24,6 @@ public class Applications : IResource
     /// 创建时间
     /// </summary>
     public long CreateTime { get; set; }
-
-    public List<Environments> Environments { get; set; }
 
     /// <summary>
     /// 资源id
