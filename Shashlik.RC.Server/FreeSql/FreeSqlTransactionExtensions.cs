@@ -20,7 +20,8 @@ public static class FreeSqlTransactionExtensions
     {
         if (!freeSql.Ado.MasterPool.IsAvailable)
             throw new Exception("主库不可用");
-        var dbConnection = freeSql.Ado.MasterPool.Get().Value;
+        var connObj = freeSql.Ado.MasterPool.Get();
+        var dbConnection = connObj.Value;
         if (dbConnection is null)
             throw new Exception("主库连接为空");
 
@@ -42,10 +43,21 @@ public static class FreeSqlTransactionExtensions
             finally
             {
                 Transactions.Value = null;
+                freeSql.Ado.MasterPool.Return(connObj);
                 await tran.DisposeAsync();
             }
         }
-        else await handler();
+        else
+        {
+            try
+            {
+                await handler();
+            }
+            finally
+            {
+                freeSql.Ado.MasterPool.Return(connObj);
+            }
+        }
     }
 
     public static IInsert<T1> WithTransactionIfRequire<T1>(this IInsert<T1> source)
